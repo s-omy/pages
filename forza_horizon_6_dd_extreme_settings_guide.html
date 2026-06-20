@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forza Horizon 6 - Fanatec DD Extreme 最適化ガイド (Xbox)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Chosen Palette: Warm Neutrals with Racing Accents (Slate-50 bg, Slate-800 text, Amber-500/Orange-600 accents for a clean, light mode interface) -->
+    <!-- Application Structure Plan: The SPA is structured as an interactive setup dashboard. It opens with an overview explaining the synergy between wheelbase and game engine. The core feature is a "Driving Style Preset" selector that dynamically updates the recommended Fanatec Tuning Menu settings, the in-game advanced control settings, and a radar chart visualizing the handling characteristics. This allows users to easily find and understand the exact settings needed for their specific goal (Grip, Drift, Rally) without scrolling through walls of text. -->
+    <!-- Visualization & Content Choices: 
+         1. Interactive Buttons (HTML/JS) -> Goal: Allow users to switch contexts (Grip/Drift/Rally) instantly.
+         2. Data Tables (HTML/Tailwind) -> Goal: Present precise numerical settings clearly.
+         3. Radar Chart (Chart.js/Canvas) -> Goal: Compare the qualitative feel of each preset (FFB Strength, Dampening, Road Feel, etc.). Justification: Radar charts are ideal for displaying multivariate performance profiles of sim racing setups. Library: Chart.js (NO SVG/Mermaid used).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            background-color: #f8fafc; /* Tailwind slate-50 */
+            color: #1e293b; /* Tailwind slate-800 */
+        }
+        
+        /* 必須のチャートコンテナスタイリング */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 380px;
+                max-height: 400px;
+            }
+        }
+        
+        .tab-btn.active {
+            background-color: #ea580c; /* orange-600 */
+            color: white;
+            border-color: #ea580c;
+        }
+        .tab-btn {
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased selection:bg-orange-200 selection:text-orange-900">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
+        <div class="max-w-6xl mx-auto px-4 py-5 flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">FH6 × DD Extreme 統合セットアップ</h1>
+                <p class="text-sm text-slate-500 mt-1">Xbox Console | Fanatec ClubSport DD Extreme (15Nm) 専用設定ガイド</p>
+            </div>
+            <div class="hidden sm:block text-orange-600 font-bold text-xl border-2 border-orange-600 px-3 py-1 rounded-md">
+                15Nm DIRECT DRIVE
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8 space-y-12">
+
+        <!-- Section 1: Overview -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <h2 class="text-xl font-bold border-b-2 border-orange-500 pb-2 mb-4 inline-block">システムの同調について</h2>
+            <p class="text-slate-700 leading-relaxed mb-4">
+                このセクションでは、本ガイドの目的とダイレクトドライブ（DD）における基本概念を説明します。Forza Horizon 6のようなオープンワールドレーシングにおいて、ステアリングコントローラーのポテンシャルを最大限に引き出すには、<strong>FanatecのTuning Menu（ホイール側のハードウェア設定）</strong>と、<strong>ゲーム内のAdvanced Controls（ソフトウェア側の物理演算）</strong>の2つを完全に一致させる必要があります。
+            </p>
+            <div class="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-md">
+                <p class="text-sm text-orange-800 font-medium">
+                    <span class="font-bold">重要ポイント:</span> DD Extremeは15Nmという非常に強力なトルクを持ちます。ゲーム内のFFBスケールを100%にするとクリッピング（信号の飽和による情報喪失）が発生しやすくなるため、ゲーム内はやや下げ（80%前後）、ホイールベース本体のピークトルクを100%に設定して余裕を持たせる手法が現在の主流です。
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 2: Interactive Setup Dashboard -->
+        <section>
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">インタラクティブ設定プロファイル</h2>
+                <p class="text-slate-600">
+                    目的のドライビングスタイルを選択してください。選択に応じて、推奨されるホイールベースの設定値、ゲーム内設定値、およびそのフィードバック特性が下部のパネルとチャートに動的に反映されます。
+                </p>
+            </div>
+
+            <!-- Preset Controls -->
+            <div class="flex flex-wrap gap-3 mb-8" id="preset-controls">
+                <button onclick="loadPreset('grip')" class="tab-btn active px-6 py-3 rounded-lg font-semibold border-2 border-slate-300 text-slate-600 hover:border-orange-500 hover:text-orange-600 bg-white">
+                    🏎️ グリップ / レース
+                </button>
+                <button onclick="loadPreset('drift')" class="tab-btn px-6 py-3 rounded-lg font-semibold border-2 border-slate-300 text-slate-600 hover:border-orange-500 hover:text-orange-600 bg-white">
+                    💨 ドリフト
+                </button>
+                <button onclick="loadPreset('rally')" class="tab-btn px-6 py-3 rounded-lg font-semibold border-2 border-slate-300 text-slate-600 hover:border-orange-500 hover:text-orange-600 bg-white">
+                    🌲 ラリー / オフロード
+                </button>
+            </div>
+
+            <!-- Profile Description -->
+            <div class="bg-slate-800 text-white p-6 rounded-xl shadow-md mb-8">
+                <h3 class="text-xl font-bold text-orange-400 mb-2" id="profile-title">グリップ / レーシング プロファイル</h3>
+                <p id="profile-desc" class="text-slate-300 leading-relaxed">
+                    舗装路での正確なハンドリングと路面インフォメーションを最大化する設定です。クリッピングを防ぎつつ、タイヤの限界（グリップ喪失の瞬間）を掴みやすくします。
+                </p>
+            </div>
+
+            <!-- Settings Grid & Chart -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Left Column: Data Tables -->
+                <div class="space-y-6">
+                    
+                    <!-- Fanatec Tuning Menu -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-slate-100 px-4 py-3 border-b border-slate-200">
+                            <h4 class="font-bold text-slate-800">Fanatec Tuning Menu (ホイール側)</h4>
+                            <p class="text-xs text-slate-500">ステアリングのディスプレイから設定します</p>
+                        </div>
+                        <div class="p-0">
+                            <table class="w-full text-sm text-left">
+                                <tbody>
+                                    <tr class="border-b border-slate-100"><td class="px-4 py-2 font-medium text-slate-600 w-1/2">SEN (Sensitivity)</td><td class="px-4 py-2 font-bold text-slate-900" id="f-sen">Auto</td></tr>
+                                    <tr class="border-b border-slate-100"><td class="px-4 py-2 font-medium text-slate-600">FF (Force Feedback)</td><td class="px-4 py-2 font-bold text-slate-900"><span id="f-ff">100</span>%</td></tr>
+                                    <tr class="border-b border-slate-100"><td class="px-4 py-2 font-medium text-slate-600">FFS (FFB Scaling)</td><td class="px-4 py-2 font-bold text-slate-900" id="f-ffs">Peak</td></tr>
+                                    <tr class="border-b border-slate-100"><td class="px-4 py-2 font-medium text-slate-600">NDP (Natural Damper)</td><td class="px-4 py-2 font-bold text-slate-900"><span id="f-ndp">20</span>%</td></tr>
+                                    <tr class="border-b border-slate-100"><td class="px-4 py-2 font-medium text-slate-600">NFR (Natural Friction)</td><td class="px-4 py-2 font-bold text-slate-900"><span id="f-nfr">5</span>%</td></tr>
+                                    <tr class="border-b border-slate-100"><td class="px-4 py-2 font-medium text-slate-600">NIN (Natural Inertia)</td><td class="px-4 py-2 font-bold text-slate-900" id="f-nin">Off</td></tr>
+                                    <tr class="border-b border-slate-100"><td class="px-4 py-2 font-medium text-slate-600">INT (Interpolation)</td><td class="px-4 py-2 font-bold text-slate-900" id="f-int">3</td></tr>
+                                    <tr><td class="px-4 py-2 font-medium text-slate-600">FEI (Force Effect Int.)</td><td class="px-4 py-2 font-bold text-slate-900" id="f-fei">100</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Forza In-Game Settings -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-slate-100 px-4 py-3 border-b border-slate-200">
+                            <h4 class="font-bold text-slate-800">Forza Horizon 6 詳細コントロール設定</h4>
+                            <p class="text-xs text-slate-500">ゲーム内の設定メニューから調整します</p>
+                        </div>
+                        <div class="p-0">
+                            <table class="w-full text-sm text-left">
+                                <tbody>
+                                    <tr class="border-b border-slate-100"><td class="px-4 py-2 font-medium text-slate-600 w-1/2">振動スケール (Vibration)</td><td class="px-4 py-2 font-bold text-slate-900" id="g-vib">0.4</td></tr>
+                                    <tr class="border-b border-slate-100"><td class="px-4 py-2 font-medium text-slate-600">FFBスケール</td><td class="px-4 py-2 font-bold text-slate-900" id="g-ffb">0.8</td></tr>
+                                    <tr class="border-b border-slate-100"><td class="px-4 py-2 font-medium text-slate-600">センタースプリング</td><td class="px-4 py-2 font-bold text-slate-900" id="g-cs">0.0</td></tr>
+                                    <tr class="border-b border-slate-100"><td class="px-4 py-2 font-medium text-slate-600">ホイールダンパー</td><td class="px-4 py-2 font-bold text-slate-900" id="g-wd">0.0</td></tr>
+                                    <tr><td class="px-4 py-2 font-medium text-slate-600">メカニカルトレール</td><td class="px-4 py-2 font-bold text-slate-900" id="g-mt">1.1</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="bg-orange-50 px-4 py-2 border-t border-slate-200 text-xs text-slate-700">
+                            ※センタースプリングとホイールダンパーを「0」にすることで、ゲーム側の人工的な抵抗を消し、DD Extreme本体のピュアなフィードバックを直接受け取ることができます。
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Visualization -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col justify-center">
+                    <div class="text-center mb-4">
+                        <h4 class="font-bold text-slate-800">フィードバック特性分析</h4>
+                        <p class="text-xs text-slate-500">選択したプロファイルの応答特性を視覚化します</p>
+                    </div>
+                    <!-- Chart Container -->
+                    <div class="chart-container">
+                        <canvas id="feedbackChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 text-center text-sm">
+        <p>※本設定はFanatec ClubSport DD Extreme (15Nm) と Xbox版 Forza Horizon シリーズの物理エンジン傾向に基づいた推奨値です。</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Data Storage: Presets definition
+        const setupData = {
+            grip: {
+                title: "グリップ / レーシング プロファイル",
+                desc: "舗装路での正確なハンドリングと路面インフォメーションを最大化する設定です。クリッピングを防ぎつつ、タイヤの限界（グリップ喪失の瞬間）を掴みやすくします。",
+                fanatec: { sen: "Auto", ff: "100", ffs: "Peak", ndp: "20", nfr: "5", nin: "Off", int: "3", fei: "100" },
+                ingame: { vib: "0.4", ffb: "0.8", cs: "0.0", wd: "0.0", mt: "1.1" },
+                chart: [90, 85, 20, 100, 95] // [操舵角の自由度, トルク強度, ダンピング(重さ), 路面情報, 応答速度]
+            },
+            drift: {
+                title: "ドリフト プロファイル",
+                desc: "セルフステアを阻害しないようダンパー（NDP）を抜き、素早いカウンターを可能にする設定です。最大トルクは少し下げ、長時間のスライドコントロールを容易にします。",
+                fanatec: { sen: "900", ff: "80", ffs: "Peak", ndp: "5", nfr: "Off", nin: "Off", int: "1", fei: "80" },
+                ingame: { vib: "0.3", ffb: "0.9", cs: "0.0", wd: "0.0", mt: "0.8" },
+                chart: [100, 70, 5, 60, 100]
+            },
+            rally: {
+                title: "ラリー / オフロード プロファイル",
+                desc: "悪路での激しいキックバックを適度に抑え、長時間のプレイでも手首を痛めないようマイルドに調整した設定です。ダンパーとフリクションを強めに入れます。",
+                fanatec: { sen: "Auto", ff: "90", ffs: "Peak", ndp: "35", nfr: "15", nin: "Off", int: "4", fei: "90" },
+                ingame: { vib: "0.6", ffb: "0.85", cs: "0.1", wd: "0.1", mt: "1.0" },
+                chart: [85, 80, 45, 85, 75]
+            }
+        };
+
+        let radarChart = null;
+
+        // Initialize Chart.js
+        function initChart() {
+            const ctx = document.getElementById('feedbackChart').getContext('2d');
+            
+            // Label wrapping logic (fallback applied via responsive chart container handling, radar labels are short here)
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: [
+                        '操舵角の自由度',
+                        'FFB トルク強度',
+                        'ダンピング (重さ)',
+                        '路面インフォメーション',
+                        'ステアリング応答速度'
+                    ],
+                    datasets: [{
+                        label: '特性値',
+                        data: setupData.grip.chart,
+                        backgroundColor: 'rgba(234, 88, 12, 0.2)', // orange-600 with opacity
+                        borderColor: 'rgba(234, 88, 12, 1)',
+                        pointBackgroundColor: 'rgba(234, 88, 12, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(234, 88, 12, 1)',
+                        borderWidth: 2,
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false, // Ensures it respects the chart-container constraints
+                    responsive: true,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                            pointLabels: {
+                                font: { family: "'Inter', sans-serif", size: 11 },
+                                color: '#475569'
+                            },
+                            ticks: {
+                                display: false, // Hide numeric ticks on radar web for cleaner look
+                                min: 0,
+                                max: 100,
+                                stepSize: 20
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                            titleFont: { size: 13 },
+                            bodyFont: { size: 14 },
+                            padding: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    return ' スコア: ' + context.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Core Interaction Handling: Update UI based on selected preset
+        function loadPreset(presetKey) {
+            const data = setupData[presetKey];
+            if(!data) return;
+
+            // Update UI Styling for Buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            // Find the clicked button (crude matching for demo, ideally pass 'this')
+            event.currentTarget.classList.add('active');
+
+            // Update Text Content
+            document.getElementById('profile-title').innerText = data.title;
+            document.getElementById('profile-desc').innerText = data.desc;
+
+            // Update Fanatec Values
+            document.getElementById('f-sen').innerText = data.fanatec.sen;
+            document.getElementById('f-ff').innerText = data.fanatec.ff;
+            document.getElementById('f-ffs').innerText = data.fanatec.ffs;
+            document.getElementById('f-ndp').innerText = data.fanatec.ndp;
+            document.getElementById('f-nfr').innerText = data.fanatec.nfr;
+            document.getElementById('f-nin').innerText = data.fanatec.nin;
+            document.getElementById('f-int').innerText = data.fanatec.int;
+            document.getElementById('f-fei').innerText = data.fanatec.fei;
+
+            // Update In-Game Values
+            document.getElementById('g-vib').innerText = data.ingame.vib;
+            document.getElementById('g-ffb').innerText = data.ingame.ffb;
+            document.getElementById('g-cs').innerText = data.ingame.cs;
+            document.getElementById('g-wd').innerText = data.ingame.wd;
+            document.getElementById('g-mt').innerText = data.ingame.mt;
+
+            // Update Chart Data
+            if(radarChart) {
+                radarChart.data.datasets[0].data = data.chart;
+                radarChart.update();
+            }
+        }
+
+        // Run on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+        });
+    </script>
+</body>
+</html>
