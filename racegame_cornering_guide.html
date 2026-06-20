@@ -1,0 +1,1052 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>レースゲーム コーナリング問題分析シート</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --ink: #1f2937;
+      --muted: #5b6473;
+      --line: #d8deea;
+      --accent: #2563eb;
+      --accent-soft: #e8f0ff;
+      --danger: #dc2626;
+      --warn: #b45309;
+      --ok: #047857;
+      --purple: #7c3aed;
+      --shadow: 0 10px 28px rgba(30, 41, 59, 0.10);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 34rem),
+        radial-gradient(circle at top right, rgba(124, 58, 237, 0.10), transparent 28rem),
+        var(--bg);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.75;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 32px auto 56px;
+    }
+
+    header.hero {
+      background: linear-gradient(135deg, #111827, #1f3b79 58%, #3730a3);
+      color: white;
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: clamp(1.65rem, 3vw, 2.35rem);
+      letter-spacing: 0.02em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #dbeafe;
+      max-width: 860px;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0 24px;
+    }
+
+    .legend-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: 0 4px 14px rgba(30, 41, 59, 0.06);
+    }
+
+    .legend-card strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #111827;
+    }
+
+    .legend-card span {
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    .tabs {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .tabs input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .tab-labels {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0;
+      background: #eef2f7;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tab-labels label {
+      display: block;
+      text-align: center;
+      padding: 16px 10px;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+      border-right: 1px solid var(--line);
+      transition: 0.16s ease;
+      user-select: none;
+    }
+
+    .tab-labels label:last-child {
+      border-right: none;
+    }
+
+    .tab-labels label:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    #tab1:checked ~ .tab-labels label[for="tab1"],
+    #tab2:checked ~ .tab-labels label[for="tab2"],
+    #tab3:checked ~ .tab-labels label[for="tab3"],
+    #tab4:checked ~ .tab-labels label[for="tab4"],
+    #tab5:checked ~ .tab-labels label[for="tab5"] {
+      background: var(--panel);
+      color: var(--accent);
+      box-shadow: inset 0 -4px 0 var(--accent);
+    }
+
+    .tab-content {
+      display: none;
+      padding: 26px;
+      background: var(--panel);
+    }
+
+    #tab1:checked ~ .contents #content1,
+    #tab2:checked ~ .contents #content2,
+    #tab3:checked ~ .contents #content3,
+    #tab4:checked ~ .contents #content4,
+    #tab5:checked ~ .contents #content5 {
+      display: block;
+    }
+
+    .section-title {
+      margin: 0 0 18px;
+      font-size: 1.55rem;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .phase-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .phase-note {
+      color: var(--muted);
+      margin: -8px 0 20px;
+      max-width: 920px;
+    }
+
+    .issue-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .issue {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .issue h3 {
+      margin: 0;
+      padding: 16px 18px;
+      background: linear-gradient(90deg, #f8fafc, #eef4ff);
+      border-bottom: 1px solid var(--line);
+      font-size: 1.18rem;
+      color: #0f172a;
+    }
+
+    .issue-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    .block {
+      padding: 17px 18px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      min-height: 160px;
+    }
+
+    .block:nth-child(2n) {
+      border-right: none;
+    }
+
+    .block:nth-last-child(-n + 2) {
+      border-bottom: none;
+    }
+
+    .block h4 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #111827;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+
+    .tag.event { background: #fee2e2; color: var(--danger); }
+    .tag.check { background: #dbeafe; color: var(--accent); }
+    .tag.drive { background: #dcfce7; color: var(--ok); }
+    .tag.setup { background: #fef3c7; color: var(--warn); }
+
+    ul {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    li + li {
+      margin-top: 4px;
+    }
+
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      margin: 12px 0 22px;
+      font-size: 0.95rem;
+    }
+
+    .mini-table th,
+    .mini-table td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      vertical-align: top;
+    }
+
+    .mini-table th {
+      background: #f1f5f9;
+      text-align: left;
+      color: #111827;
+      white-space: nowrap;
+    }
+
+    .mini-table tr:nth-child(even) td {
+      background: #fbfdff;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin: 16px 0 22px;
+    }
+
+    .flow-step {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px;
+      min-height: 132px;
+    }
+
+    .flow-step strong {
+      display: block;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .flow-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .callout {
+      border-left: 5px solid var(--accent);
+      background: var(--accent-soft);
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin: 18px 0;
+    }
+
+    .callout strong {
+      color: #0f172a;
+    }
+
+    .compact {
+      margin-top: 0;
+    }
+
+    @media (max-width: 900px) {
+      .legend,
+      .flow {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .tab-labels {
+        grid-template-columns: 1fr;
+      }
+
+      .tab-labels label {
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .issue-body {
+        grid-template-columns: 1fr;
+      }
+
+      .block,
+      .block:nth-child(2n) {
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .block:last-child {
+        border-bottom: none;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .page {
+        width: min(100% - 20px, 1180px);
+        margin-top: 16px;
+      }
+
+      header.hero {
+        padding: 22px;
+      }
+
+      .legend,
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      .tab-content {
+        padding: 18px;
+      }
+
+      .mini-table {
+        font-size: 0.88rem;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .tabs {
+        box-shadow: none;
+      }
+
+      .tab-labels,
+      .tabs input[type="radio"] {
+        display: none;
+      }
+
+      .tab-content {
+        display: block !important;
+        page-break-inside: avoid;
+      }
+
+      .issue {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <h1>レースゲーム コーナリング問題分析シート</h1>
+      <p>
+        コーナリング中の悩みを「発生している事象」「テレメトリでの確認方法」「ドライビング対処」「セッティング対処」に分解した整理表です。
+        まずは車速・入力・ヨーレート・前後スリップ角を見ると、操作原因と車両セッティング原因を切り分けやすくなります。
+      </p>
+    </header>
+
+    <section class="legend" aria-label="基本テレメトリ">
+      <div class="legend-card">
+        <strong>入力</strong>
+        <span>ブレーキ圧、スロットル開度、ステア角</span>
+      </div>
+      <div class="legend-card">
+        <strong>車体反応</strong>
+        <span>ヨーレート、横G、縦G、車速</span>
+      </div>
+      <div class="legend-card">
+        <strong>タイヤ状態</strong>
+        <span>スリップ角、スリップ率、温度、荷重</span>
+      </div>
+      <div class="legend-card">
+        <strong>車両状態</strong>
+        <span>サスストローク、車高、ABS/TC、デフ</span>
+      </div>
+    </section>
+
+    <section class="tabs">
+      <input type="radio" name="tabs" id="tab1" checked>
+      <input type="radio" name="tabs" id="tab2">
+      <input type="radio" name="tabs" id="tab3">
+      <input type="radio" name="tabs" id="tab4">
+      <input type="radio" name="tabs" id="tab5">
+
+      <nav class="tab-labels" aria-label="コーナリング分析タブ">
+        <label for="tab1">1. ブレーキング</label>
+        <label for="tab2">2. ターンイン</label>
+        <label for="tab3">3. ミッドコーナー</label>
+        <label for="tab4">4. コーナー脱出</label>
+        <label for="tab5">簡易判定＆分析</label>
+      </nav>
+
+      <div class="contents">
+        <section class="tab-content" id="content1">
+          <h2 class="section-title"><span class="phase-badge">1</span>ブレーキング区間</h2>
+          <p class="phase-note">
+            直線から減速し、車を曲げられる速度まで落とす区間です。ここでは「タイヤの縦グリップ」「前後荷重移動」「左右安定性」が主な確認対象になります。
+          </p>
+
+          <div class="issue-grid">
+            <article class="issue">
+              <h3>1-1. ハードブレーキ時にステアリングが暴れる</h3>
+              <div class="issue-body">
+                <div class="block">
+                  <h4><span class="tag event">事象</span>発生していること</h4>
+                  <ul>
+                    <li>前輪または後輪がロック寸前になり、車体が左右に振られている。</li>
+                    <li>ABSが断続的に介入し、制動力が波打っている。</li>
+                    <li>リア荷重が抜け、制動中の姿勢が不安定になっている。</li>
+                    <li>左右荷重差、バンプ、縁石などで片輪のグリップが乱れている。</li>
+                    <li>ブレーキバランスがリア寄りすぎる可能性がある。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag check">確認</span>テレメトリで見る値</h4>
+                  <ul>
+                    <li>ブレーキ圧：急激に100%へ立ち上がっていないか。</li>
+                    <li>各輪ホイールスピード：特定輪だけ車速より急落していないか。</li>
+                    <li>スリップ率：制動スリップが過大になっていないか。</li>
+                    <li>ABS作動：細かく入り続けていないか。</li>
+                    <li>ヨーレート：ステア角が少ないのに左右に揺れていないか。</li>
+                    <li>前後サスストローク：フロント沈み込み、リア伸び切りが極端でないか。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag drive">運転</span>ドライビング対処</h4>
+                  <ul>
+                    <li>ブレーキを一気に踏み切るのではなく、初期入力を少し丸める。</li>
+                    <li>直線状態で強く減速し、ステア入力を入れる前にブレーキを少し抜く。</li>
+                    <li>バンプや縁石上で最大ブレーキを使わない。</li>
+                    <li>ABSに乗せっぱなしではなく、ロック寸前の手前を狙う。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag setup">設定</span>セッティング対処</h4>
+                  <ul>
+                    <li>ブレーキバランスを前寄りにする。</li>
+                    <li>ブレーキ圧を下げ、ロックしにくくする。</li>
+                    <li>リアの安定性を上げるため、リアの伸び側ダンパーやスタビを見直す。</li>
+                    <li>タイヤ空気圧・温度の左右差が大きい場合は適正化する。</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-content" id="content2">
+          <h2 class="section-title"><span class="phase-badge">2</span>ターンイン区間</h2>
+          <p class="phase-note">
+            ブレーキを残しながら、車の向きを変え始める区間です。ここでは「前輪が曲げる仕事をできているか」「リアが踏ん張れているか」を分けて見ます。
+          </p>
+
+          <div class="issue-grid">
+            <article class="issue">
+              <h3>2-1. ステアリングの切り角に対してノーズが回頭していかない｜進入アンダーステア</h3>
+              <div class="issue-body">
+                <div class="block">
+                  <h4><span class="tag event">事象</span>発生していること</h4>
+                  <ul>
+                    <li>進入速度が高すぎ、前輪が横グリップ限界を超えている。</li>
+                    <li>ブレーキと旋回を同時に受け持ちすぎて、前輪が飽和している。</li>
+                    <li>ブレーキを抜くのが早く、フロント荷重が抜けている。</li>
+                    <li>コーストデフが強く、車が曲がりにくい。</li>
+                    <li>フロントタイヤの温度・空気圧・キャンバーが合っていない。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag check">確認</span>テレメトリで見る値</h4>
+                  <ul>
+                    <li>ステア角：切り増しているのに車が曲がらないか。</li>
+                    <li>ヨーレート：ステア入力に対して立ち上がりが鈍いか。</li>
+                    <li>前輪スリップ角：後輪より大きくなりすぎていないか。</li>
+                    <li>横G：ステアを増やしても増えず頭打ちしていないか。</li>
+                    <li>ブレーキ圧：ターンイン時に残しすぎ、または抜きすぎていないか。</li>
+                    <li>前輪温度：外側ショルダーだけ過熱していないか。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag drive">運転</span>ドライビング対処</h4>
+                  <ul>
+                    <li>進入速度を少し落とし、前輪の横グリップを残す。</li>
+                    <li>ブレーキを一気に離さず、薄く残してフロント荷重を維持する。</li>
+                    <li>ステアを急に切らず、タイヤが反応できる速度で入力する。</li>
+                    <li>早すぎるターンインを避け、向き変えの位置を見直す。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag setup">設定</span>セッティング対処</h4>
+                  <ul>
+                    <li>フロントのグリップを増やす方向に調整する。</li>
+                    <li>フロントスタビを柔らかくする、またはリアスタビを硬める。</li>
+                    <li>フロントキャンバー・空気圧を適正化する。</li>
+                    <li>コースト側デフロックを弱め、進入で曲がりやすくする。</li>
+                    <li>必要に応じてブレーキバランスをやや前寄り、または安定する位置へ調整する。</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+
+            <article class="issue">
+              <h3>2-2. ステアリングの切り角に対してノーズが回頭しすぎる｜進入オーバーステア</h3>
+              <div class="issue-body">
+                <div class="block">
+                  <h4><span class="tag event">事象</span>発生していること</h4>
+                  <ul>
+                    <li>リア荷重が抜け、リアタイヤの横グリップが不足している。</li>
+                    <li>トレイルブレーキが強すぎ、リアが不安定になっている。</li>
+                    <li>ブレーキバランスがリア寄りすぎる。</li>
+                    <li>エンジンブレーキやコーストデフでリアが巻き込みやすい。</li>
+                    <li>リアのロール剛性が高く、リア外輪が限界を超えやすい。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag check">確認</span>テレメトリで見る値</h4>
+                  <ul>
+                    <li>ヨーレート：ステア角に対して急激に増えていないか。</li>
+                    <li>リアスリップ角：フロントより大きくなっていないか。</li>
+                    <li>ステア角：カウンターステアが出ていないか。</li>
+                    <li>後輪スリップ率：制動方向に大きく滑っていないか。</li>
+                    <li>ブレーキ圧：旋回開始後も強く残しすぎていないか。</li>
+                    <li>リア荷重・リアサス：リアが浮き、伸び切りに近くないか。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag drive">運転</span>ドライビング対処</h4>
+                  <ul>
+                    <li>ターンイン時のブレーキ残し量を少し減らす。</li>
+                    <li>ブレーキリリースを滑らかにし、リア荷重を急に抜かない。</li>
+                    <li>ステア入力を少し穏やかにする。</li>
+                    <li>不安定な場合は、わずかなメンテナンススロットルでリアを落ち着かせる。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag setup">設定</span>セッティング対処</h4>
+                  <ul>
+                    <li>ブレーキバランスを前寄りにする。</li>
+                    <li>コースト側デフロックを強め、進入の安定性を上げる。</li>
+                    <li>リアスタビを柔らかくする、またはフロント側とのバランスを見直す。</li>
+                    <li>リアトーインを増やし、直進・進入安定性を上げる。</li>
+                    <li>リアタイヤ温度・空気圧が高すぎる場合は適正化する。</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-content" id="content3">
+          <h2 class="section-title"><span class="phase-badge">3</span>クリッピング付近・ミッドコーナー</h2>
+          <p class="phase-note">
+            ブレーキを抜き、パーシャルスロットルまたは慣性で旋回する区間です。ここでは「前だけ滑る」「後ろだけ滑る」「4輪全体が流れる」を分けるのが重要です。
+          </p>
+
+          <div class="issue-grid">
+            <article class="issue">
+              <h3>3-1. ステアリングの切り角に対してノーズが回頭していかない｜定常アンダーステア</h3>
+              <div class="issue-body">
+                <div class="block">
+                  <h4><span class="tag event">事象</span>発生していること</h4>
+                  <ul>
+                    <li>前輪の横グリップが不足している。</li>
+                    <li>ミッドコーナー速度が高すぎ、必要旋回半径を満たせない。</li>
+                    <li>パーシャルスロットルで前荷重が抜けている。</li>
+                    <li>フロントタイヤが過熱、または空気圧が適正外。</li>
+                    <li>フロントのロール剛性が高すぎる。</li>
+                    <li>空力車両では車高変化でフロントダウンフォースが不足している。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag check">確認</span>テレメトリで見る値</h4>
+                  <ul>
+                    <li>ステア角：切り増しても反応がないか。</li>
+                    <li>ヨーレート：ステア角に対して低いか。</li>
+                    <li>横G：頭打ちになっていないか。</li>
+                    <li>前後スリップ角：前輪スリップ角が後輪より大きいか。</li>
+                    <li>スロットル開度：早めに開けて前荷重を抜いていないか。</li>
+                    <li>フロント車高・サスストローク：外輪底付きやエアロ姿勢崩れがないか。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag drive">運転</span>ドライビング対処</h4>
+                  <ul>
+                    <li>クリップ前の速度を少し落とす。</li>
+                    <li>スロットルオンを遅らせ、車体が向きを変える時間を作る。</li>
+                    <li>ステアを足すより、ラインと速度で旋回半径を作る。</li>
+                    <li>進入でしっかり向きを変え、ミッドで無理に曲げない。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag setup">設定</span>セッティング対処</h4>
+                  <ul>
+                    <li>フロントスタビを柔らかくする、またはリアスタビを硬める。</li>
+                    <li>フロントキャンバーを増やし、旋回中の接地を改善する。</li>
+                    <li>フロント空気圧を適正化する。</li>
+                    <li>フロント車高・ダウンフォースを見直す。</li>
+                    <li>デフやトー設定で車が曲がりやすい方向に調整する。</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+
+            <article class="issue">
+              <h3>3-2. ステアリングの切り角に対してノーズが回頭しすぎる｜定常・リフトオフオーバーステア</h3>
+              <div class="issue-body">
+                <div class="block">
+                  <h4><span class="tag event">事象</span>発生していること</h4>
+                  <ul>
+                    <li>リアタイヤの横グリップが不足している。</li>
+                    <li>アクセルオフや微妙なスロットル変化でリア荷重が抜けている。</li>
+                    <li>リアタイヤが過熱、または空気圧が適正外。</li>
+                    <li>リアのロール剛性が高すぎる。</li>
+                    <li>コーストデフやエンジンブレーキでリアが不安定。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag check">確認</span>テレメトリで見る値</h4>
+                  <ul>
+                    <li>リアスリップ角：フロントより大きいか。</li>
+                    <li>ヨーレート：ステア角に対して過大か。</li>
+                    <li>ステア角：カウンターステアが出ているか。</li>
+                    <li>スロットル開度：アクセルオフや急なパーシャル変化がないか。</li>
+                    <li>リアタイヤ温度：過熱していないか。</li>
+                    <li>リアサスストローク：底付き、伸び切り、イン側浮きがないか。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag drive">運転</span>ドライビング対処</h4>
+                  <ul>
+                    <li>スロットルを急に戻さず、パーシャルを安定させる。</li>
+                    <li>ステア角を入れすぎず、必要以上に車を回そうとしない。</li>
+                    <li>ミッドコーナーでの急な荷重移動を避ける。</li>
+                    <li>リアが出る前に、わずかにアクセルを当てて姿勢を落ち着かせる。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag setup">設定</span>セッティング対処</h4>
+                  <ul>
+                    <li>リアスタビを柔らかくする。</li>
+                    <li>リアトーインを増やす。</li>
+                    <li>リアキャンバー・空気圧を適正化する。</li>
+                    <li>コースト側デフロックを強め、アクセルオフ時の安定性を上げる。</li>
+                    <li>リアダンパーや車高を見直し、荷重抜けを抑える。</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+
+            <article class="issue">
+              <h3>3-3. グリップが足りずアウトに車が流れてしまう｜4輪グリップ限界</h3>
+              <div class="issue-body">
+                <div class="block">
+                  <h4><span class="tag event">事象</span>発生していること</h4>
+                  <ul>
+                    <li>進入速度またはミッドコーナー速度が高すぎる。</li>
+                    <li>前後タイヤとも横グリップ限界に近い。</li>
+                    <li>横Gが車両・タイヤの限界で頭打ちになっている。</li>
+                    <li>タイヤ温度・空気圧が適正外で、全体グリップが落ちている。</li>
+                    <li>底付き、バンプ、エアロ失速で全体の接地性が落ちている。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag check">確認</span>テレメトリで見る値</h4>
+                  <ul>
+                    <li>横G：一定値で頭打ちになっていないか。</li>
+                    <li>前後スリップ角：前後とも大きくなっていないか。</li>
+                    <li>ステア角：切り増しても横Gやヨーレートが増えないか。</li>
+                    <li>車速：同じコーナーで基準ラップより高すぎないか。</li>
+                    <li>タイヤ温度：4輪全体が過熱していないか。</li>
+                    <li>車高・サスストローク：底付きや縁石での荷重抜けがないか。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag drive">運転</span>ドライビング対処</h4>
+                  <ul>
+                    <li>進入速度を落とし、旋回に必要な余白を作る。</li>
+                    <li>早すぎるステア切り始めや浅いラインを避ける。</li>
+                    <li>縁石やバンプを踏む位置を見直す。</li>
+                    <li>タイヤを滑らせ続けず、早めに限界手前へ戻す。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag setup">設定</span>セッティング対処</h4>
+                  <ul>
+                    <li>タイヤ空気圧を適正温度域に合わせる。</li>
+                    <li>車高を上げる、またはダンパーを見直して底付きを防ぐ。</li>
+                    <li>ダウンフォース設定を増やす。</li>
+                    <li>前後バランスではなく、まず全体グリップの底上げを考える。</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+
+            <article class="issue">
+              <h3>3-4. グリップが足りずリアが流れてしまう｜リア横グリップ不足</h3>
+              <div class="issue-body">
+                <div class="block">
+                  <h4><span class="tag event">事象</span>発生していること</h4>
+                  <ul>
+                    <li>リアタイヤの横グリップが不足している。</li>
+                    <li>リア荷重が抜け、接地が不安定になっている。</li>
+                    <li>リアタイヤが過熱して滑りやすくなっている。</li>
+                    <li>リアのサスペンションやスタビが硬く、バンプ吸収性が低い。</li>
+                    <li>リアキャンバー、トー、空気圧が合っていない。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag check">確認</span>テレメトリで見る値</h4>
+                  <ul>
+                    <li>リアスリップ角：フロントより明確に大きいか。</li>
+                    <li>ヨーレート：急に増えて車が巻き込んでいないか。</li>
+                    <li>ステア角：カウンター修正が多く出ていないか。</li>
+                    <li>リアタイヤ温度・空気圧：適正範囲を外れていないか。</li>
+                    <li>リア荷重：コーナリング中やバンプ通過で抜けていないか。</li>
+                    <li>リアサスストローク：外輪底付き、内輪浮きがないか。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag drive">運転</span>ドライビング対処</h4>
+                  <ul>
+                    <li>ミッドコーナーでアクセルオフを急に入れない。</li>
+                    <li>ステアをこじらず、リアがついてくる範囲で旋回する。</li>
+                    <li>縁石を踏む量を減らし、リア荷重抜けを避ける。</li>
+                    <li>リアが流れ始める前にスロットルとステアを微修正する。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag setup">設定</span>セッティング対処</h4>
+                  <ul>
+                    <li>リアスタビを柔らかくする。</li>
+                    <li>リアトーインを増やす。</li>
+                    <li>リアのキャンバー・空気圧を適正化する。</li>
+                    <li>リアのバンプ側・リバウンド側ダンパーを見直す。</li>
+                    <li>リア車高やダウンフォースを増やし、安定性を上げる。</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-content" id="content4">
+          <h2 class="section-title"><span class="phase-badge">4</span>コーナー脱出区間</h2>
+          <p class="phase-note">
+            車体が出口に向き始め、スロットルを開けて加速に移る区間です。ここでは「踏むと曲がらなくなる」か「踏むとリアが出る」かを分けます。
+          </p>
+
+          <div class="issue-grid">
+            <article class="issue">
+              <h3>4-1. コーナー脱出時に大きくアウトに膨らむ｜出口アンダーステア</h3>
+              <div class="issue-body">
+                <div class="block">
+                  <h4><span class="tag event">事象</span>発生していること</h4>
+                  <ul>
+                    <li>スロットルを開けるのが早すぎ、フロント荷重が抜けている。</li>
+                    <li>ステアが残った状態で加速している。</li>
+                    <li>駆動輪が縦方向にグリップを使い、横方向の余裕が減っている。</li>
+                    <li>パワー側デフロックが強く、車が外へ押し出されている。</li>
+                    <li>クリップが早すぎ、出口で車体の向きが足りない。</li>
+                    <li>FWD/AWDでは前輪が駆動と旋回を同時に受け持ちすぎている。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag check">確認</span>テレメトリで見る値</h4>
+                  <ul>
+                    <li>スロットル開度：ステアが残っている段階で急に開けていないか。</li>
+                    <li>ステア角：脱出時に大きく残っていないか。</li>
+                    <li>ヨーレート：スロットルオンで落ちていないか。</li>
+                    <li>前輪スリップ角：スロットルオン後に増えていないか。</li>
+                    <li>前輪スリップ率：FWD/AWDで駆動スリップしていないか。</li>
+                    <li>横G・縦G：横Gが残ったまま縦Gを増やしすぎていないか。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag drive">運転</span>ドライビング対処</h4>
+                  <ul>
+                    <li>車体が出口方向を向いてから踏む。</li>
+                    <li>ステアを戻しながらスロットルを開ける。</li>
+                    <li>早いクリップを避け、遅めのクリップで出口角度を作る。</li>
+                    <li>アクセルオンで曲げようとせず、向きを作ってから加速する。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag setup">設定</span>セッティング対処</h4>
+                  <ul>
+                    <li>パワー側デフロックを弱め、出口で曲がりやすくする。</li>
+                    <li>フロントグリップを増やす方向に調整する。</li>
+                    <li>リアが粘りすぎる場合はリア側の回頭性を少し上げる。</li>
+                    <li>FWD/AWDでは前輪空気圧・キャンバー・デフ設定を重点的に見る。</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+
+            <article class="issue">
+              <h3>4-2. コーナー脱出時にリアのグリップが失われ、スロットルを開けられない｜パワーオーバーステア</h3>
+              <div class="issue-body">
+                <div class="block">
+                  <h4><span class="tag event">事象</span>発生していること</h4>
+                  <ul>
+                    <li>スロットルオンで後輪がホイールスピンしている。</li>
+                    <li>リアタイヤが横方向と縦方向の両方で限界に達している。</li>
+                    <li>低いギアでトルクが急に出すぎている。</li>
+                    <li>パワー側デフ設定が合わず、片輪空転または両輪滑りが起きている。</li>
+                    <li>リア荷重、リアタイヤ温度、空気圧、サス設定に問題がある。</li>
+                    <li>TCが頻繁に介入し、加速が途切れている。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag check">確認</span>テレメトリで見る値</h4>
+                  <ul>
+                    <li>後輪ホイールスピード：車速より急に高くなっていないか。</li>
+                    <li>後輪スリップ率：駆動方向のスリップが大きくないか。</li>
+                    <li>リアスリップ角：スロットルオン後に増えていないか。</li>
+                    <li>ヨーレート：スロットルオンで急に増えていないか。</li>
+                    <li>ステア角：カウンターが必要になっていないか。</li>
+                    <li>TC作動：頻繁に入っていないか。</li>
+                    <li>ギア・RPM：トルクの立ち上がりが急すぎないか。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag drive">運転</span>ドライビング対処</h4>
+                  <ul>
+                    <li>スロットルを一気に開けず、ステア戻しに合わせて踏み足す。</li>
+                    <li>必要なら1段高いギアを使い、トルクの立ち上がりを穏やかにする。</li>
+                    <li>出口で車体を早めにまっすぐ向けるラインを選ぶ。</li>
+                    <li>リアが出始めたら踏み増しではなく、少し戻してグリップを回復させる。</li>
+                  </ul>
+                </div>
+                <div class="block">
+                  <h4><span class="tag setup">設定</span>セッティング対処</h4>
+                  <ul>
+                    <li>パワー側デフを調整する。片輪空転ならロック強め、両輪で滑るなら弱めを検討する。</li>
+                    <li>リアタイヤ空気圧・キャンバーを適正化する。</li>
+                    <li>リアサスを少し柔らかくし、加速時の接地を確保する。</li>
+                    <li>リアトーインを増やし、脱出安定性を上げる。</li>
+                    <li>TC設定が可能なら介入量を調整し、加速と安定の妥協点を探す。</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-content" id="content5">
+          <h2 class="section-title"><span class="phase-badge">判</span>簡易判定＆分析フロー</h2>
+          <p class="phase-note">
+            セッティング変更の前に、まず「速度」「入力」「車体反応」「タイヤ限界」「車両状態」の順で見ます。
+            いきなり足回りやデフを触るより、原因を分類してから対処する方が迷いにくくなります。
+          </p>
+
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>悩み</th>
+                <th>典型的な事象</th>
+                <th>最重要テレメトリ</th>
+                <th>最初に疑うこと</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ブレーキで暴れる</td>
+                <td>ロック、ABS介入、リア不安定</td>
+                <td>ホイールスピード、スリップ率、ABS、ヨーレート</td>
+                <td>ブレーキ入力、ブレーキバランス、リア荷重抜け</td>
+              </tr>
+              <tr>
+                <td>ターンインで曲がらない</td>
+                <td>前輪飽和、前荷重不足</td>
+                <td>ステア角、ヨーレート、前輪スリップ角、ブレーキ圧</td>
+                <td>進入速度、ブレーキリリース、フロントグリップ</td>
+              </tr>
+              <tr>
+                <td>ターンインで巻き込む</td>
+                <td>リア荷重抜け、リア制動不安定</td>
+                <td>リアスリップ角、ヨーレート、後輪スリップ率、ブレーキ圧</td>
+                <td>トレイルブレーキ過多、リア寄りブレーキ、コーストデフ</td>
+              </tr>
+              <tr>
+                <td>ミッドで曲がらない</td>
+                <td>定常アンダーステア</td>
+                <td>前後スリップ角、横G、ヨーレート、スロットル</td>
+                <td>ミッド速度、前荷重不足、フロントタイヤ状態</td>
+              </tr>
+              <tr>
+                <td>ミッドでリアが出る</td>
+                <td>定常オーバー、リフトオフオーバー</td>
+                <td>リアスリップ角、ヨーレート、スロットル変化</td>
+                <td>アクセルオフ、リア横グリップ不足、リア剛性</td>
+              </tr>
+              <tr>
+                <td>車全体がアウトに流れる</td>
+                <td>4輪グリップ限界、速度過多</td>
+                <td>横G、前後スリップ角、車速、タイヤ温度</td>
+                <td>単純な速度過多、タイヤ過熱、底付き</td>
+              </tr>
+              <tr>
+                <td>脱出で外に膨らむ</td>
+                <td>出口アンダー、踏み始めが早い</td>
+                <td>スロットル、ステア角、ヨーレート、前輪スリップ角</td>
+                <td>踏むタイミング、車体の向き、パワー側デフ</td>
+              </tr>
+              <tr>
+                <td>脱出でリアが流れる</td>
+                <td>パワーオーバー、トラクション不足</td>
+                <td>後輪スリップ率、リアスリップ角、ヨーレート、TC</td>
+                <td>スロットル操作、ギア、リア接地、パワー側デフ</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="compact">分析の基本順序</h3>
+          <div class="flow">
+            <div class="flow-step">
+              <strong>1. 車速</strong>
+              <p>そもそもその速度で曲がれるかを見る。前後両方が滑るなら速度過多を疑う。</p>
+            </div>
+            <div class="flow-step">
+              <strong>2. 入力</strong>
+              <p>ブレーキ、ステア、スロットルが急すぎないか。操作が原因なら先に修正する。</p>
+            </div>
+            <div class="flow-step">
+              <strong>3. ヨーレート</strong>
+              <p>ステア角に対して車が曲がらないか、曲がりすぎるかを見る。</p>
+            </div>
+            <div class="flow-step">
+              <strong>4. 前後スリップ</strong>
+              <p>前が先ならアンダー、後ろが先ならオーバー、両方なら全体限界。</p>
+            </div>
+            <div class="flow-step">
+              <strong>5. 車両状態</strong>
+              <p>温度、空気圧、サス、車高、デフ、電子制御の影響を見る。</p>
+            </div>
+          </div>
+
+          <div class="callout">
+            <strong>読み取りのコツ：</strong>
+            ステアを切っているのにヨーレートが増えず、前輪スリップ角だけが大きいならアンダーステア。
+            ステア角以上にヨーレートが増え、リアスリップ角が大きいならオーバーステア。
+            前後スリップ角が両方大きく横Gが頭打ちなら、セッティング以前に速度・ライン・タイヤ状態を疑います。
+          </div>
+
+          <h3>セッティング変更の原則</h3>
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>症状</th>
+                <th>ドライビングで先に試す</th>
+                <th>セッティングで試す</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>進入アンダー</td>
+                <td>進入速度を落とす、ブレーキを滑らかに残す</td>
+                <td>フロントグリップ増、コーストデフ弱め、フロント空気圧・キャンバー調整</td>
+              </tr>
+              <tr>
+                <td>進入オーバー</td>
+                <td>ブレーキ残しを減らす、ステア入力を穏やかにする</td>
+                <td>ブレーキバランス前寄り、リア安定方向、コーストデフ強め</td>
+              </tr>
+              <tr>
+                <td>ミッドアンダー</td>
+                <td>ミッド速度を落とす、スロットルオンを遅らせる</td>
+                <td>フロントロール剛性低下、フロントキャンバー・空気圧調整</td>
+              </tr>
+              <tr>
+                <td>ミッドオーバー</td>
+                <td>パーシャルを安定させる、急なアクセルオフを避ける</td>
+                <td>リアスタビ柔らかめ、リアトーイン増、リアタイヤ適正化</td>
+              </tr>
+              <tr>
+                <td>出口アンダー</td>
+                <td>車体が出口を向いてから踏む、ステアを戻しながら踏む</td>
+                <td>パワー側デフ弱め、フロントグリップ増、ラインに合わせてバランス調整</td>
+              </tr>
+              <tr>
+                <td>出口オーバー</td>
+                <td>スロットルを段階的に開ける、必要なら高いギアを使う</td>
+                <td>リア接地向上、リアトーイン増、パワー側デフ調整、TC調整</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
