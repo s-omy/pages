@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>レースゲーム11タイトル多角的調査 ― リアリティとゲーム性のバランシング（2026年6月）｜統合版</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15171C;
+    --ink-soft:#41444C;
+    --ink-mute:#6B6E77;
+    --paper:#F4F3EF;
+    --paper-card:#FBFAF7;
+    --panel:#14161B;
+    --panel-2:#1C1F26;
+    --panel-3:#262A33;
+    --line:#DEDBD2;
+    --line-strong:#C9C5B9;
+    --line-dark:rgba(255,255,255,.10);
+    --on-dark:#ECEAE3;
+    --on-dark-mute:#9A9DA6;
+    --violet:#6A48E8;
+    --violet-bright:#9A82FF;
+    --violet-soft:#EEEAFD;
+    --green:#1C9A60;
+    --green-soft:#E6F4EC;
+    --amber:#C9821A;
+    --amber-soft:#F8EFDD;
+    --radius:4px;
+    --maxw:1080px;
+    --prose:opt;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Zen Kaku Gothic New",-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    font-weight:400;
+    line-height:1.95;
+    letter-spacing:.01em;
+    font-feature-settings:"palt" 1;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    *{animation:none!important;transition:none!important;}
+  }
+
+  /* ---------- shared text utilities ---------- */
+  .mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;}
+  .cond{font-family:"Saira Condensed",sans-serif;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;}
+  .prose{max-width:760px;}
+  a{color:var(--violet);text-underline-offset:3px;text-decoration-thickness:1px;}
+  a:hover{color:var(--ink);}
+  :focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:2px;}
+
+  /* ---------- eyebrow / labels ---------- */
+  .eyebrow{
+    font-family:"Saira Condensed",sans-serif;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.22em;
+    font-size:.78rem;
+    color:var(--violet);
+  }
+  .eyebrow.on-dark{color:var(--violet-bright);}
+
+  /* =========================================================
+     HERO — pit wall panel
+  ========================================================= */
+  .hero{
+    background:var(--panel);
+    color:var(--on-dark);
+    position:relative;
+    overflow:hidden;
+    border-bottom:3px solid var(--violet);
+  }
+  .hero::before{
+    content:"";
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(var(--line-dark) 1px,transparent 1px),
+      linear-gradient(90deg,var(--line-dark) 1px,transparent 1px);
+    background-size:46px 46px;
+    mask-image:radial-gradient(ellipse 80% 75% at 70% 0%,#000 0%,transparent 75%);
+    -webkit-mask-image:radial-gradient(ellipse 80% 75% at 70% 0%,#000 0%,transparent 75%);
+    opacity:.55;
+  }
+  .hero-inner{position:relative;padding:74px 0 60px;}
+  .hero-meta{
+    display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;
+    font-family:"JetBrains Mono",monospace;
+    font-size:.74rem;letter-spacing:.08em;color:var(--on-dark-mute);
+    margin-bottom:30px;
+  }
+  .hero-meta .dot{width:7px;height:7px;border-radius:50%;background:var(--violet-bright);display:inline-block;margin-right:8px;vertical-align:middle;box-shadow:0 0 12px var(--violet-bright);}
+  h1.hero-title{
+    font-weight:900;
+    font-size:clamp(2.05rem,5.4vw,3.7rem);
+    line-height:1.24;
+    letter-spacing:-.01em;
+    margin:0 0 8px;
+    max-width:30ch;
+  }
+  .hero-sub{
+    font-family:"Saira Condensed",sans-serif;
+    font-weight:500;letter-spacing:.04em;
+    font-size:clamp(1rem,2.2vw,1.35rem);
+    color:var(--on-dark-mute);
+    text-transform:uppercase;
+    margin:0 0 34px;
+  }
+  .thesis{
+    max-width:680px;
+    font-size:1.02rem;line-height:1.95;color:#D9D7D0;
+    border-left:2px solid var(--violet);
+    padding:4px 0 4px 22px;
+  }
+  .thesis b{color:#fff;font-weight:700;}
+
+  /* axis chips */
+  .axes{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px;}
+  .axis{
+    flex:1 1 240px;min-width:220px;
+    background:var(--panel-2);
+    border:1px solid var(--line-dark);
+    border-top:2px solid var(--violet);
+    border-radius:var(--radius);
+    padding:16px 18px;
+  }
+  .axis .k{font-family:"Saira Condensed",sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.92rem;color:#fff;}
+  .axis .k span{color:var(--violet-bright);}
+  .axis .d{font-size:.86rem;color:var(--on-dark-mute);line-height:1.7;margin-top:4px;}
+
+  /* =========================================================
+     STARTING GRID — entry list / timing tower
+  ========================================================= */
+  .grid-sec{padding:64px 0 8px;}
+  .sec-eyebrow-row{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:6px;}
+  .grid-sec h2{
+    font-weight:900;font-size:clamp(1.5rem,3vw,2.05rem);margin:6px 0 6px;letter-spacing:-.01em;
+  }
+  .grid-note{color:var(--ink-mute);font-size:.92rem;max-width:60ch;margin:0 0 26px;}
+
+  .tower{border-top:2px solid var(--ink);}
+  .tower-head{
+    display:grid;grid-template-columns:54px 1fr 200px 92px;gap:14px;align-items:center;
+    padding:9px 14px;
+    font-family:"JetBrains Mono",monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-mute);
+    border-bottom:1px solid var(--line);
+  }
+  .row{
+    display:grid;grid-template-columns:54px 1fr 200px 92px;gap:14px;align-items:center;
+    padding:14px;
+    border-bottom:1px solid var(--line);
+    background:var(--paper-card);
+    transition:background .18s ease,transform .18s ease;
+  }
+  .row:nth-child(odd){background:transparent;}
+  .row:hover{background:var(--violet-soft);transform:translateX(3px);}
+  .row .pos{font-family:"Saira Condensed",sans-serif;font-weight:700;font-size:1.7rem;color:var(--ink);line-height:1;}
+  .row .pos small{display:block;font-size:.6rem;letter-spacing:.1em;color:var(--ink-mute);font-family:"JetBrains Mono",monospace;font-weight:400;margin-top:3px;}
+  .row .name{font-weight:700;font-size:1.05rem;line-height:1.4;}
+  .row .name em{display:block;font-style:normal;font-weight:400;font-size:.78rem;color:var(--violet);font-family:"JetBrains Mono",monospace;letter-spacing:.02em;margin-top:2px;}
+  .row .studio{font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--ink-soft);}
+  .tag{
+    justify-self:start;
+    font-family:"Saira Condensed",sans-serif;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    font-size:.72rem;padding:4px 10px;border-radius:2px;white-space:nowrap;
+  }
+  .tag.sim{background:var(--violet);color:#fff;}
+  .tag.hybrid{background:var(--ink);color:#fff;}
+  .tag.arcade{background:var(--amber);color:#fff;}
+
+  /* =========================================================
+     DARK CALLOUTS — TL;DR & key findings
+  ========================================================= */
+  .dark-block{
+    background:var(--panel);color:var(--on-dark);
+    border-radius:var(--radius);
+    padding:40px 38px;
+    margin:38px 0;
+    position:relative;
+    border-left:3px solid var(--violet);
+  }
+  .dark-block h2{color:#fff;font-weight:900;font-size:1.5rem;margin:10px 0 18px;letter-spacing:-.01em;}
+  .dark-block p,.dark-block li{color:#D7D5CE;}
+  .dark-block b,.dark-block strong{color:#fff;font-weight:700;}
+  .lede-list{list-style:none;margin:0;padding:0;display:grid;gap:18px;}
+  .lede-list li{
+    position:relative;padding-left:38px;font-size:1rem;line-height:1.9;
+  }
+  .lede-list li::before{
+    content:counter(li,decimal-leading-zero);counter-increment:li;
+    position:absolute;left:0;top:1px;
+    font-family:"Saira Condensed",sans-serif;font-weight:700;font-size:1.05rem;
+    color:var(--violet-bright);
+  }
+  .lede-list{counter-reset:li;}
+
+  /* findings */
+  .findings{display:grid;gap:0;margin:0;padding:0;list-style:none;counter-reset:f;}
+  .findings li{
+    counter-increment:f;
+    padding:18px 0 18px 46px;position:relative;
+    border-top:1px solid var(--line-dark);
+    font-size:.98rem;line-height:1.85;
+  }
+  .findings li:first-child{border-top:none;}
+  .findings li::before{
+    content:"F." counter(f,decimal-leading-zero);
+    position:absolute;left:0;top:19px;
+    font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.06em;
+    color:var(--violet-bright);
+  }
+
+  /* =========================================================
+     MAIN SECTIONS
+  ========================================================= */
+  .section{padding:56px 0;border-top:1px solid var(--line);}
+  .sec-marker{
+    display:flex;align-items:center;gap:16px;margin-bottom:6px;
+  }
+  .sec-code{
+    font-family:"Saira Condensed",sans-serif;font-weight:700;
+    background:var(--ink);color:#fff;
+    font-size:1.05rem;letter-spacing:.04em;
+    padding:4px 12px;border-radius:2px;
+    line-height:1.2;
+  }
+  .sec-tag{font-family:"Saira Condensed",sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.18em;font-size:.8rem;color:var(--violet);}
+  .section h2{
+    font-weight:900;font-size:clamp(1.55rem,3.2vw,2.25rem);
+    line-height:1.3;letter-spacing:-.01em;margin:14px 0 26px;
+    max-width:40ch;
+  }
+  .section h3{
+    font-weight:700;font-size:1.22rem;margin:40px 0 14px;
+    padding-bottom:8px;border-bottom:2px solid var(--line-strong);
+    position:relative;
+  }
+  .section h3::after{content:"";position:absolute;left:0;bottom:-2px;width:54px;height:2px;background:var(--violet);}
+  .section h4{font-weight:700;font-size:1.04rem;margin:26px 0 8px;color:var(--ink);}
+  .section p{margin:0 0 18px;}
+  .section .prose strong,.section .prose b{font-weight:700;color:var(--ink);background:linear-gradient(transparent 62%,rgba(106,72,232,.16) 62%);padding:0 1px;}
+
+  /* clean list */
+  .clean{list-style:none;margin:0 0 20px;padding:0;max-width:760px;}
+  .clean li{position:relative;padding:8px 0 8px 26px;border-bottom:1px dotted var(--line-strong);line-height:1.85;}
+  .clean li::before{content:"";position:absolute;left:2px;top:18px;width:9px;height:2px;background:var(--violet);}
+  .clean li:last-child{border-bottom:none;}
+  .clean li b{font-weight:700;}
+
+  /* split sub-card for GT7 onroad/offroad */
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:24px 0;}
+  .subcard{
+    background:var(--paper-card);border:1px solid var(--line);border-top:3px solid var(--violet);
+    border-radius:var(--radius);padding:22px 22px 8px;
+  }
+  .subcard h4{margin-top:4px;display:flex;align-items:center;gap:10px;}
+  .subcard h4 .pill{font-family:"JetBrains Mono",monospace;font-size:.66rem;letter-spacing:.06em;background:var(--ink);color:#fff;padding:3px 8px;border-radius:2px;font-weight:500;}
+
+  /* quote / driver voice */
+  blockquote{
+    margin:24px 0;padding:18px 24px;
+    background:var(--paper-card);
+    border-left:3px solid var(--violet);
+    border-radius:0 var(--radius) var(--radius) 0;
+    font-size:.97rem;color:var(--ink-soft);
+  }
+  blockquote .src{display:block;margin-top:10px;font-family:"JetBrains Mono",monospace;font-size:.74rem;color:var(--ink-mute);letter-spacing:.02em;}
+
+  /* callout cards for rec/caveat */
+  .cards{display:grid;gap:16px;}
+  .card{
+    border-radius:var(--radius);padding:22px 24px;
+    border:1px solid var(--line);background:var(--paper-card);
+    border-left:4px solid var(--ink-mute);
+  }
+  .card.good{border-left-color:var(--green);background:var(--green-soft);}
+  .card.warn{border-left-color:var(--amber);background:var(--amber-soft);}
+  .card h4{margin:0 0 6px;font-size:1rem;font-weight:700;}
+  .card p{margin:0;font-size:.94rem;line-height:1.8;color:var(--ink-soft);}
+  .card p b{color:var(--ink);font-weight:700;}
+
+  /* =========================================================
+     REFERENCES
+  ========================================================= */
+  .refs{background:var(--panel);color:var(--on-dark);padding:60px 0;}
+  .refs h2{color:#fff;font-weight:900;font-size:1.6rem;margin:10px 0 8px;}
+  .refs .grid-note{color:var(--on-dark-mute);}
+  .ref-group{margin-top:34px;}
+  .ref-group h3{
+    font-family:"Saira Condensed",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+    font-size:.92rem;color:var(--violet-bright);border-bottom:1px solid var(--line-dark);padding-bottom:8px;margin:0 0 4px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .ref-group h3 .badge{font-family:"JetBrains Mono",monospace;font-size:.6rem;letter-spacing:.04em;background:var(--panel-3);color:var(--on-dark);padding:3px 7px;border-radius:2px;font-weight:400;text-transform:none;}
+  .ref-list{list-style:none;margin:0;padding:0;}
+  .ref-list li{
+    border-bottom:1px solid var(--line-dark);padding:11px 0;
+    display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;
+  }
+  .ref-list .rsrc{font-weight:700;color:#fff;min-width:170px;font-size:.92rem;}
+  .ref-list .rtitle{color:var(--on-dark-mute);font-size:.86rem;flex:1 1 240px;}
+  .ref-list a{color:var(--violet-bright);font-family:"JetBrains Mono",monospace;font-size:.74rem;word-break:break-all;}
+  .ref-list a:hover{color:#fff;}
+
+  /* footer */
+  footer{background:#0E0F13;color:var(--on-dark-mute);padding:40px 0;font-size:.82rem;}
+  footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center;}
+  footer .mono{font-size:.72rem;letter-spacing:.06em;}
+  footer b{color:var(--on-dark);font-weight:700;}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease;}
+  .reveal.in{opacity:1;transform:none;}
+
+  /* =========================================================
+     DIVERGENT VIEWS — 異なる見解の併記ブロック
+  ========================================================= */
+  .divergent{
+    margin:22px 0;border:1px solid var(--line-strong);border-radius:var(--radius);
+    overflow:hidden;background:var(--paper-card);
+  }
+  .divergent-head{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 18px;background:var(--ink);color:#fff;
+  }
+  .divergent-head .dv-ico{
+    font-family:"Saira Condensed",sans-serif;font-weight:700;font-size:.72rem;
+    letter-spacing:.1em;text-transform:uppercase;
+    background:var(--amber);color:#1a1305;padding:2px 9px;border-radius:2px;
+  }
+  .divergent-head span.dv-label{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:.92rem;letter-spacing:.03em;}
+  .divergent-body{display:grid;}
+  .dv-row{
+    padding:16px 18px;border-top:1px solid var(--line);
+    display:grid;grid-template-columns:128px 1fr;gap:14px;
+  }
+  .dv-row:first-child{border-top:none;}
+  .dv-tag{
+    font-family:"JetBrains Mono",monospace;font-size:.7rem;letter-spacing:.04em;
+    color:var(--violet);align-self:start;padding-top:2px;
+  }
+  .dv-row p{margin:0;font-size:.92rem;line-height:1.8;color:var(--ink-soft);}
+  .dv-row p b{color:var(--ink);font-weight:700;}
+  @media (max-width:640px){
+    .dv-row{grid-template-columns:1fr;gap:4px;}
+  }
+
+  /* note: 出典/再検証メモ用の小さな注記 */
+  .src-note{
+    display:inline-block;margin-top:8px;
+    font-family:"JetBrains Mono",monospace;font-size:.7rem;letter-spacing:.02em;
+    color:var(--ink-mute);background:var(--paper);border:1px dashed var(--line-strong);
+    padding:3px 9px;border-radius:2px;
+  }
+  .section .prose .src-note{color:var(--ink-mute);}
+
+  /* =========================================================
+     RESPONSIVE
+  ========================================================= */
+  @media (max-width:860px){
+    .pair{grid-template-columns:1fr;}
+    .tower-head{display:none;}
+    .row{grid-template-columns:46px 1fr;grid-template-areas:"pos name" "pos studio" "pos tag";row-gap:6px;}
+    .row .pos{grid-area:pos;}
+    .row .name{grid-area:name;}
+    .row .studio{grid-area:studio;}
+    .row .tag{grid-area:tag;}
+  }
+  @media (max-width:560px){
+    .wrap{padding:0 18px;}
+    .hero-inner{padding:54px 0 46px;}
+    .dark-block{padding:30px 22px;}
+    .section{padding:44px 0;}
+    .ref-list .rsrc{min-width:0;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap hero-inner">
+    <div class="hero-meta">
+      <span><span class="dot"></span>PIT-WALL DOSSIER</span>
+      <span>基準時点 / 2026.06</span>
+      <span>対象 / 11 TITLES</span>
+      <span>評価軸 / 2 AXES</span>
+      <span>統合元 / 3 REPORTS</span>
+    </div>
+    <p class="eyebrow on-dark">Racing Sim Landscape Report — Merged Edition</p>
+    <h1 class="hero-title">レースゲーム11タイトル<br>多角的調査【統合版】</h1>
+    <p class="hero-sub">Real vs. Realistic — 車両挙動・ルール解釈・シーン活性度の精査</p>
+    <p class="thesis">
+      本レポートは「レースのルールセットそのものへの忠実性」と「ゲームとしての解釈」を分離し、
+      <b>「リアルであること（計測可能な現実の再現）」</b>と
+      <b>「リアリティのあること（プレイヤーの納得感）」</b>を別軸で評価する。
+      敷居が高いとされるこのジャンルが、新規プレイヤーを呼び込み定着させ、シーンを活性化させているかを問う。
+      本稿は同一指示のもとで独立に作成された3本のレビューを1本に統合したものであり、
+      重複する記述を整理した上で、見解が分かれた論点は<b>「異なる見解が存在する」</b>として両論を併記している。
+    </p>
+    <div class="axes">
+      <div class="axis">
+        <div class="k"><span>REAL</span> / リアル</div>
+        <div class="d">計測・実走・実エンジニアリングデータと一致する物理的忠実性。BMW・Goodyear・F1チームとの接続が裏付け。</div>
+      </div>
+      <div class="axis">
+        <div class="k"><span>REALISTIC</span> / リアリティ</div>
+        <div class="d">プレイヤーが「現実的だ」と感じる体感。要求水準はタイトルごとに異なり、間口の広さに直結する。</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ STARTING GRID ============ -->
+<section class="grid-sec reveal" aria-labelledby="grid-h">
+  <div class="wrap">
+    <div class="sec-eyebrow-row">
+      <span class="eyebrow">Entry List</span>
+    </div>
+    <h2 id="grid-h">対象タイトル一覧</h2>
+    <p class="grid-note">精査・分析の対象は以下の11タイトル（Gran Turismo 7はオンロードとオフロードを個別に論じるため実質12項目）。分類は SIM（物理忠実性主軸）／ HYBRID（シムケード）／ ARCADE（娯楽性主軸）。本稿は同一のリサーチ指示に基づき独立に作成された3本のレポートを統合したものである。</p>
+
+    <div class="tower">
+      <div class="tower-head">
+        <span>No.</span><span>Title</span><span>Studio</span><span>Class</span>
+      </div>
+
+      <div class="row"><span class="pos">01<small>GRID</small></span>
+        <span class="name">Gran Turismo 7<em>オンロード / オフロードを個別評価</em></span>
+        <span class="studio">Polyphony Digital</span>
+        <span class="tag hybrid">Hybrid</span></div>
+
+      <div class="row"><span class="pos">02<small>GRID</small></span>
+        <span class="name">Forza Horizon 6<em>2026.05.19 発売 / 舞台＝日本</em></span>
+        <span class="studio">Playground Games</span>
+        <span class="tag arcade">Arcade</span></div>
+
+      <div class="row"><span class="pos">03<small>GRID</small></span>
+        <span class="name">Assetto Corsa Competizione<em>SRO / GT3・GT2</em></span>
+        <span class="studio">Kunos Simulazioni</span>
+        <span class="tag sim">Sim</span></div>
+
+      <div class="row"><span class="pos">04<small>GRID</small></span>
+        <span class="name">Assetto Corsa Evo<em>EA v0.7 / アーリーアクセス</em></span>
+        <span class="studio">Kunos Simulazioni</span>
+        <span class="tag sim">Sim</span></div>
+
+      <div class="row"><span class="pos">05<small>GRID</small></span>
+        <span class="name">Assetto Corsa Rally<em>2025.11.13〜 アーリーアクセス</em></span>
+        <span class="studio">Supernova / Kunos</span>
+        <span class="tag sim">Sim</span></div>
+
+      <div class="row"><span class="pos">06<small>GRID</small></span>
+        <span class="name">Le Mans Ultimate<em>WEC / ル・マン24時間 公式</em></span>
+        <span class="studio">Studio 397</span>
+        <span class="tag sim">Sim</span></div>
+
+      <div class="row"><span class="pos">07<small>GRID</small></span>
+        <span class="name">EA Sports WRC<em>Rally1 ハイブリッド</em></span>
+        <span class="studio">Codemasters</span>
+        <span class="tag sim">Sim</span></div>
+
+      <div class="row"><span class="pos">08<small>GRID</small></span>
+        <span class="name">EA Sports F1<em>F1 25 / 2026 Season Pack</em></span>
+        <span class="studio">Codemasters</span>
+        <span class="tag hybrid">Hybrid</span></div>
+
+      <div class="row"><span class="pos">09<small>GRID</small></span>
+        <span class="name">DiRT Rally 2.0<em>2019年作 / 2026も現役</em></span>
+        <span class="studio">Codemasters</span>
+        <span class="tag sim">Sim</span></div>
+
+      <div class="row"><span class="pos">10<small>GRID</small></span>
+        <span class="name">iRacing<em>サブスク / 公式シリーズ多数</em></span>
+        <span class="studio">iRacing Studios</span>
+        <span class="tag sim">Sim</span></div>
+
+      <div class="row"><span class="pos">11<small>GRID</small></span>
+        <span class="name">rFactor 2<em>isiMotor 系譜 / Goodyear提携</em></span>
+        <span class="studio">Studio 397</span>
+        <span class="tag sim">Sim</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TL;DR ============ -->
+<section class="wrap" aria-labelledby="tldr-h">
+  <div class="dark-block reveal">
+    <span class="eyebrow on-dark">TL;DR</span>
+    <h2 id="tldr-h">核心の3行回答</h2>
+    <ol class="lede-list">
+      <li><b>「リアル（物理的忠実性）」の最高峰は iRacing・rFactor2・Le Mans Ultimate・ACC・AC Evo。</b>これらは自動車メーカー（BMW）・タイヤメーカー（Goodyear）・F1チームの実エンジニアリングと実データで接続している。一方<b>「リアリティ（納得感）」で最も広い層を取り込んでいるのは Gran Turismo 7 と Forza Horizon</b>。両者は別の評価軸であり、要求水準はタイトルごとに異なる。</li>
+      <li><b>競技シーン活性度は iRacing と Gran Turismo World Series が二強。</b>eNASCAR Coca-Cola iRacing Series は賞金総額50万ドル超（王者10万ドル＋Dale Earnhardt Jr. Cup）。だが数値的覇権は <b>マリオカートワールド（2025年末で14.03百万本）</b>が握り、シム系は高価なステアリング依存とMOD導入の技術ハードルという参入障壁で苦戦している。</li>
+      <li><b>Forza Horizon 6（5/19発売）・AC Evo（v0.7・EA）・AC Rally（EA）は発展途上であり、評価は暫定的に扱う必要がある。</b>仕様・物理・コンテンツは今後も変動しうる。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ KEY FINDINGS ============ -->
+<section class="section reveal" aria-labelledby="kf-h">
+  <div class="wrap prose">
+    <div class="sec-marker"><span class="sec-tag">Key Findings</span></div>
+    <h2 id="kf-h">主要な発見</h2>
+    <ul class="findings">
+      <li><b>GT7のSophy AIは、レースゲームの車両挙動・AIが査読付き科学誌Natureに掲載・表紙を飾った世界唯一の事例。</b>論文 “Outracing champion Gran Turismo drivers with deep reinforcement learning”（Nature 602, 223–228, DOI:10.1038/s41586-021-04357-7、Sony AI／Polyphony Digital／SIE共著）。2025年12月のPower Pack DLCで Sophy 3.0 へ進化した。</li>
+      <li><b>iRacing・rFactor2は実メーカー／タイヤメーカーと実データ連携している。</b>BMW M Motorsport は CADデータとシミュレータ／実走データをiRacingに提供し、実車と仮想車を「同期して開発」。Studio 397 は Goodyear とタイヤモデルを共同開発した。</li>
+      <li><b>オンライン対戦のルール解釈では、GT7のペナルティシステムが発売以来一貫して批判されている。</b>「生命を脅かすラミングが無罰になる」問題が競技性の信頼を損なっている。</li>
+      <li><b>MODセキュリティは Assetto Corsa 系で現実の脅威。</b>AC Evo は 0.7 でマネージドな公式SDK（PBR制作パイプライン）を導入し、この課題に応えようとしている。</li>
+      <li><b>タイヤモデルは経験則（Pacejkaのマジックフォーミュラ）から物理ベースモデルへの世代交代が進行中。</b>iRacing・rFactor2・LMUは、タイヤ内部構造から第一原理的に摩擦力を計算する物理モデル／高度なブラシモデルへ移行し、限界域でのスライド・発熱・摩耗・フラットスポット形成を動的に再現する。ただし精度の追求は調整を「芸術（art form）」級に困難化させ、結果として現れる挙動の評価はタイトル間・プレイヤー間で分かれる。</li>
+      <li><b>iRacingは2026シーズン以降、シリーズごとに異なる競技規則を動的に切り替える「series-specific sporting regulations」を導入。</b>同一車両でも参戦シリーズ（IMSA・DTM等）によりピット作業手順や裁定基準が変わり、ルールのゲーム実装としては現状最も精緻な部類に入る。</li>
+      <li><b>高精度な物理演算が逆に「リアルすぎるがゆえのバグ」を生む例がある。</b>GT7は1.49アップデートでサスペンション・タイヤ物理を刷新した直後、特定の極端なセッティング車両が物理エンジンの反発力計算の限界を超えて空高く跳ね上がる現象（通称「車ウキウキバウンド」）が報告された。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ SECTION 3 ============ -->
+<section class="section reveal" aria-labelledby="s3-h">
+  <div class="wrap prose">
+    <div class="sec-marker"><span class="sec-code cond">S.03</span><span class="sec-tag">Vehicle Dynamics</span></div>
+    <h2 id="s3-h">車両挙動のシミュレーション評価</h2>
+
+    <h3>分析軸：「リアル」と「リアリティ」の分離</h3>
+    <p>本レポートでは一貫して2つの軸を区別する。<strong>「リアルであること（real＝計測可能な現実の車両挙動を明確に再現していること）」</strong>と、<strong>「リアリティのあること（realistic feel＝プレイヤーが現実的だと感じる納得感）」</strong>である。両者は必ずしも一致せず、タイトルが要求するレベルも異なる。重要なのは、情報源のポジション（実モータースポーツ／カーエンジニアリング主軸か、ゲーム／eスポーツ主軸か）によって「リアル」の判定が大きく変わる点である。ABSやTCSのような電子制御は実車の安定性とトラクションに大きく関わるため、年代や車種が広いゲームほど実装は「厳密再現」より「横断的な遊びやすさ」に寄る傾向がある。</p>
+
+    <h3>タイヤモデルの世代交代：経験則（Pacejka）から物理ベースモデルへ</h3>
+    <p>車両挙動の要となるタイヤモデルのシミュレーション技術は、世代ごとに明確なパラダイムシフトを起こしている。過去のレースゲームや実車の基礎的なハンドリング解析で多用されてきたのが、ハンス・パチェイカ（Hans B. Pacejka）が提唱した「マジックフォーミュラ（Magic Formula）」に代表される経験的モデル（Empirical model）である。これは実験室で測定されたタイヤの力学データ（スリップアングルやスリップレシオに対する反力）を数学的な曲線に当てはめる手法で、正常なグリップ範囲内では極めて正確な挙動を示す一方、極低速度域での数式破綻（ゼロ除算）や、極端な複合スリップ・急激な温度変化といった「測定データが存在しない異常領域」のシミュレーションには適していない。</p>
+    <p>これに対し<strong>iRacing</strong>・<strong>rFactor 2</strong>・<strong>Le Mans Ultimate</strong>の最新技術スタックは、タイヤの内部構造（カーカスやトレッドゴムの材質）から第一原理的に摩擦力を計算する物理ベースモデル（Physical model、または高度なBrushモデル）を採用しており、タイヤが限界を超えてスライドした際の発熱・摩耗・フラットスポット（偏摩耗）形成といった動的な環境変化をリアルタイムで演算可能になった。しかし物理モデルのチューニングは「芸術（art form）」と称されるほど困難で、パラメーターのわずかな誤差が車両を運転不可能な状態に陥らせるため、プレイヤーコミュニティでは「iRacingは限界を超えると氷の上のように滑る（カートゥーン的）」という批判も見られる。逆に、完全な物理演算よりも減衰（ダンピング）やフィードバックの翻訳に重きを置く<strong>Assetto Corsa Evo</strong>のアプローチは、限界を超えた際のスライドコントロール性において「直感的にカウンターが当てやすい」と評価する声がある。</p>
+    <div class="divergent">
+      <div class="divergent-head"><span class="dv-ico">Divergent</span><span class="dv-label">「物理的に厳密」と「操作して楽しい」は必ずしも一致しない</span></div>
+      <div class="divergent-body">
+        <div class="dv-row"><span class="dv-tag">見解A</span><p>物理モデルが高度化し実車のレーシングカー特有のシビアな荷重移動を要求するようになった結果、<b>過度に「リアル（厳密）」になりすぎ</b>、実車的な丁寧な操作をしないと曲がらない仕様となり、プレイヤーの「期待する操作感」と乖離した。AC Evoのアーリーアクセス版に対し、旧作（AC1）のMod環境に慣れた層から「フロントタイヤの接地感が希薄」「トレイルブレーキングが効かずアンダーステアになりやすい」という批判が出ている。</p></div>
+        <div class="dv-row"><span class="dv-tag">見解B</span><p>AC Evoの1000Hzのダンピング演算・新タイヤモデルにより、<b>限界域でのスライドや路面のインフォメーションが劇的に高解像度になった</b>と高く評価する声もある。物理刷新自体の方向性は歓迎されており、課題は「未成熟さ」であって「設計思想の誤り」ではないとする立場。</p></div>
+      </div>
+    </div>
+
+    <h3>実車のカーエンジニアリング・シミュレーションとの比較</h3>
+    <p>モータースポーツチームや自動車メーカーの車両開発では、ADAMS・dSpace・Dymolaといった高度なマルチボディ・ダイナミクス・ソフトウェア（MBD）が活用され、VeHIL（Vehicle-Hardware-in-the-Loop）テストベンチと統合されて実車と仮想空間の間で相関性のあるデータが提供されている。例えばTOYOTA Gazoo Racing（TGR）はドイツ・ケルンに実車のテレメトリシステムと完全に一致する高度なレーシングシミュレーターを構築し、WECに向けた耐久テストやタイヤパンク・ギアボックス故障といった異常事象（failure modes）のシミュレーションを行っている。市販車「GRカローラ」「GRヤリス」の「GR-FOUR」AWDシステムは、電磁多板クラッチ（ITCC）で前後アクスル間にわずかな速度差（約1%）を持たせ、センターデフを持たずに60:40〜30:70のトルク配分を動的かつ精密に制御している。</p>
+    <p>最新のレースゲームはこうした複雑な実車機構の再現に踏み込んでいる。AC EvoのSDKドキュメントや物理アップデートノートによれば、マルチボディサスペンションの精度向上により電気自動車・ハイブリッド・高度なAWDシステムのドライブトレイン再現が可能になったとされ、v0.6からはダブルウィッシュボーン式サスペンションのコイルオーバー角度に起因する動的なモーションレシオの変化や、バンプストップの限界剛性（無限に圧縮されない物理的限界）が正確にモデル化された。これは将来のシムレーシングが、簡略化された「ホイルレート」表現から、CADデータに近いレベルでサスペンションジオメトリをシミュレートする実車エンジニアリングの領域に到達しつつあることを示す。</p>
+
+    <h3>最高位の物理忠実性グループ（iRacing / rFactor2 / LMU / ACC / AC Evo）</h3>
+    <p><strong>iRacing</strong>（路面：舗装サーキット＋ダートオーバル、走行路：サーキット主軸）はLIDARスキャンした車両・コースを用い、2026シーズンもタイヤモデルの多年R&Dを継続している。iRacing公式開発ブログ（2026年5月、発信者は実シミュレーション開発主軸）は、コア物理エンジン・ステアリング忠実度とフォースフィードバック・マルチスレッド物理アーキテクチャ・物理レートの改善にこれまで以上に取り組んでいるとする。2026シーズンではGT3・GTEクラスの物理刷新、TCRクラスの実車スペック準拠リアプロポーショニングバルブ追加など、実車エンジニアリングへの接近が続く。</p>
+
+    <h4>実エンジニアリングによる裏付け（重要）</h4>
+    <blockquote>
+      「我々は CADデータとシミュレータ／サーキットテストの知見を iRacing に提供している。それらは現実的な仮想版を作る基盤として使われる。これによりすべてのシムレーサーが最先端プロトタイプの性能を体験できる」――実車と仮想車の開発を「同期して走らせた」とも。
+      <span class="src">BMW M Motorsport / Maurizio Leschiutta（実メーカー一次情報・BMW Group PressClub）</span>
+    </blockquote>
+    <p>これは「リアル」軸での最も強力な裏付けである。<strong>rFactor 2</strong>（路面：舗装サーキット主軸）はISIのrFactor Pro系譜を持ち、プロのレースチームの車両開発・ドライバートレーニングを設計目的に含む。pMotor 2.5エンジンを採用し、タイヤのブラシモデルなど高度な熱力学シミュレーションを備える。Studio 397 はタイヤメーカー Goodyear とデータ提携し、タイヤモデルを「ゼロから」刷新した。古いUIを抱える一方、動的路面・天候・タイヤ・路面変化を核にした"physics simulator"寄りの系譜にある点は評価できる。ただし運営元 Motorsport Games は財政難が報じられ、2023年に主要開発者 Marcel Offermans が離脱、ウェブサイト／フォーラムの一時停止も発生しており、開発体制の持続性には不透明感がある点を明記する。</p>
+    <p><strong>Le Mans Ultimate</strong>（路面：舗装サーキット）はrFactor2由来の物理エンジン（isiMotor系）を使うFIA世界耐久選手権（WEC）／ル・マン24時間の公式タイトル。Hypercar・LMGT3をレーザースキャンで再現する。WEC/Le Mansに範囲を絞ることで、ハイパーカーとLMGT3の差、ハイブリッドシステム、天候、耐久向けルール処理に集中できている点が強みである。</p>
+    <p><strong>Assetto Corsa Competizione</strong>（路面：舗装サーキット、走行路：GT3/GT2サーキット）はUnreal Engine 4ベースでSRO GTワールドチャレンジに特化。GT World Challenge公認作品として、タイヤグリップ・空力・サスペンション・電子制御・ダメージを数理モデルで再現すると明言し、v1.9の物理ノートでもタイヤの熱・フレックス・ロール抵抗・再整列トルク・TCロジックまで細かく更新が続いている。重要なのは、プロドライバーの間でも評価が割れる点である。</p>
+    <blockquote>
+      トラック精度は超印象的だった。ゲーム内の縁石は実物と全く同じに見え、実車で使うリファレンスポイントやトラックマーキングまで存在した――一方で「ブレーキングやアンダーステア領域でもう少しフィーリングを加えてほしい」と批判的フィードバックも残した。
+      <span class="src">David Perel（フェラーリ・カスタマーGT3/GTEドライバー＝実モータースポーツ主軸 / ACC技術コンサルタント）</span>
+    </blockquote>
+    <p>WEC GTEドライバーの Nicki Thiim は「ACCは良いゲームだが実車と同じかと聞かれて笑った」と発言したとされる（ただしフォーラム／YouTube経由の二次情報であり信頼性は留保する）。シム＝現実という単純な等式は、実ドライバー自身が否定している。</p>
+    <p><strong>Assetto Corsa Evo</strong>（路面：舗装サーキット）は新自社エンジンで、動的天候下の路面パフォーマンスを数学モデル化。2026年2月のv0.5で新ローンチコントロール、ディファレンシャルモデル改善、ソリッドリアアクスル対応、Audi Sport quattroのデフロック機構などを追加。road cars・classics・hypercars・race carsという広範な車種を扱う。BMW M3 E46のギア比修正やAudi RS6のAWD改善など、メカニカルな細部の調整が続く。野心の大きさという点では本調査対象中最大であり、新タイヤモデル・サスペンション・ダンパー・差動・FFB・オープンワールド・マルチプレイ対応を段階的に拡張している。ただしプレイフィール自体は高評価でも、アーリーアクセス当初は安定性・AI・VR・コンテンツ量が未成熟であり、<strong>目標水準は高いが現時点の完成度は発展途上</strong>というのが公正な評価である。</p>
+
+    <h3>Forza Horizon 6・EA WRC・DiRT Rally 2.0 の評価</h3>
+    <p><strong>Forza Horizon 6</strong>のハンドリングについて、シムレース専門媒体Traxionは"approachable"（親しみやすい）と評しつつ、"Simulation steering"という名称ほど純粋なシムではないと評している。リアル軸では低めだが、リアリティ軸では非常に高く、公道・峠・市街地・ダートが連続する世界設計が「車を操る快感」を強く支えている。</p>
+    <p><strong>Assetto Corsa Rally</strong>は「uneven terrain」「variable grip」「jumps」を公式に掲げ、WRCドライバーのJon Armstrongがタイヤ・空力・サスペンションの改善に直接関与している。グラベル志向の忠実性は高い一方、Traxionはアスファルトでの走行安定性に課題を指摘した。<strong>EA Sports WRC</strong>はCodemastersの"multi-surface handling model"を受け継ぎDiRT Rally 2.0の進化系として成立しているが、AI挙動の一貫性や最適化面にはムラが残る。<strong>DiRT Rally 2.0</strong>は今なお基準点として参照されるほど評価が高いが、現役運営の中心はEA Sports WRCに移っている。</p>
+    <div class="divergent">
+      <div class="divergent-head"><span class="dv-ico">Divergent</span><span class="dv-label">DiRT Rally 2.0とEA Sports WRC、どちらが「リアル」か</span></div>
+      <div class="divergent-body">
+        <div class="dv-row"><span class="dv-tag">見解A</span><p><b>EA Sports WRCの圧倒的なスケールや美麗なグラフィック、舗装路での扱いやすさ</b>をカジュアルプレイヤーは評価する。最新Rally1のハイブリッドシステム（ブレーキ後のブースト）もモデル化されている。</p></div>
+        <div class="dv-row"><span class="dv-tag">見解B</span><p>ハードコアラリーファンからは「<b>EA Sports WRCは重量移動やサスペンションのロール感が不足し、路面から浮いているようだ</b>」という批判があり、グラベルにおける横方向の食いつき感（リアリティ）を表現していたDiRT Rally 2.0を至高とする声が依然として強い。一部シム主軸プレイヤーは「物理がアーケード寄りに後退した」とも指摘する。ハイブリッドブーストの実装についても「気にする価値がない」という簡素さへの批判がある。</p></div>
+      </div>
+    </div>
+
+    <h3>EA Sports F1 25 / 2026 Season Pack</h3>
+    <p><strong>F1 25</strong>では、2026年シーズンのフォーミュラ1における大掛かりなレギュレーション変更が忠実に実装された。小型・軽量化された車両寸法に加え、約500馬力のブーストをもたらす電動モーターの「オーバーライドモード」と、前後のウイングを動的に変化させる<strong>アクティブエアロダイナミクス</strong>が導入され、プレイヤーはバッテリーエネルギーのデプロイメント（配分）と空力抵抗の増減をコーナーごとにリアルタイムで判断する必要がある。狭い車種帯域ゆえに「F1らしい速さ・繊細さ・セットアップ差」を作りやすい作品だが、現実のF1は極端に規格化された単一カテゴリーであるため、ここでの忠実性は「F1の雰囲気と操作感」に強く、実際のチーム運用・審議・タイヤを読む力まで含む総体とはまだ差がある。特に<strong>AIの雨天挙動</strong>はEA自身がパッチで改善対象にしているほどで、プレイヤー側にも不満が残っている。</p>
+
+    <h3>製造世代・技術スタック差への対応とアシスト（ABS / TCS / STM）</h3>
+    <p>扱う車種がエアロ・サスペンション・電子制御・シャーシ剛性で大きく異なる場合、アプローチには明確な分岐がある。</p>
+    <ul class="clean">
+      <li><b>Gran Turismo 7</b>：オリジナルカーに実在しないアシスト（ABS・TCS・スタビリティマネジメント＝STM）もゲーム共通システムとして付与可能。旧車・近代車を同一土俵で扱うための「ゲームとしての割り切り」であり、<b>「リアリティ」優先</b>のアプローチ。</li>
+      <li><b>シム系（iRacing・ACC・AC Evo・rFactor2）</b>：実車に存在するアシストのみを再現する方向で<b>「リアル」優先</b>。iRacingはTCRクラスにリアプロポーショニングバルブを実装するなど実機構を再現。</li>
+    </ul>
+
+    <h3>Gran Turismo 7（オンロード / オフロード）</h3>
+    <div class="pair">
+      <div class="subcard">
+        <h4>オンロード <span class="pill">ON-ROAD</span></h4>
+        <p>物理は「リアリティ」側に最適化されつつ、Sophy AIにより「リアル」へ接近。Polyphony公式は計算流体力学（CFD）でダウンフォース変化を再現する「シリーズ最先端の物理モデル」とする。発信者はゲーム開発主軸だが、Sony AIとの協業で科学的裏付けを持つ点が他のコンソール系と一線を画す。2026年もv1.65〜v1.68で物理調整、ステアリングへの摩擦シミュレーション追加が続く。570台規模という広大な車種帯域ゆえに、個別物理の厳密さよりも「広い年代・駆動方式・改造幅を破綻なく横断する」ことに重心がある設計であり、実車の楽しさ・学習・収集・セッティングを結びつける設計は非常に強く、補助輪としてのアシストや教材群も充実している。そのため<b>リアリティは高い</b>が、ACCやLMUのような「車種帯域を絞った深掘り」とは別方向の強みである。</p>
+      </div>
+      <div class="subcard">
+        <h4>オフロード <span class="pill">OFF-ROAD</span></h4>
+        <p>ダート／雪上タイヤで対応し World Rally Challenge Gr.B 等のイベントも備えるが、専用ラリーシム（DiRT Rally 2.0・AC Rally）と比べると簡易的。GT7は本質的にサーキット主軸のゲームであり、オフロードは付随的コンテンツと位置づけられる。ゲームメディア（racinggames.gg）も「GT7やForza Horizon 6のダート走行は舗装路に比べ限定的」とし、GTPlanetのレビューも「現実的ではない」「ゲーム全体の周縁」と評している。GT7はオンロードでは高い説得力を持つ一方、オフロードは収録されてはいるが中核ではない、という評価が妥当である。</p>
+      </div>
+    </div>
+
+    <h3>Forza Horizon 6</h3>
+    <p>アーケード寄りのオープンワールド（路面：舗装路＋非舗装路混在、走行路：非サーキット）。日本（東京・峠）を舞台に550台以上を収録（シリーズ最多のローンチ収録、70社超のメーカー）。Playground Games自身が「日本の道や空間を正確に再現するのではなく、より滑らかで凝縮された現実の中にその場所のエッセンスを捉える」と述べている。これは明確に<strong>「リアリティ（雰囲気）」を「リアル（計測的再現）」より優先する設計思想</strong>であり、挙動の目標は明らかに「サーキットシム」ではなく「気持ちよく滑り、飛び、流し、探索できる大衆向けの車体験」である。</p>
+  </div>
+</section>
+
+<!-- ============ SECTION 4 ============ -->
+<section class="section reveal" aria-labelledby="s4-h">
+  <div class="wrap prose">
+    <div class="sec-marker"><span class="sec-code cond">S.04</span><span class="sec-tag">Rules Interpretation</span></div>
+    <h2 id="s4-h">レースジャンルの公式ルールのゲーム化解釈</h2>
+
+    <h3>「生命を脅かす違反が合理的戦略になる」問題</h3>
+    <p>これは本調査で最も明確な課題が浮かび上がったセクションである。<strong>Gran Turismo 7のSport Modeペナルティシステムは、発売から長年「根本的に壊れている」と批判される</strong>（TechRadar、ゲームメディア主軸）。後方から追突された無実のドライバーがペナルティを受け、故意の加害者が無罰のまま上位スプリットに残る事例が多発している。GTPlanetフォーラム（プレイヤーコミュニティ＝レースゲームに詳しい層）には、ラミング戦術で自分のレースが台無しになり加害者が無罰でポディウムに上がる、という投稿が複数ある。さらに <strong>AI対戦車はコースカットやラミングをしてもペナルティを受けず、その理由はPolyphony Digitalから説明されていない</strong>――これはCPUライバルがプレイヤーとイコールコンディション（同一ルール下）で走行していないことを意味し、ソロプレイの公平性に関わる重大な指摘である。</p>
+    <p>一方 <strong>iRacing</strong> は「Safety Rating」「iRating」「incident points（無過失減点）」による体系的システムを採用。接触時は過失を問わず全当事者に同点の減点を与える方式で、ラミング戦略の旨味を構造的に削いでいる。2026シーズンではさらに「シリーズ別競技規則（series-specific sporting regulations）」を実装し、同一車両でも参戦シリーズ（IMSAやDTMなど）に応じてピットストップ手順（タイヤ交換と給油の同時可否など）や裁定基準が動的に変わる。Sporting Code・Safety Rating・License Class・Rookieからの昇格線が明文化されており、「物理」だけでなく「危険な行為を得にしない制度設計」を最も真面目に進めたタイトルといえる。</p>
+
+    <h3>耐久レース・ラリーの競技規則の実装</h3>
+    <p>WEC公式ゲームである<strong>Le Mans Ultimate</strong>は、耐久レース特有の厳格なルールをシステムとして落とし込んでいる。ハイパーカークラスにはABSが搭載されておらず、代わりにハイブリッドシステムの回生ブレーキによる制動力が重要となる。バッテリーが100%になると回生ブレーキが効かなくなり制動距離が伸びるため、プレイヤーは「モーターマップ」を切り替えてエネルギーを消費し、バッテリー容量に空きを作るという現実のドライバーと同様のマネジメントを強いられる。さらに現実のWECで適用された「タイヤウォーマー禁止」ルールがシミュレーションされており、ピットアウト直後の冷え切ったタイヤでトラクションコントロールに依存しながらいかにスピンを防ぐかが勝敗を分ける重要なメカニクスとなっている。実際のWEC規則にあるセーフティカー・ピット入口閉鎖・追い越し禁止・Pass-Around・作業位置・給油・ドライバー交代手順についても、LMU側はRace Start Guide・Safety Rank・Driver Rank・Race Weekend設定・Fill Grid・Hosted Serverを整備し、「現実の耐久レース運営」をそのまま飲み込む方向で進んでいる。ゲーム的な寛容さより<strong>競技管理の学習</strong>を優先する設計である。</p>
+    <p><strong>ACC</strong>もGTWC公式ゲームとしてBoP（バランス・オブ・パフォーマンス）、24時間レース、ピット作業、ドライバー交代、SA（セーフティレーティング）評価などをかなり忠実に実装している。SRO規則側でもFCY（フルコースイエロー）や制裁の考え方が細かく定義されており、ACCはそれを「GT3視点で手触りよく学べる形」に圧縮した作品といえる。ラリージャンルでは、FIAが<strong>Assetto Corsa Rally</strong>を公式プラットフォームとして採用し「FIA Esports Global Rally Tour」を開催している。ラリーの「単独走行によるタイムアタック」というルールセットは非同期でのオンライン予選と相性が良く、オンラインの予選から地域別シュートアウト（オフラインイベント）、グランドファイナルへとシームレスに繋がる競技フォーマットを実現している。各国のASN（国内モータースポーツ統括団体）を巻き込み、国際eスポーツライセンスの発行を義務付けることで、シムレーサーが「FIA認定のアスリート」へと昇華される仕組みになっている。</p>
+
+    <h3>ルールセットの厳格さの管理可能性</h3>
+    <p>ゲームセッティングによるルール管理は可能。GT7はArcade／ロビーでペナルティをオフ可能。iRacingはホスト／リーグで非ランク戦を設定可能。<strong>AC Evo</strong> は 0.4 で「acevo.gg」デイリーレーシングポータルを導入し、GridRatingベースの自動スプリット分け、近接ベースのセーフティレーティングシステム（0.7で確認）を実装した。</p>
+
+    <h3>CPUライバルのイコールコンディションとグリッド</h3>
+    <p>GT Sophy はディープRL（強化学習）で人間的挙動を実現し、プレイヤーと同じ物理シミュレーション下で走行する点が画期的（GT7のSpec III／Power PackでSophy 3.0へ進化）。従来のレースゲームAIは設定されたレコードラインを正確になぞる（レールの上を走る）だけの「動く障害物」であり、これがソロプレイを退屈にさせる最大の要因だったが、Sophyはプレイヤーの動きに対してダイナミックに反応し、人間のドライバーのようなブロックやクロスラインの駆け引きを行う。iRacingのAIも温度相関アップデートで挙動がプレイヤー車に接近している。スターティンググリッドはGT7・F1・iRacingとも予選ベースで適切に設定され、ソロのフリーレースでカスタマイズ可能。GT7は2025年3月のv1.57でSophyをCustom Racesに追加し、コース・時間帯・天候・燃料を自由設定可能にした。ただしGT Sophyが対応するのは19トラック（2025年3月時点・GT7収録トラック全39の一部）に限られ、対応車種にも制限があり、CPUが常に同等条件の高水準AIというわけではない点には留意が必要である。</p>
+    <div class="divergent">
+      <div class="divergent-head"><span class="dv-ico">Divergent</span><span class="dv-label">GT Sophyの「人間らしさ」は歓迎すべきか</span></div>
+      <div class="divergent-body">
+        <div class="dv-row"><span class="dv-tag">見解A</span><p>GT Sophyは<b>「動く障害物」だった従来AIからの画期的進化</b>であり、人間的なブロックやクロスラインの駆け引きを実現した点は高く評価できる。実際にディープRLでチャンピオンドライバーに勝利した実績がNatureに掲載されている。</p></div>
+        <div class="dv-row"><span class="dv-tag">見解B</span><p>一部のプレイヤーからは「<b>Sophyのダイブボム（急なインへの突っ込み）は現実的ではなく、かえってフラストレーションが溜まる</b>」との批判もある（Redditの分析より、二次情報のため留保が必要）。AIに「人間らしさ」を持たせることと「理不尽さ」を排除することのバランス調整は今後も課題として残る。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION 5 ============ -->
+<section class="section reveal" aria-labelledby="s5-h">
+  <div class="wrap prose">
+    <div class="sec-marker"><span class="sec-code cond">S.05</span><span class="sec-tag">Game Quality</span></div>
+    <h2 id="s5-h">現代的なゲームとしてのクオリティ評価</h2>
+
+    <h3>「サーキット周回は退屈」への各タイトルの回答</h3>
+    <p>レースゲームを主軸にしない層からの「サーキットをひたすら周回する退屈な体験」という批判に対し、各タイトルは異なる回答を持つ。</p>
+    <ul class="clean">
+      <li><b>Forza Horizon 6</b>：オープンワールド探索（Fog of War地図）、カーミート、峠バトル、Collection Journal、カスタマイズ可能な邸宅（Estate）で回答。最も明確に「周回からの脱却」を実現。</li>
+      <li><b>GT7</b>：GT Café（収集と物語）、ワールドサーキット、Music Rallyで回答。</li>
+      <li><b>EA Sports WRC</b>：Moments（実史再現）、Builder（車両製作）、チーム経営キャリアで回答。</li>
+      <li><b>F1 25</b>：Braking Point 3（約5時間のストーリー）、My Team 2.0（チーム経営）、F1映画タイアップで回答。</li>
+      <li><b>シム系（iRacing・LMU・rFactor2）</b>：本質的に競技周回が主体で、この批判への回答は弱い。「退屈さ」をコンテンツでなく競技性で克服する設計である。</li>
+    </ul>
+
+    <h3>新規参入導線の太さ：Forza Horizon 6とGT7の二大入口</h3>
+    <p><strong>Forza Horizon 6</strong>は、2026年にリリースされ日本のオープンワールド（東京、富士山周辺、田舎道など）を舞台とし、「レースに勝つこと」自体を必ずしも目的としないゲームデザインを採用した。モータースポーツがコース上のギミックで楽しませるのに対し、Horizonは「車を通じた景観や探索」に主眼を置いている。車のセッティング知識がなくても自動で最適化されるチューニングシステムや、理想的なラインとブレーキングポイントを視覚的に表示するUIに加え、「AutoDrive」や「ハイコントラストモード」などのアクセシビリティ機能により、車の知識が全くない層でも高度なドライビング体験を直座に味わうことができる。プレイヤーはただ車を走らせ、看板を壊したり写真を撮ったりするだけでゲーム内通貨を獲得し、褒め称えられる。この「全肯定のゲームデザイン」は、モータースポーツへの最初の入り口として極めて重要な役割を果たしている。</p>
+    <p><strong>GT7</strong>は別解で、車の歴史や文化をコンテキストとして提供する「GT Café（メニューブック）」システムにより、プレイヤーを教育しながらゲームを進行させる。ライセンス、ミッション、クルマ図鑑、Scapes、そして無料の<strong>My First Gran Turismo</strong>によって、サーキット走行を「車文化の入口」に変えている設計である。両者は方向こそ違うが、新規導線の太さでは現レースゲーム界の双璧といえる。</p>
+
+    <h3>コントローラー（ゲームパッド）のアルゴリズム最適化</h3>
+    <p>シミュレーターのプレイには高価なステアリングコントローラー（ハンコン）が必須という認識は参入障壁の最たるものであり、これに対し各開発陣はゲームパッド向けの操舵アルゴリズムに多大な工数を割いている。GT7はアップデート1.49でスティック操作および方向キーの操舵アルゴリズムを改善し、タイヤ限界域での車両のコントローラビリティを劇的に向上させた（DualSenseのハプティックフィードバックによる路面状況の伝達も含む）。Assetto Corsaシリーズは速度感度（Speed sensitivity）・ステアリングガンマ・フィルターの概念を導入し、ゲームパッド特有の「急すぎる入力」を数学的に平滑化している。iRacingではコントローラー使用が一部で推奨されない風潮（Twitchyな挙動）があるものの、アナログスティックの入力範囲を仮想的に制限する機能を持ち、パッドでトップクラスの成績を残すプレイヤー（eNASCAR等）も存在する。</p>
+
+    <h3>マリオカートとの比較・新規参入障壁</h3>
+    <p>数値的覇権は明確だ。<strong>マリオカートワールドは2025年12月31日時点で14.03百万本（バンドル含む）を売り上げ</strong>、Switch 2の最大要因として任天堂最新コンソールで圧倒的ベストセラーとなった。日本では発売29週で物理版250万本超、シリーズ史上最速。さらに前作<strong>Mario Kart 8 Deluxeは2026年3月末時点で7,108万本</strong>に達しており、NintendoがSmart SteeringとAuto-Accelerateを明示することで「最初の数分で走れること」を売上レベルで証明したシリーズである。これに対し本レポートの11タイトルは桁が2〜3つ小さい。</p>
+    <p>シム系の新規参入障壁は <strong>(1)高価で取り回しの悪いステアリングコントローラ依存</strong>、<strong>(2)MOD導入の技術ハードル</strong> の2点に集約される（S.09で詳述）。これに対し <strong>Forza Horizon と GT7 はパッド操作で最も遊びやすいレースゲーム</strong>として新規層の受け皿となっている。AC Evoのアシスト調整、EA Sports WRCのRally School、F1 25の豊富なアシストトグル（ブレーキ・ステアリングアシスト、ラインガイド、巻き戻し）は障壁を下げる努力として評価できるが、いずれもマリオカートの「直感的な楽しさ」には及ばない。ACC・LMU・iRacing・rFactor2は、ゲームとしての導線より競技体系の純度を優先するため、どうしても参入障壁は高くなる。</p>
+
+    <h3>一般ゲームとしての完成度</h3>
+    <p>一般ゲームとしての完成度で見ると、FH6は非常に高評価、GT7は入門〜中級の広さが強い、F1 25は機能拡張と単年商品の両立に成功、ACCはニッチだが深い、LMUは走行品質は非常に高いがキャリアモード未整備が単独ゲームとして惜しい点、ACEvoは野心先行で未成熟、EA WRCは物理に対し最適化と安定性が追いつかない、rFactor2は体験の新しさで不利、という傾向が見られる。直近30日のSteamレビュー傾向としても、FH6は非常に好評、F1 25も非常に好評、ACCはSteamDBで非常に強く、LMUは「Mostly Positive」、AC EvoとEA WRCは「Mixed」という分布である。</p>
+  </div>
+</section>
+
+<!-- ============ SECTION 6 ============ -->
+<section class="section reveal" aria-labelledby="s6-h">
+  <div class="wrap prose">
+    <div class="sec-marker"><span class="sec-code cond">S.06</span><span class="sec-tag">Esports Scene</span></div>
+    <h2 id="s6-h">eスポーツ／競技シーンの活性度</h2>
+    <p>開発による継続的な盛り上げ努力（コミュニティ丸投げでないか）を評価する。</p>
+    <ul class="clean">
+      <li><b>iRacing（最も体系的・実モータースポーツ主軸）</b>：eNASCAR Coca-Cola iRacing Series 第17シーズン（2026）は賞金総額50万ドル超、王者は10万ドルと Dale Earnhardt Jr. Cup。2025年シーズンはピーク視聴者17,465人。Porsche Esports Supercup（賞金総額3万ドル）は2026年に「実車シートへの道」を新設。INDYCAR Pro Series は賞金5万ドル。FIA F4 Esports Global Championshipなど特別イベント群も含め、複数の実モータースポーツ団体（NASCAR・Porsche・INDYCAR・FIA）が公式パートナーとして継続投資している点が決定的に強い。</li>
+      <li><b>Gran Turismo World Series（GTWS）</b>：Nations Cup／Manufacturers Cupの二本立て。世界巡回のライブイベントとして継続し、オンライン予選から現地大会まで一本化している。歴代王者から実モータースポーツへ転向する例（Takuma Miyazonoが2026年ニュル24時間に参戦）もある。ただし2026年は中東情勢でアブダビ開幕戦が中止となりミラノに繰り上がるなど運営上の波乱があった。</li>
+      <li><b>Le Mans Ultimate / rFactor 2</b>：チームイベント「4 Hours of Spa」に5,100チーム超が参加。2026年3月31日のイースター無料コンテンツ配布が同時接続8,809人の最高記録を生んだ。両タイトルともRaceControlで日次レース・Hosted・LiveryHub・配信用オーバーレイを整え、観戦可能な競技インフラを開発元主導で増築している。開発による盛り上げ努力が機能している好例といえる。</li>
+      <li><b>EA Sports F1</b>：F1 Esports Series を運営し、元王者をプレイアブルアバターに追加するなど実シーンと連動。</li>
+      <li><b>ACC</b>：SRO公式eスポーツのプラットフォームではあるが、開発元よりもコミュニティ側のリーグ運営力が強く、SimGridのカレンダーでもACC中心のイベント数が目立つ。開発主導というよりコミュニティ主導でシーンが活性化している点が他タイトルと異なる。</li>
+      <li><b>Assetto Corsa Rally</b>：ここに割って入る形で、2026年にはFIAとの提携で「FIA Esports Global Rally Tour」の基盤タイトルとなり、急速に存在感を増している。</li>
+      <li><b>Forza</b>：Horizon系はeスポーツより娯楽性主軸で、競技シーンの活性度は限定的。厳密なeスポーツよりライブサービス型の定着策（週間更新・共有体験）に強みがある。</li>
+      <li><b>EA Sports WRC / DiRT Rally 2.0</b>：ラリーは対人同時走行でなくタイム競技のため、観戦型eスポーツとしての盛り上がりは構造的に限定的。RaceNet Clubs等のコミュニティ競技が中心。EA Sports WRCは公式ライセンスを持ちながら、継続的なeスポーツ運営の見え方が弱く、プレイヤー評価も混在している。DiRT Rally 2.0は今なお愛される「レガシー作品」だが、シーン活性化の主役はもはや現行タイトルではない。</li>
+    </ul>
+    <p>シーン活性化のアプローチをより広く見ると、自動車メーカーや統括団体による投資の存在も大きい。<strong>TOYOTA GAZOO Racing（TGR）</strong>は「TOYOTA GAZOO Racing GT Cup」などのeモータースポーツプログラムを世界規模で展開しており、その目的は単なるゲームのプロモーションではなく、仮想空間でのドライバーの反応や評価を「もっといいクルマづくり」のためのデータセットとして活用することにあるとされる。こうした実自動車メーカーの広告投資とリソース投入は、シムレーシングに現実のモータースポーツと同等のプレステージを与える方向に働いている。</p>
+  </div>
+</section>
+
+<!-- ============ SECTION 7 ============ -->
+<section class="section reveal" aria-labelledby="s7-h">
+  <div class="wrap prose">
+    <div class="sec-marker"><span class="sec-code cond">S.07</span><span class="sec-tag">Expectation vs. Delivery</span></div>
+    <h2 id="s7-h">プレイヤー／シーンの期待と充足度</h2>
+    <ul class="clean">
+      <li><b>iRacing</b>：「競技プラットフォームとしての安定性」が期待され、Steam直近30日81%好評で高水準を維持。物理刷新の継続で充足度は高い。</li>
+      <li><b>GT7</b>：「カジュアルと競技の橋渡し」が期待される。Sophyとコンテンツ更新で納得感は高いが、ペナルティシステムへの不満が競技層の充足を削いでいる。</li>
+      <li><b>LMU</b>：「耐久レースの再現」は満たされつつあるが、「シングルプレイヤーキャリアとコンソール版」が今後の期待。Steam評価は79.3%好評。</li>
+      <li><b>AC Evo</b>：「フル機能の1.0」が最大の期待。だが直近30日Steamレビューは56%好評、全体54%好評（Mixed）にとどまり、アーリーアクセスの長期化への不満が反映。キャリアモードのOpen Mode統合も賛否を呼んだ。</li>
+      <li><b>AC Rally</b>：「Richard Burns Rallyに比肩する硬派ラリーシム」への期待。物理の土台は高評価だがアーリーアクセスでコンテンツが希薄（ローンチ時10車種・33km）。</li>
+      <li><b>Forza Horizon 6</b>：「探索の楽しさ」への期待が満たされ、Metacriticで universal acclaim、OpenCriticで100%推奨。ただしカットシーンの台詞は「平凡」と批判も。</li>
+      <li><b>EA Sports WRC</b>：「DiRT Rally 2.0の正統進化」への期待に対し、ハンドリングは高評価だがパフォーマンス問題・グラフィック簡素化・キャリアの薄さで充足度は割れる。一部シム主軸プレイヤーは「物理がアーケード寄りに後退」と指摘。</li>
+      <li><b>F1 25 / 2026 Season Pack</b>：ハンドリング改善は歓迎されたが、2026 Season Packは29.99ドルに対し「薄い」と批判。2027年新作までのつなぎという位置づけ。</li>
+      <li><b>DiRT Rally 2.0</b>：2019年作ながら2026年も「PCで最も人気のラリーシムの一つ」として支持され、納得感の高い物理で長寿命を保つ。</li>
+    </ul>
+    <p>プレイヤーが現在期待しているものをタイトル単位で整理すると、GT7には<strong>Sophyの全面展開</strong>、Forza Horizon 6には<strong>AI／Drivatar改善と長期コンテンツ</strong>、ACCには<strong>安定した競技基盤の維持</strong>、AC Evoには<strong>完成度の底上げ</strong>、AC Rallyには<strong>アスファルト改善とFIA連動の定着</strong>、LMUには<strong>キャリアモード</strong>、EA Sports WRCには<strong>最適化とAI整合性</strong>、EA Sports F1には<strong>マルチプレイ秩序とAIの雨天妥当性</strong>、rFactor2には<strong>現代的UX</strong>、iRacingには<strong>高コストに見合う継続価値</strong>が、それぞれ求められている。各作品が現在どこまで応えられているかは、評価指標やフォーラムの不満点にそのまま反映されている。</p>
+  </div>
+</section>
+
+<!-- ============ SECTION 8 ============ -->
+<section class="section reveal" aria-labelledby="s8-h">
+  <div class="wrap prose">
+    <div class="sec-marker"><span class="sec-code cond">S.08</span><span class="sec-tag">Synthesis</span></div>
+    <h2 id="s8-h">総論：リアリティとゲーム性のバランシング</h2>
+
+    <h4>ポジティブな視点</h4>
+    <p>シム系（iRacing・rFactor2・LMU・ACC・AC Evo）は実モータースポーツと深く接続している。BMWのCADデータ提供、Goodyearのタイヤデータ提携、Porsche Esports Supercupの「実車シートへの道」は、シミュレーションが単なるゲームでなく実エンジニアリングと地続きであることを示す。</p>
+    <blockquote>
+      私の視点では、仮想の BMW M4 GT3 は今や実車に非常に近い。
+      <span class="src">Bruno Spengler（BMWワークスドライバー＝実モータースポーツ主軸・BMW Group PressClub一次情報）</span>
+    </blockquote>
+    <p>「リアル」を追求する層にとって、現在のシム系の到達点は歴史上最高水準にある。</p>
+
+    <h4>ネガティブな視点</h4>
+    <p>その「リアル」が、高価なハードウェア依存と学習曲線の急峻さという形で新規層を遠ざけている。同時にプロドライバー自身（Nicki Thiimら）が「シム＝現実ではない」と釘を刺している通り、「リアル」を標榜するマーケティングと実態の乖離も存在する。EA Sports WRCのように「究極のシミュレーション」と宣伝されながら「simcadeだ」と批判される例は、過剰な「リアル」訴求のリスクを示す。</p>
+
+    <h4>果たすべき役割</h4>
+    <p>新規ユーザー取り込みと、競技性の高いeモータースポーツの活性化は、本質的に異なる2つのゴールである。GT7とForza Horizonは「リアリティ（納得感）」で間口を広げ、敷居の高いジャンルへの入口を提供する。iRacingとGTWSは「リアル」と体系的競技で、その先の頂点を提供する。マリオカートワールド（14.03百万本）の数値的覇権が示す通り、ジャンル全体の新規取り込みでは「ゲーム性・楽しさ」が「リアル」を圧倒しており、シム系が果たすべき役割はむしろ <strong>「楽しさで取り込んだ層を、いかに段階的に競技性へ橋渡しするか」</strong> にある。GT Sophyのような人間的AIや、パッドでの遊びやすさは、この橋渡しの鍵となる。</p>
+    <p>狭い車種帯域と強い公式ライセンスを持つACC・LMU・iRacingは「リアル」に強く、GT7とFH6は「リアリティ」をより広い層へ開く役目を担い、EA Sports F1やEA Sports WRCはその中間で「公式競技の見え方」と「商品としての遊びやすさ」を両立しようとしている。この構図はポジティブに見れば役割分担であり、ネガティブに見れば市場の分断とも言える。新規ユーザー取り込みとeモータースポーツ活性化の両方を進めるには、GT7やFH6のような入口と、iRacingやLMUのような競技の深さの両方が必要というのが妥当な整理である。</p>
+    <p>「ゲーム性の導入」は物理モデルの妥協ではなく、<strong>時間スケールの加速</strong>という形でも実現されている。GT7の耐久レースやLMUのWECイベントでは、タイヤの摩耗や燃料消費を現実の10〜25倍程度のスケールで加速させる設定が用いられ、数時間から24時間に及ぶ現実の耐久レースの「ピット戦略の醍醐味」を、わずか20分〜1時間のゲームプレイに凝縮している。物理モデル（リアリティ）は妥協せず、時間のスケールや環境変化（ゲーム性）だけを加速させるこのアプローチは、プレイヤーに退屈を感じさせることなくモータースポーツの戦略性を体験させる設計として機能している。</p>
+  </div>
+</section>
+
+<!-- ============ SECTION 9 ============ -->
+<section class="section reveal" aria-labelledby="s9-h">
+  <div class="wrap prose">
+    <div class="sec-marker"><span class="sec-code cond">S.09</span><span class="sec-tag">Supplementary Issues</span></div>
+    <h2 id="s9-h">補足議論：ハードウェア依存とMODセキュリティ</h2>
+
+    <h3>ステアリングコントローラ依存</h3>
+    <p>多くのシム系は、他ジャンルでは使わない高価で取り回しの悪い専用デバイス（ステアリング＋ペダル＋リグ）に依存しがちである。ダイレクトドライブ方式は2026年に低価格化が進み、<strong>MOZA R5バンドル（5.5Nm DD＋ESステアリング＋SR-P Liteペダル）が399.99ドル</strong>まで下がった。500ドルあれば「適切なDDセットアップ」に入れるとされる。しかし依然として、(1)パッドで完結する他ジャンルと比べ初期投資が大きく、(2)デスククランプやリグなど物理的設置スペースを要し、(3)ハイエンド（Simucube 3 Pro 約1,650ポンド、Moza R21 約1,099ポンド）は「killswitch」付きの32Nm級トルクで取り回しが悪い。AC RallyやEA Sports WRCはパッドでも「機能する」が「ホイール向けに作られている」とされ、最良の体験にはハードウェア投資が前提となる。これがシム系の新規参入障壁の中核である。GT7の教材も「自分はホイールが好みだがコントローラでも学べる」と書き、AC Evoはゲームパッドからハンドブレーキまで幅広い互換性を謳い、ACCも多様なハード対応を強調するなど、アクセシビリティ面の進歩自体は各タイトルに見られる。しかし現実には、GTPlanetの巨大なハードウェア掲示板が示す通り、シム文化の中心は依然として高価で大きいデバイス群であり、アクセシビリティ面で進歩していても<strong>文化的な標準装備としてのハンコン圧力</strong>は残っている。</p>
+
+    <h3>MOD依存とセキュリティリスク</h3>
+    <p>ゲームのアップグレードがユーザーMODに依存する構造は、(1)導入の技術ハードル、(2)コンソール展開の困難、(3)セキュリティリスクの3課題を生む。Assetto Corsa（初代）はMODエコシステムで寿命を延ばした一方、<strong>マルウェア混入は現実の脅威</strong>である。Steam Communityには「acServer.exe が Kaspersky に Trojan として検出された」「偽版がトロイの木馬だった」という報告が複数あり、Content Managerのダウンロード機能がアンチウイルスに検出される事例も発生している。PC版のシムレーシング（特にAssetto Corsaやr Factor 2）はユーザーMODの文化によって長寿命化を果たしてきたが、MODはゲームエンジンのメモリやファイルシステムに深く介入するため重大なセキュリティリスクを孕む。</p>
+    <p><strong>生成AI（GAI）の発展により、エクスプロイトコードをMODに混入させることがより容易になっており、競技性のあるゲームではチート性コードの潜入リスクが極めて高い。</strong>近年、生成AIの普及によりサンドボックスエスケープやリモートコード実行（RCE）等の高度なエクスプロイトを自動生成することが容易になりつつある点は、汎用的なソフトウェアセキュリティの領域でも指摘されている事象である。実際、2026年にはNode.jsのサンドボックスライブラリ「vm2」においてPromiseコールバックのサニタイズ漏れに起因する重大なサンドボックスエスケープ脆弱性（CVE-2026-22709、CVSS 9.8）が報告されており、AI生成コードを含む形でこうした脆弱性が悪用される懸念が指摘されている。<span class="src-note">※このCVEはNode.js全般の汎用ライブラリに関する脆弱性報告であり、レースゲームMOD自体に特化した事例として確認されたものではない。本稿では「生成AIによるエクスプロイト混入の容易化」という構造的リスクの説明として参照している。</span></p>
+    <p>これに対しKunosは明確な方針転換を行った。AC Evoの0.7（2026年6月3日）で投入された公式SDKは、PBR（物理ベースレンダリング）制作パイプライン、フルLOD管理、アフターマーケット部品対応を備える「より近代的で完全な」ツールである。独自の「KSPackage（kspkg）」アーカイブフォーマットと公式の「Assetto Corsa Dedicated Server Tool」を使用することで、物理演算のコア変数への不正アクセスを遮断しつつ、開発側が承認した安全なパラメーターの範囲内（サスペンションジオメトリの調整や自作コンパウンドの作成等）でのみMODの制作と適用を許可するサンドボックス環境を構築しようとしている。Kunosは当初「ユーザーが一次アセットを抜き出す問題を防ぐため、MOD実装を従来と違う形にする」と述べており、これはマネージドなアプローチへの転換を示す。このクローズドなアプローチに対しては、従来の自由なMOD環境を愛するコアファンから「Modサポートを殺し、公式DLCを強制するための口実ではないか」という反発の声も上がっている。</p>
+    <p>ただし注意すべきは、<strong>現時点でユーザー生成車両はシングルプレイヤーのみ対応で、マルチプレイヤー対応は今後の更新に持ち越されている</strong>点である。Kunos／Digital Brosは「コミュニティ製コンテンツが商標・ブランドポリシー・法に抵触しても責任を負わない」と明記している。AC Evoの近接ベースセーフティレーティングはオンレースの公平性に寄与するが、コードレベルのチート対策とは別問題である。一方EA Sports WRCはカーネルレベルのアンチチートを導入し（侵襲的だと批判もある）、開発によるマネージド対策の方向性を示している。rFactor系は「easily extendable」を伝統としてきたが、LMU／rFactor2のRaceControl LiveryHubは少なくとも現時点では主にリバリー（外装）管理が中心であり、実行可能コードのMODそのものを広く扱う仕組みではない。</p>
+
+    <div class="divergent">
+      <div class="divergent-head"><span class="dv-ico">Divergent</span><span class="dv-label">MODセキュリティ対策は「十分」と言えるか</span></div>
+      <div class="divergent-body">
+        <div class="dv-row"><span class="dv-tag">見解A</span><p>RCE（任意コード実行）のリスクを排除し、同時にeスポーツとしての公平性（グリップ係数改ざん等のチート防止）を担保するため、最新タイトルは「マネージドMOD」環境への移行を進めている。競技のインテグリティ保持とプレイヤーのホストOSを悪意あるコード実行から守るという観点で、<b>この「マネージド・プラットフォーム」への進化は産業として不可避な決断</b>であると評価できる。</p></div>
+        <div class="dv-row"><span class="dv-tag">見解B</span><p>実行可能コードを含むMODに対して、どの程度のサンドボックス・検証・競技チート対策があるかは、<b>今回確認できた公開資料の範囲では十分に確認できなかった</b>。マネージドなMOD導線は歓迎できても、競技性の高いタイトルでの安全性を「十分担保済み」とまでは現時点で断言できず、開発元がもっと透明に説明すべき領域として残っている。</p></div>
+        <div class="dv-row"><span class="dv-tag">見解C</span><p>AC Evoのマルチプレイヤー対応におけるユーザー生成車両のチート対策は、<b>実装内容次第で現時点では未確定</b>というのが最も慎重な評価である。近接ベースセーフティレーティングはオンレースの公平性に寄与するが、それはコードレベルのチート対策そのものではない点を区別する必要がある。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RECOMMENDATIONS ============ -->
+<section class="section reveal" aria-labelledby="rec-h" style="border-top:2px solid var(--ink);">
+  <div class="wrap prose">
+    <div class="sec-marker"><span class="sec-tag">Recommendations</span></div>
+    <h2 id="rec-h">推奨事項</h2>
+    <div class="cards">
+      <div class="card good">
+        <h4>完全な新規ユーザー（レースゲーム未経験）</h4>
+        <p>パッドで遊べる <b>GT7（PS5）</b>または <b>Forza Horizon 6</b>（Game Pass初日対応）から開始すべき。投資ゼロで「リアリティ」を体験でき、定着率が最も高い。<b>閾値：</b>ここで「もっと競技性が欲しい」と感じたら次段階へ。</p>
+      </div>
+      <div class="card">
+        <h4>競技志向・実モータースポーツ的体験を求める層</h4>
+        <p><b>iRacing</b> が最も体系的（Safety Rating、賞金付き公式シリーズ、メーカー連携）。サブスク＋コンテンツ課金（全部買うと1,000ドル超）が許容できるかが判断基準。<b>MOZA R5（約400ドル）</b>級のDDが推奨ハードウェアの閾値。</p>
+      </div>
+      <div class="card">
+        <h4>純粋な物理忠実性の探求</h4>
+        <p><b>rFactor2・LMU・AC Evo</b>。ただしrFactor2は開発体制の持続性、AC Evoはアーリーアクセス完成度（1.0未達）がリスク。AC Evoは <b>1.0到達まで購入を待つ</b>のも合理的判断。</p>
+      </div>
+      <div class="card">
+        <h4>ラリー</h4>
+        <p>完成度と安定性なら <b>DiRT Rally 2.0</b>（2019年作だが2026も現役・安価）。最新の物理を求めるなら <b>AC Rally</b>（発展途上・コンテンツ希薄を許容できる場合）。EA Sports WRCはコンテンツ量で勝るがパフォーマンス問題に注意。</p>
+      </div>
+      <div class="card">
+        <h4>F1</h4>
+        <p><b>F1 25</b> は2027年新作までのつなぎ。F1 24以前を持つなら2026 Season Pack（29.99ドル）のコスパは低く、見送りが妥当。</p>
+      </div>
+      <div class="card good">
+        <h4>判断を変える指標（ベンチマーク）</h4>
+        <p>AC Evoが1.0へ到達しMixed評価が改善した時／GT7のペナルティが抜本改修された時／MOZA R5級が300ドルを切った時――いずれも上記推奨を見直すべき転換点となる。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAVEATS ============ -->
+<section class="section reveal" aria-labelledby="cav-h">
+  <div class="wrap prose">
+    <div class="sec-marker"><span class="sec-tag" style="color:var(--amber);">Caveats</span></div>
+    <h2 id="cav-h">注意事項</h2>
+    <div class="cards">
+      <div class="card warn">
+        <h4>発展途上タイトルの暫定評価</h4>
+        <p>Forza Horizon 6（2026.05.19発売、PS5版は後日）、Assetto Corsa Evo（v0.7・EA・1.0未定）、Assetto Corsa Rally（2025.11.13〜EA・v1.0は2026予定）は発売直後・早期アクセス段階。本レポートの評価は <b>2026年6月時点の暫定的なもの</b>であり、仕様・物理・コンテンツは今後変動しうる。</p>
+      </div>
+      <div class="card warn">
+        <h4>プレイヤー数の数値の限界</h4>
+        <p>LMU等のプレイヤー数はSteam同時接続者数であり全体像ではない。iRacingは直販サブスクが多く、Steam数値は実コミュニティ規模を著しく過小評価する。マリオカートの販売本数はバンドル（同梱）を含み、単体購入と区別できない。</p>
+      </div>
+      <div class="card warn">
+        <h4>rFactor 2 と rFpro の区別</h4>
+        <p>F1チームが使う「rFpro」はISI/rFactor系譜を共有するエンジニアリング用Driver-in-the-Loopツールであり、市販のrFactor 2とは deeply different とされる。本文の「プロチームが使う設計」は系譜的つながりを指し、市販版そのものがF1チームで使われている意味ではない。</p>
+      </div>
+      <div class="card warn">
+        <h4>GT Sophy の数値の出典差</h4>
+        <p>「2日で人間の95%に勝つ」等はNVIDIA開発者ブログ要約であり、Nature論文本文（Sartheで48時間に99パーセンタイル到達）とは出典が異なる。本文では論文の事実（Natureに掲載・表紙）のみを確定情報として扱った。</p>
+      </div>
+      <div class="card warn">
+        <h4>情報源のポジション混在</h4>
+        <p>情報源はゲームメディア主軸、プレイヤーコミュニティ、実モータースポーツ／カーエンジニアリング主軸が混在する。本文中で各ポジションを明示したが、特にフォーラム由来の発言（Nicki Thiim等）は二次情報であり信頼性に留保が必要。評価にあたっては実カーエンジニアリング（BMW・Goodyear・Porsche・Nature論文）を優先的に参照した。</p>
+      </div>
+      <div class="card warn">
+        <h4>本稿は3本の独立レポートの統合版である</h4>
+        <p>本稿は同一のリサーチ指示のもとで独立に作成された3本のレビューを1本に統合したものである。重複する記述は整理・削除し、同一論点について見解が異なる場合は本文中に<b>「異なる見解が存在する」</b>枠（Divergentボックス）として両論を明示的に併記した。統合にあたり原文の論旨・文章表現は原則として維持し、平仄を合わせる程度の編集に留めている。</p>
+      </div>
+      <div class="card warn">
+        <h4>MODセキュリティ論におけるCVE援用の位置づけ</h4>
+        <p>本文中で言及したCVE-2026-22709（vm2サンドボックスエスケープ）等の脆弱性情報は、Node.js環境一般における汎用的なセキュリティ事例であり、レースゲームMOD自体に特化して検証・報告されたものではない。これは「生成AIによるエクスプロイト混入の容易化」という構造的リスクを説明するための類推・例示として援用されている点に留意されたい。レースゲームMODの実行可能コードに対する具体的なサンドボックス実装・検証体制については、本稿の3本の原資料いずれにおいても公開資料からの確認が十分でなく、未確定な領域として残る。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ REFERENCES ============ -->
+<section class="refs reveal" aria-labelledby="ref-h">
+  <div class="wrap">
+    <span class="eyebrow on-dark">Sources</span>
+    <h2 id="ref-h">主要情報源（ポジション別）</h2>
+    <p class="grid-note">透明性基準に基づき、各情報源を発信者のポジションで分類して提示する。本リストは統合元3レポートの引用文献を整理・統合したものであり、重複する出典は一本化している。</p>
+
+    <div class="ref-group">
+      <h3>実エンジニアリング / メーカー・チーム・学術 <span class="badge">REAL MOTORSPORT</span></h3>
+      <ul class="ref-list">
+        <li><span class="rsrc">BMW Group PressClub</span><span class="rtitle">iRacing × BMW M4 GT3 開発連携</span><a href="https://www.press.bmwgroup.com/global/article/detail/T0336416EN/" target="_blank" rel="noopener">press.bmwgroup.com</a></li>
+        <li><span class="rsrc">Goodyear（via Bsimracing）</span><span class="rtitle">rFactor × Goodyear タイヤモデル提携</span><a href="https://www.bsimracing.com/rfactor-and-goodyear-announce-partnership/" target="_blank" rel="noopener">bsimracing.com</a></li>
+        <li><span class="rsrc">Porsche Motorsport</span><span class="rtitle">Porsche Esports Supercup 2026 / 実車への道</span><a href="https://racing.porsche.com/articles/esports-pesc-2026-announcement" target="_blank" rel="noopener">racing.porsche.com</a></li>
+        <li><span class="rsrc">David Perel（GTドライバー）</span><span class="rtitle">ACCアルファ版 ― レーシングドライバーの所見</span><a href="https://davidperel.net/assetto-corsa-competizione-alpha-a-racing-drivers-take/" target="_blank" rel="noopener">davidperel.net</a></li>
+        <li><span class="rsrc">TOYOTA GAZOO Racing</span><span class="rtitle">e-Motorsports / ケルン拠点シミュレーター・GR-FOURシステム解説</span><a href="https://toyotagazooracing.com/e-motorsports/" target="_blank" rel="noopener">toyotagazooracing.com</a></li>
+        <li><span class="rsrc">FIA</span><span class="rtitle">FIA Esports Global Rally Tour 概要</span><a href="https://esportsglobalrallytour.digital.fia.com/about" target="_blank" rel="noopener">esportsglobalrallytour.digital.fia.com</a></li>
+      </ul>
+    </div>
+
+    <div class="ref-group">
+      <h3>公式 / 開発スタジオ <span class="badge">FIRST PARTY</span></h3>
+      <ul class="ref-list">
+        <li><span class="rsrc">iRacing</span><span class="rtitle">Development Update 2026年5月 / eNASCAR 2026 / NTM V7物理解説</span><a href="https://www.iracing.com/iracing-development-update-may-2026/" target="_blank" rel="noopener">iracing.com</a></li>
+        <li><span class="rsrc">Gran Turismo 公式</span><span class="rtitle">GT7 製品情報 / Update 1.49・1.65 / Sophy 2.1</span><a href="https://www.gran-turismo.com/us/products/gt7/" target="_blank" rel="noopener">gran-turismo.com</a></li>
+        <li><span class="rsrc">Electronic Arts</span><span class="rtitle">F1 25 ― 2026 Season Pack パッチノート／公式発表</span><a href="https://www.ea.com/en/games/f1/f1-25/news/f1-25-2026-season-pack-patch-notes-v120" target="_blank" rel="noopener">ea.com</a></li>
+        <li><span class="rsrc">EA Sports WRC</span><span class="rtitle">EA anticheat（カーネルレベル）公式FAQ</span><a href="https://www.ea.com/news/ea-anticheat" target="_blank" rel="noopener">ea.com</a></li>
+        <li><span class="rsrc">Assetto Corsa 公式 / 505 Games</span><span class="rtitle">AC Evo EA 0.7 SDK / AC Rally EA リリース／物理機能解説</span><a href="https://assettocorsa.gg/assetto-corsa-evo-early-access-0-7-now-available/" target="_blank" rel="noopener">assettocorsa.gg</a></li>
+        <li><span class="rsrc">Le Mans Ultimate 公式</span><span class="rtitle">The Game（WEC規則実装の解説）</span><a href="https://lemansultimate.com/the-game/" target="_blank" rel="noopener">lemansultimate.com</a></li>
+      </ul>
+    </div>
+
+    <div class="ref-group">
+      <h3>ゲーム専門メディア <span class="badge">GAMING PRESS</span></h3>
+      <ul class="ref-list">
+        <li><span class="rsrc">TechRadar</span><span class="rtitle">GT7のペナルティシステムは未だ根本的に壊れている</span><a href="https://www.techradar.com/features/a-year-on-gran-turismo-7s-penalty-system-is-still-fundamentally-broken" target="_blank" rel="noopener">techradar.com</a></li>
+        <li><span class="rsrc">Traxion</span><span class="rtitle">LMU 同時接続記録 / Sophy 2.1 / FH6ハンドリング評 / Studio 397動向</span><a href="https://traxion.gg/le-mans-ultimate-hits-new-concurrent-player-milestone/" target="_blank" rel="noopener">traxion.gg</a></li>
+        <li><span class="rsrc">PCGamesN</span><span class="rtitle">F1 25 レビュー</span><a href="https://www.pcgamesn.com/f1-25/review" target="_blank" rel="noopener">pcgamesn.com</a></li>
+        <li><span class="rsrc">OverTake.gg</span><span class="rtitle">EA Sports WRC レビュー / AC Evo EA延長 / EAアンチチート論評</span><a href="https://www.overtake.gg/news/ea-sports-wrc-review-a-rally-fans-dream.1454/reviews" target="_blank" rel="noopener">overtake.gg</a></li>
+        <li><span class="rsrc">Game Informer</span><span class="rtitle">マリオカートワールド販売記録</span><a href="https://gameinformer.com/2026/02/03/mario-kart-world-is-the-switch-2s-best-selling-game-so-far-and-its-not-even-close" target="_blank" rel="noopener">gameinformer.com</a></li>
+        <li><span class="rsrc">ESPN / RacingGames.gg</span><span class="rtitle">Forza Horizon 6・AC Rally 発売情報 / 2026ラリー総括</span><a href="https://www.espn.com/gaming/story/_/id/47707224/forza-horizon-6-release-date-japan" target="_blank" rel="noopener">espn.com</a></li>
+        <li><span class="rsrc">Coach Dave Academy</span><span class="rtitle">ダイレクトドライブホイール総覧 2026 / LMU入門・セットアップガイド</span><a href="https://coachdaveacademy.com/tutorials/direct-drive-wheels-complete-guide/" target="_blank" rel="noopener">coachdaveacademy.com</a></li>
+        <li><span class="rsrc">GAME*Spark / IGN Japan</span><span class="rtitle">Forza Horizon 6レビュー（日本語）</span><a href="https://www.gamespark.jp/article/2026/05/26/166938.html" target="_blank" rel="noopener">gamespark.jp</a></li>
+        <li><span class="rsrc">DirtFish</span><span class="rtitle">FIAラリーeスポーツ大会創設報道</span><a href="https://dirtfish.com/rally/wrc/fia-launches-global-esports-competition-for-rallying/" target="_blank" rel="noopener">dirtfish.com</a></li>
+      </ul>
+    </div>
+
+    <div class="ref-group">
+      <h3>コミュニティ / 統計データ <span class="badge">COMMUNITY &amp; DATA</span></h3>
+      <ul class="ref-list">
+        <li><span class="rsrc">GTPlanet</span><span class="rtitle">ペナルティシステム議論スレッド / GT Sophy対応トラック一覧 / ハードウェア掲示板</span><a href="https://www.gtplanet.net/forum/threads/penalty-system.436983/" target="_blank" rel="noopener">gtplanet.net</a></li>
+        <li><span class="rsrc">Steam Community / Reddit</span><span class="rtitle">Assetto Corsa MODのマルウェア検出報告 / AC Evo物理に関するプレイヤー評</span><a href="https://steamcommunity.com/app/244210/discussions/search/?q=trojan" target="_blank" rel="noopener">steamcommunity.com</a></li>
+        <li><span class="rsrc">Esports Charts</span><span class="rtitle">2025 eNASCAR Coca-Cola iRacing Series 視聴データ</span><a href="https://escharts.com/tournaments/iracing/2025-enascar-coca-cola-iracing-series" target="_blank" rel="noopener">escharts.com</a></li>
+        <li><span class="rsrc">SteamDB</span><span class="rtitle">Le Mans Ultimate / AC Evo / EA WRC 同時接続・レビュー傾向チャート</span><a href="https://steamdb.info/app/2399420/charts/" target="_blank" rel="noopener">steamdb.info</a></li>
+        <li><span class="rsrc">Nature</span><span class="rtitle">GT Sophy 論文 DOI:10.1038/s41586-021-04357-7</span><a href="https://gran-turismo.fandom.com/wiki/Gran_Turismo_Sophy" target="_blank" rel="noopener">参考: GT Wiki / Sophy</a></li>
+        <li><span class="rsrc">Endor Labs / The Hacker News / BleepingComputer</span><span class="rtitle">CVE-2026-22709（vm2サンドボックスエスケープ）技術解説</span><a href="https://www.endorlabs.com/learn/cve-2026-22709-critical-sandbox-escape-in-vm2-enables-arbitrary-code-execution" target="_blank" rel="noopener">endorlabs.com</a></li>
+        <li><span class="rsrc">Wikipedia / Edy's Projects</span><span class="rtitle">Pacejkaのマジックフォーミュラ・タイヤモデル理論解説</span><a href="https://en.wikipedia.org/wiki/Tire_model" target="_blank" rel="noopener">en.wikipedia.org</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span class="mono">PIT-WALL DOSSIER &nbsp;/&nbsp; RACING SIM LANDSCAPE &nbsp;/&nbsp; MERGED EDITION</span>
+    <span class="mono">基準時点 <b>2026.06</b> &nbsp;/&nbsp; 対象 <b>11 TITLES</b> &nbsp;/&nbsp; 評価軸 <b>REAL × REALISTIC</b> &nbsp;/&nbsp; 統合元 <b>3 REPORTS</b></span>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var els = document.querySelectorAll('.reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      els.forEach(function(el){el.classList.add('in');});
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    },{threshold:0.08, rootMargin:'0px 0px -8% 0px'});
+    els.forEach(function(el){io.observe(el);});
+  })();
+</script>
+
+</body>
+</html>
