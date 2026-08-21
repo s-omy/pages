@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>海外PSストアゲーム購入・プレイマニュアル</title>
+    <style>
+        :root {
+            --primary-color: #00439c;
+            --secondary-color: #0072ce;
+            --accent-color: #ff4500;
+            --text-color: #333333;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --border-color: #e1e8ed;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+        .lead-text {
+            font-size: 15px;
+            color: #666;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 20px;
+            margin: 35px 0 15px 0;
+            padding-left: 10px;
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        strong {
+            color: #000;
+            background: linear-gradient(transparent 70%, #fff27f 70%);
+            padding: 0 2px;
+            font-weight: bold;
+        }
+
+        /* 警告・注意書きボックス */
+        .alert-box {
+            background-color: #fff5f5;
+            border-left: 4px solid var(--accent-color);
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        .alert-box h3 {
+            color: var(--accent-color);
+            font-size: 16px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* ステップリスト */
+        .step-list {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .step-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding-left: 60px;
+        }
+
+        .step-item::before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 2px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--secondary-color);
+            color: #white;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,114,230,0.3);
+        }
+
+        .step-title {
+            font-size: 17px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .sub-list {
+            list-style-type: disc;
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+
+        .sub-list li {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        /* 補足事項の箇条書き */
+        .info-list {
+            list-style-type: none;
+        }
+
+        .info-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 10px;
+            font-size: 14.5px;
+        }
+
+        .info-list li::before {
+            content: "■";
+            position: absolute;
+            left: 0;
+            color: var(--secondary-color);
+            font-size: 12px;
+            top: 1px;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>海外PSストア限定ゲーム 購入＆プレイマニュアル</h1>
+        <p class="lead-text">日本国内のPS5環境において、海外ストア限定タイトルを安全に購入し、いつもの日本アカウントで遊ぶための手順解説です。</p>
+    </header>
+
+    <h2>基本ロジック</h2>
+    <p>PS5本体に<strong>「日本のPSNアカウント（メイン用）」</strong>と<strong>「海外のPSNアカウント（購入用）」</strong>を同居させ、海外アカウント側の共有設定を有効にすることで、日本アカウントからでも海外ゲームが起動できるようになります。</p>
+
+    <div class="alert-box">
+        <h3>【重要】最高年齢レーティング作品に関する制限</h3>
+        <p>現地の最高年齢レーティング（米国のM/AO、欧州のPEGI 18など）に指定されている一部のゲームは、ストアでの購入時にその国で発行されたクレジットカードによる成人認証が必須となります。日本のクレジットカードや通常のPSNカード（残高チャージ）では購入できません。</p>
+        <p>ただし、<strong>Amazon等の外部ECサイトで「ゲーム本編のデジタルダウンロードコード」が直接販売されている場合のみ</strong>、そのコードを購入・入力することでこの制限を回避してダウンロードが可能です。</p>
+    </div>
+
+    <h2>最新・改善版購入手順</h2>
+    <ol class="step-list">
+        <li class="step-item">
+            <div class="step-title">海外PSNアカウントの作成（PC・スマホ推奨）</div>
+            <p>ブラウザからPlayStation Networkの新規登録画面を開き、新しくアカウントを作成します。</p>
+            <ul class="sub-list">
+                <li>国・地域は目的地（例：<strong>「米国（United States）」</strong>など）に設定します。</li>
+                <li>日本のPSNとは<strong>異なるメールアドレス</strong>が必要です。</li>
+                <li>住所（郵便番号など）の入力が必要になります。米国の場合、<strong>オレゴン州（Oregon）やアラスカ州（Alaska）</strong>の適当なホテル等の住所に設定すると、<strong>購入時の消費税（Sales Tax）がかからない</strong>ため、チャージ金額の計算がシンプルになり最もおすすめです。</li>
+            </ul>
+        </li>
+
+        <li class="step-item">
+            <div class="step-title">PS5への登録とコンテンツ共有設定</div>
+            <p>作成した海外アカウントをPS5本体に登録し、共有設定を行います。</p>
+            <ul class="sub-list">
+                <li>PS5に新しいユーザーを追加し、作成した海外アカウントでサインインします。</li>
+                <li>設定（歯車アイコン）＞「ユーザーとアカウント」＞「その他」＞<strong>「コンテンツ共有とオフラインプレイ」</strong>を開きます。</li>
+                <li>設定が<strong>「有効にする」</strong>になっていることを確認します（デフォルトで有効になっている場合が多いです）。これにより、このPS5を使う全アカウントにゲームが共有されます。</li>
+            </ul>
+        </li>
+
+        <li class="step-item">
+            <div class="step-title">海外PSNコード（ギフトカード）の購入</div>
+            <p>信頼できる海外ゲーム取り扱いECサイト（Play-Asia、米国のAmazon.com、SEAGMなど）を利用し、目的のゲーム金額分のPSNコードを購入します。</p>
+            <ul class="sub-list">
+                <li>日本国内用のPSNコードは海外ストアでは使用できません。必ず対象国用のコードを購入してください。</li>
+                <li>海外ECサイトでは日本のクレジットカードが弾かれる場合があるため、その際は支払い手段に日本発行のクレジットカードを紐付けた<strong>PayPal（ペイパル）</strong>を利用するとスムーズに購入できます。</li>
+            </ul>
+        </li>
+
+        <li class="step-item">
+            <div class="step-title">残高チャージとゲームの購入・ダウンロード</div>
+            <p>PS5で海外アカウントに切り替え、ゲームを購入します。</p>
+            <ul class="sub-list">
+                <li>PlayStation Storeを開き、メニューから「コード番号の入力（Redeem Codes）」を選んで、購入したコードを入力し残高をチャージします。</li>
+                <li>目的のゲームを購入し、<strong>そのままPS5本体へのダウンロード（インストール）を開始</strong>します。</li>
+            </ul>
+        </li>
+
+        <li class="step-item">
+            <div class="step-title">日本アカウントに切り替えてプレイ</div>
+            <p>ダウンロードが開始、または完了したら、PS5のユーザーを<strong>いつもの日本アカウント（本アカウント）に切り替えます</strong>。</p>
+            <ul class="sub-list">
+                <li>ホーム画面または「ゲームライブラリー」に該当の海外ゲームが表示されていることを確認し、起動してプレイします。</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2>プレイ時の注意点・例外事項</h2>
+    <ul class="info-list">
+        <li><strong>追加DLCやゲーム内通貨の互換性：</strong>ゲーム本編は日本アカウントで遊べますが、追加コンテンツ（DLC）や課金通貨などは、購入した海外アカウント側でしか認識されないケースが非常に多いです。DLCも遊ぶ場合は海外ストア側で買い足す必要があります。</li>
+        <li><strong>日本語データの有無：</strong>海外ストアにしかないゲームは、基本的に日本語データ（テキスト・音声）が含まれていない可能性が極めて高いです（アジア版ストアなど、一部例外を除く）。事前に仕様を確認することをおすすめします。</li>
+    </ul>
+
+    <footer>
+        <p>※本手順は2026年時点のPS5およびPSNの仕様に基づいています。ネットワークサービスの規約変更等により、仕様が変更される場合があります。</p>
+    </footer>
+</div>
+
+</body>
+</html>
