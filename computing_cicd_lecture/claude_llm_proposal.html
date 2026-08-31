@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大規模システム開発におけるLLM活用 ― プロポーザルレポート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f5f6f3;
+    --surface:#ffffff;
+    --ink:#161b22;
+    --ink-soft:#4a5160;
+    --ink-faint:#7c8291;
+    --line:#dde1e6;
+    --line-strong:#c3c9d1;
+    --indigo:#35406b;
+    --indigo-tint:#edeff6;
+    --teal:#1f6f63;
+    --teal-tint:#e9f3f0;
+    --amber:#b4692a;
+    --amber-tint:#faf1e7;
+    --radius:2px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Inter",-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    font-size:16px;
+    line-height:1.8;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:"IBM Plex Mono",monospace;}
+  a{color:var(--indigo);}
+
+  /* ---------- Layout shell ---------- */
+  .page{max-width:960px;margin:0 auto;padding:0 32px;}
+
+  /* ---------- Cover ---------- */
+  .cover{
+    background:linear-gradient(180deg,#181d27 0%,#242b3a 100%);
+    color:#f2f3f0;
+    padding:96px 0 72px;
+    position:relative;
+    overflow:hidden;
+  }
+  .cover::after{
+    content:"";
+    position:absolute;
+    right:-120px;top:-120px;
+    width:420px;height:420px;
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:50%;
+  }
+  .cover::before{
+    content:"";
+    position:absolute;
+    right:-40px;top:-40px;
+    width:280px;height:280px;
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:50%;
+  }
+  .cover .page{position:relative;z-index:1;}
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12.5px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:#9aa4c4;
+    margin:0 0 22px;
+  }
+  .cover h1{
+    font-family:"Source Serif 4",serif;
+    font-weight:600;
+    font-size:44px;
+    line-height:1.35;
+    margin:0 0 20px;
+    max-width:680px;
+  }
+  .cover .sub{
+    font-size:16.5px;
+    color:#c7cbd8;
+    max-width:600px;
+    margin:0 0 44px;
+    line-height:1.9;
+  }
+  .cover-meta{
+    display:flex;
+    gap:48px;
+    flex-wrap:wrap;
+    padding-top:32px;
+    border-top:1px solid rgba(255,255,255,0.14);
+  }
+  .cover-meta div{min-width:120px;}
+  .cover-meta .label{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:#8890a8;
+    margin-bottom:6px;
+  }
+  .cover-meta .value{font-size:15px;color:#eef0f5;}
+
+  /* ---------- TOC ---------- */
+  .toc-band{
+    background:var(--surface);
+    border-bottom:1px solid var(--line);
+  }
+  .toc{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 0;
+    padding:20px 0;
+  }
+  .toc a{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    text-decoration:none;
+    padding:6px 16px;
+    border-right:1px solid var(--line);
+  }
+  .toc a:first-child{padding-left:0;}
+  .toc a:last-child{border-right:none;}
+  .toc a:hover{color:var(--indigo);}
+
+  /* ---------- Sections ---------- */
+  section{padding:64px 0;border-bottom:1px solid var(--line);}
+  section:last-of-type{border-bottom:none;}
+  .section-head{margin-bottom:36px;}
+  .section-num{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12.5px;
+    letter-spacing:0.14em;
+    color:var(--indigo);
+    margin:0 0 10px;
+  }
+  h2{
+    font-family:"Source Serif 4",serif;
+    font-weight:600;
+    font-size:30px;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .section-desc{color:var(--ink-soft);font-size:15px;max-width:640px;margin:14px 0 0;}
+  h3{
+    font-family:"Source Serif 4",serif;
+    font-weight:600;
+    font-size:21px;
+    margin:0 0 12px;
+  }
+  h4{
+    font-size:14.5px;
+    font-weight:600;
+    margin:28px 0 10px;
+    color:var(--ink);
+  }
+  p{margin:0 0 16px;color:var(--ink-soft);}
+  strong{color:var(--ink);font-weight:600;}
+
+  /* ---------- Synthesis cards ---------- */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:8px;}
+  .grid3 .cell{background:var(--surface);padding:22px 20px;}
+  .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:8px;}
+  .grid2 .cell{background:var(--surface);padding:22px 20px;}
+  .cell .tag{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    margin-bottom:8px;
+    display:block;
+  }
+  .cell p{font-size:14.5px;margin:0;color:var(--ink-soft);}
+  .cell p:not(:last-child){margin-bottom:10px;}
+
+  /* ---------- Diagram (signature element) ---------- */
+  .diagram{
+    background:#12161f;
+    border-radius:var(--radius);
+    padding:52px 40px 44px;
+    margin:32px 0 8px;
+    position:relative;
+  }
+  .diagram-caption{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    color:#7b84a0;
+    letter-spacing:0.06em;
+    text-align:center;
+    margin-bottom:34px;
+  }
+  .layer-stack{display:flex;flex-direction:column;gap:0;max-width:620px;margin:0 auto;}
+  .layer{
+    display:grid;
+    grid-template-columns:64px 1fr auto;
+    align-items:center;
+    gap:18px;
+    padding:16px 20px;
+    background:#1a2030;
+    border:1px solid #2a3346;
+    color:#e7e9f0;
+  }
+  .layer + .layer{margin-top:0;}
+  .layer .lnum{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    color:#6d7694;
+  }
+  .layer .lname{font-family:"Source Serif 4",serif;font-size:17px;font-weight:600;}
+  .layer .lsub{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:#8891ac;margin-top:3px;}
+  .layer .lowner{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:10.5px;
+    letter-spacing:0.06em;
+    padding:4px 9px;
+    border-radius:100px;
+    white-space:nowrap;
+  }
+  .owner-A{background:rgba(53,64,107,0.35);color:#a9b3e0;border:1px solid rgba(169,179,224,0.35);}
+  .owner-B{background:rgba(31,111,99,0.3);color:#8fd6c6;border:1px solid rgba(143,214,198,0.35);}
+  .owner-C{background:rgba(180,105,42,0.28);color:#e6b183;border:1px solid rgba(230,177,131,0.35);}
+  .connector{
+    height:20px;
+    margin-left:32px;
+    border-left:1px dashed #3a4360;
+  }
+  .loop-note{
+    max-width:620px;
+    margin:26px auto 0;
+    padding-top:22px;
+    border-top:1px dashed #2a3346;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .loop-note svg{flex:none;width:18px;height:18px;stroke:#8fd6c6;}
+  .loop-note span{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:#a7b0cc;line-height:1.7;}
+
+  /* ---------- Proposal blocks ---------- */
+  .proposal{
+    border:1px solid var(--line);
+    background:var(--surface);
+    margin-top:8px;
+  }
+  .proposal-head{
+    padding:26px 28px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .proposal-head .letter{
+    font-family:"Source Serif 4",serif;
+    font-size:38px;
+    font-weight:600;
+    line-height:1;
+  }
+  .proposal[data-owner="A"] .letter{color:var(--indigo);}
+  .proposal[data-owner="B"] .letter{color:var(--teal);}
+  .proposal[data-owner="C"] .letter{color:var(--amber);}
+  .proposal-titles{flex:1;min-width:260px;}
+  .arch-label{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    margin-bottom:6px;
+  }
+  .proposal-titles h3{margin-bottom:8px;}
+  .proposal-titles .lede{font-size:14.5px;color:var(--ink-soft);margin:0;max-width:520px;}
+  .proposal-body{padding:0 28px 28px;}
+  .proposal[data-owner="A"] .proposal-head{border-top:3px solid var(--indigo);}
+  .proposal[data-owner="B"] .proposal-head{border-top:3px solid var(--teal);}
+  .proposal[data-owner="C"] .proposal-head{border-top:3px solid var(--amber);}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0 20px;font-size:14px;}
+  th,td{text-align:left;padding:10px 14px;border:1px solid var(--line);vertical-align:top;}
+  th{
+    background:var(--indigo-tint);
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--indigo);
+    font-weight:600;
+  }
+  td{color:var(--ink-soft);}
+  .proposal[data-owner="B"] th{background:var(--teal-tint);color:var(--teal);}
+  .proposal[data-owner="C"] th{background:var(--amber-tint);color:var(--amber);}
+
+  ol.actions, ul.plain{margin:0 0 18px;padding-left:22px;color:var(--ink-soft);font-size:14.5px;}
+  ol.actions li, ul.plain li{margin-bottom:8px;}
+
+  .principle-box{
+    border:1px solid var(--line-strong);
+    background:var(--indigo-tint);
+    padding:20px 24px;
+    margin:18px 0;
+    font-family:"Source Serif 4",serif;
+    font-size:17px;
+    font-style:italic;
+    color:var(--indigo);
+    line-height:1.7;
+  }
+  .proposal[data-owner="C"] .principle-box{background:var(--amber-tint);color:var(--amber);}
+
+  /* ---------- Issue log table ---------- */
+  .issues{margin-top:8px;}
+  .issues table{font-size:13.5px;}
+  .status{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    padding:2px 8px;
+    border-radius:100px;
+    background:var(--teal-tint);
+    color:var(--teal);
+    white-space:nowrap;
+  }
+
+  /* ---------- Reporting tiers ---------- */
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:8px;}
+  .tier{background:var(--surface);padding:24px 22px;}
+  .tier .tier-eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;}
+  .tier:nth-child(1) .tier-eyebrow{color:var(--indigo);}
+  .tier:nth-child(2) .tier-eyebrow{color:var(--amber);}
+  .tier:nth-child(3) .tier-eyebrow{color:var(--teal);}
+  .tier h4{margin-top:0;font-size:15.5px;}
+  .tier ul{margin:0;padding-left:18px;font-size:13.5px;color:var(--ink-soft);}
+  .tier ul li{margin-bottom:6px;}
+
+  /* ---------- Closing ---------- */
+  .closing{background:var(--surface);}
+  .closing-principles{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:24px 0 32px;}
+  .closing-principles .p-card{
+    border:1px solid var(--line-strong);
+    padding:22px 24px;
+    background:#12161f;
+    color:#e7e9f0;
+  }
+  .closing-principles .p-card .k{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:#8fd6c6;
+    margin-bottom:10px;
+    display:block;
+  }
+  .closing-principles .p-card .v{
+    font-family:"Source Serif 4",serif;
+    font-size:17px;
+    line-height:1.7;
+  }
+
+  footer{
+    padding:36px 0 56px;
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11.5px;
+    color:var(--ink-faint);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  @media(max-width:760px){
+    .cover h1{font-size:32px;}
+    .grid3,.grid2,.tiers,.closing-principles{grid-template-columns:1fr;}
+    .layer{grid-template-columns:40px 1fr;}
+    .layer .lowner{grid-column:1/-1;justify-self:start;margin-top:6px;}
+    .cover-meta{gap:24px;}
+    .toc{overflow-x:auto;flex-wrap:nowrap;}
+  }
+
+  @media print{
+    .cover::after,.cover::before{display:none;}
+    section{break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="page">
+    <p class="eyebrow">Proposal Report ― Discussion Summary</p>
+    <h1>大規模システム開発における<br>LLM活用のガバナンス設計</h1>
+    <p class="sub">
+      モノリス・オンプレミス・ウォーターフォールからクラウド・アジャイルへの移行期において、
+      LLMを安全かつ効果的に組み込むためのDelivery / Observation / Governanceアーキテクチャを、
+      3名のディスカッションメンバーによる検討を通じて統合した提言レポート。
+    </p>
+    <div class="cover-meta">
+      <div><div class="label">Members</div><div class="value">A ・ B ・ C</div></div>
+      <div><div class="label">Theme</div><div class="value">大規模システム開発におけるLLMの活用</div></div>
+      <div><div class="label">Output</div><div class="value">統合5層モデル ／ 三提言</div></div>
+      <div><div class="label">Status</div><div class="value">合意形成完了</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toc-band">
+  <div class="page">
+    <nav class="toc">
+      <a href="#overview">00 ／ 背景と全体像</a>
+      <a href="#model">01 ／ 統合5層モデル</a>
+      <a href="#proposal-a">02 ／ 提言A</a>
+      <a href="#proposal-b">03 ／ 提言B</a>
+      <a href="#proposal-c">04 ／ 提言C</a>
+      <a href="#issues">05 ／ 主要合意事項</a>
+      <a href="#reporting">06 ／ 経営報告フレーム</a>
+      <a href="#closing">07 ／ 結論</a>
+    </nav>
+  </div>
+</div>
+
+<div class="page">
+
+  <section id="overview">
+    <div class="section-head">
+      <p class="section-num">00 ― BACKGROUND</p>
+      <h2>背景と全体像</h2>
+      <p class="section-desc">
+        モノリス・オンプレミス・ウォーターフォール開発からクラウドコンピューティング・アジャイル開発への変容が進む中、
+        変化の受容と加速するデリバリーへの対応には生産性向上と開発全体の柔軟性・機敏さが不可欠である。
+        この文脈でLLMが果たす役割は大きいが、従来の決定論的なシステム構成技術と異なり、
+        LLMは確率論的に出力を行うため、これまでとは異なる観点での評価・注意が求められる。
+      </p>
+    </div>
+
+    <div class="grid3">
+      <div class="cell">
+        <span class="tag">Client Situation</span>
+        <p>クラウド・アジャイルへ移行を始めたチーム。スクラム・クラウド技術の知識はあるが実績はない。</p>
+        <p>経営層より「AI実績」が新プロジェクトの目標として掲げられ、仕様駆動開発(SDD)の推進が決定している。</p>
+      </div>
+      <div class="cell">
+        <span class="tag">Core Tension</span>
+        <p>LLMの確率的出力特性を、決定論的な統制がなじむ大規模システム開発の中でどう安全に扱うか。</p>
+        <p>「AI実績」という経営要求が、利用量偏重のVanity Metricsに陥るリスク。</p>
+      </div>
+      <div class="cell">
+        <span class="tag">Discussion Outcome</span>
+        <p>A・B・Cそれぞれの提言が、独立した施策ではなく相互接続する一つの統制システムへ収束した。</p>
+        <p>三提言を貫く原則:<br><em>Authorityは付与するものではなく、Evidenceによって獲得し、異常時には自動的に失うもの。</em></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="model">
+    <div class="section-head">
+      <p class="section-num">01 ― INTEGRATED MODEL</p>
+      <h2>統合5層モデル</h2>
+      <p class="section-desc">
+        A・B・C三者の提言は、ディスカッションを通じて以下の5層から成る一つの循環構造
+        ―― Software Delivery Control System ―― として統合された。
+        各層は特定の提言が中心的に担う一方、層をまたぐ接続によって全体が自己修正的なループを形成する。
+      </p>
+    </div>
+
+    <div class="diagram">
+      <p class="diagram-caption mono">FIG.1 ― INTENT-TO-EVIDENCE LOOP / 各層の主担当を色で示す</p>
+      <div class="layer-stack">
+        <div class="layer">
+          <span class="lnum mono">01</span>
+          <div><div class="lname">Intent Layer</div><div class="lsub mono">Business Intent / Requirement / Decision / ADR</div></div>
+          <span class="lowner owner-A">共通基盤</span>
+        </div>
+        <div class="connector"></div>
+        <div class="layer">
+          <span class="lnum mono">02</span>
+          <div><div class="lname">Specification Layer</div><div class="lsub mono">Executable Spec ／ Type System ／ Context Selection</div></div>
+          <span class="lowner owner-B">B ― Input</span>
+        </div>
+        <div class="connector"></div>
+        <div class="layer">
+          <span class="lnum mono">03</span>
+          <div><div class="lname">Reasoning / Generation Layer</div><div class="lsub mono">LLMによる分析・設計候補・Code・Test・Drift Candidate生成</div></div>
+          <span class="lowner owner-B">B ― Input</span>
+        </div>
+        <div class="connector"></div>
+        <div class="layer">
+          <span class="lnum mono">04</span>
+          <div><div class="lname">Control / Evidence Layer</div><div class="lsub mono">Build / Test / SAST / SCA / Policy / Contract 検証</div></div>
+          <span class="lowner owner-A">A ― Delivery</span>
+        </div>
+        <div class="connector"></div>
+        <div class="layer">
+          <span class="lnum mono">05</span>
+          <div><div class="lname">Delegation / Governance Layer</div><div class="lsub mono">Capability Registry ／ Trust Level ／ Promotion・Demotion</div></div>
+          <span class="lowner owner-C">C ― Governance</span>
+        </div>
+      </div>
+      <div class="loop-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M4 12a8 8 0 1 1 2.7 6M4 12V6M4 12h6"/></svg>
+        <span>Deployment → Telemetry / Communication Log → Drift Detection → Human Decision → Specification Update として Intent Layer へ還流する。</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="proposal-a">
+    <div class="section-head">
+      <p class="section-num">02 ― PROPOSAL A</p>
+      <h2>提言A</h2>
+    </div>
+
+    <div class="proposal" data-owner="A">
+      <div class="proposal-head">
+        <span class="letter mono">A</span>
+        <div class="proposal-titles">
+          <p class="arch-label">Delivery Architecture</p>
+          <h3>仕様駆動開発を「Spec-to-Evidence 統制Pipeline」として構築する</h3>
+          <p class="lede">
+            仕様駆動開発をAIコード生成手法としてではなく、要求から実装・検証・証跡までを一貫して追跡できる
+            Delivery Pipelineとして設計する。LLMには推論・生成を担わせ、決定論的な仕組みには判定・制約・実行を担わせる
+            ―― Reasoning PlaneとControl Planeの分離を基本原則とする。
+          </p>
+        </div>
+      </div>
+      <div class="proposal-body">
+        <h4>提言の目的</h4>
+        <ul class="plain">
+          <li>要求から実装までのTraceability(追跡可能性)を確保する</li>
+          <li>AI生成物の検証可能性を確保し、確率的出力をそのままシステムリスクにしない</li>
+          <li>クラウド・アジャイル経験不足に起因する事故を構造的に抑制する</li>
+          <li>AI Agentが持つ権限(Authority)を、影響範囲に応じて統制する</li>
+        </ul>
+
+        <h4>具体的マイルストーン</h4>
+        <table>
+          <tr><th>Phase</th><th>内容</th><th>完了基準</th></tr>
+          <tr><td class="mono">M0</td><td>Baseline測定(Lead Time / Change Failure Rate / MTTR等)</td><td>最低1 Sprint分のBaselineを取得済み</td></tr>
+          <tr><td class="mono">M1</td><td>AI利用境界の定義(Allow/Conditional/Deny)</td><td>IAM・CI/CD・Repository Ruleとして機械的に強制できていること</td></tr>
+          <tr><td class="mono">M2</td><td>SpecificationをSingle Source of Intentにする(Pilot機能)</td><td>任意のコード変更をSpecificationまで逆引きできること</td></tr>
+          <tr><td class="mono">M3</td><td>Deterministic Verification Gate構築(Test/SAST/SCA/Policy等)</td><td>AI生成・人間生成を問わず同一Gateを通過しなければMerge不可</td></tr>
+          <tr><td class="mono">M4</td><td>Spec-to-Evidence Pipeline完成、Agentic Developmentへ拡張</td><td>Requirement→Spec→Code→Test→PR→CI→Deployment→Metricsを一つのTraceとして追跡可能</td></tr>
+        </table>
+
+        <h4>具体的なネクストアクション</h4>
+        <ol class="actions">
+          <li>本番影響の小さいFeatureを1件選定する</li>
+          <li>Requirement → Specification → Acceptance Criteriaを作成する</li>
+          <li>AI Agentには専用BranchとDev環境のみを付与する</li>
+          <li>作業時間・修正回数・レビュー時間・Defect・AI介入箇所を記録する</li>
+          <li>「品質を落とさずLead TimeをX%短縮できた」という実績を最初のゴールに据える</li>
+        </ol>
+
+        <div class="principle-box">
+          「AIを使いこなすこと」を最初の課題にしない。<br>
+          最初に構築すべきは「AIが間違えても事故にならないSoftware Delivery System」である。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="proposal-b">
+    <div class="section-head">
+      <p class="section-num">03 ― PROPOSAL B</p>
+      <h2>提言B</h2>
+    </div>
+
+    <div class="proposal" data-owner="B">
+      <div class="proposal-head">
+        <span class="letter mono">B</span>
+        <div class="proposal-titles">
+          <p class="arch-label">Input &amp; Observation Architecture</p>
+          <h3>Executable Specとログ解析を組み込んだ「コンテキスト駆動型ガードレール」</h3>
+          <p class="lede">
+            仕様を対象の性質に応じたハイブリッド構造(Why=自然言語 / Business Rule=Gherkin / API=OpenAPI 等)で
+            Executable化し、LLMには最小十分なコンテキストのみを渡す。加えてChat・Ticket等の非構造化ログを
+            継続的に解析し、仕様とコードのDriftを人間の意思決定前に検知する。
+          </p>
+        </div>
+      </div>
+      <div class="proposal-body">
+        <h4>提言の目的とA案への補完ポイント</h4>
+        <ul class="plain">
+          <li>ウォーターフォール出身チームが巨大な自然言語仕様を投入し検証不能に陥るリスクを防ぐ</li>
+          <li>仕様タイプごとに適した表現手段を使い分けるSpecification Type Systemを定義する</li>
+          <li>Chat/Jira等のコミュニケーションログをDrift検知に活用し、仕様の形骸化を防ぐ</li>
+          <li>ガードレールを「自動テスト」から「多角的なVerification Evidence」へ拡張する</li>
+        </ul>
+
+        <h4>具体的マイルストーン</h4>
+        <table>
+          <tr><th>Phase</th><th>内容</th><th>完了基準</th></tr>
+          <tr><td class="mono">Phase 1</td><td>Specification Type Systemの定義とVerification Evidenceパイプライン構築</td><td>仕様Type定義済み・CI Guardrail稼働・AI Authority境界定義済み・Baseline計測済み</td></tr>
+          <tr><td class="mono">Phase 2</td><td>限定機能でのパイロット運用(仕様→テスト→コード生成サイクル)</td><td>Traceability成立・Acceptance CriteriaへのEvidence存在・Lead Time/Defect Escape悪化なし</td></tr>
+          <tr><td class="mono">Phase 3</td><td>スプリント標準プラクティスへの本格組み込み、Drift Detection拡大</td><td>Evidence-based Promotionにより次段階のCapabilityへ順次拡張</td></tr>
+        </table>
+
+        <h4>具体的なネクストアクション</h4>
+        <ol class="actions">
+          <li>仕様記述を対象別(Why/Business Rule/API/Data/Architecture等)に定型化するワークショップを実施</li>
+          <li>LLMへ渡すContextを「関連Requirement→Contract→ADR→Code→Test」のみに絞るMinimum Sufficient Context設計を導入</li>
+          <li>Slack/Jira/PR/Commit/CI/Incident/WorklogのログをLLMで横断解析し、Drift Candidateを抽出する仕組みを構築</li>
+          <li>Drift検知はPrecision/Recall双方で評価し、検出後は必ず人間の承認を経てSpecification更新に反映する</li>
+        </ol>
+
+        <h4>KPI(補正後)</h4>
+        <table>
+          <tr><th>指標</th><th>内容</th></tr>
+          <tr><td>Verification Evidence網羅率</td><td>Acceptance Criteriaに対して検証Evidenceが存在する割合(単純カバレッジ率から置換)</td></tr>
+          <tr><td>Critical Incident件数</td><td>「バグ流出ゼロ」ではなくSeverity別(Critical=0件、Major/Minorは閾値運用)</td></tr>
+          <tr><td>Drift検知 Precision / Recall</td><td>検知の的中率と見逃し率の双方を継続計測</td></tr>
+        </table>
+
+        <div class="principle-box">
+          Chat/Ticketは Signal であって Source of Truth ではない。<br>
+          Drift Candidate は必ず人間の意思決定を経てSpecification変更に反映する。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="proposal-c">
+    <div class="section-head">
+      <p class="section-num">04 ― PROPOSAL C</p>
+      <h2>提言C</h2>
+    </div>
+
+    <div class="proposal" data-owner="C">
+      <div class="proposal-head">
+        <span class="letter mono">C</span>
+        <div class="proposal-titles">
+          <p class="arch-label">Delegation / Governance Architecture</p>
+          <h3>Capability Registryによる段階的Authority委譲の構築</h3>
+          <p class="lede">
+            AI Agentへの権限付与を、システム単位・チーム単位の一括判断ではなく、Capability
+            (AIへ委譲可能な操作・判断・生成・分析の最小統制単位)ごとにTrust Level(T0〜T3)を
+            独立して付与・運用する。昇格はEvidenceに基づく人間判断、降格はSeverity別の自動トリガーとする。
+          </p>
+        </div>
+      </div>
+      <div class="proposal-body">
+        <h4>提言の目的</h4>
+        <ul class="plain">
+          <li>権限を一括で拡大・収縮させる粗い運用による重大事故を構造的に排除する</li>
+          <li>AのDeterministic Gate、BのExecutable Spec/Drift Detectionを「どこまでAIに委ねてよいか」を継続管理するGovernance機構として接続する</li>
+          <li>「AI実績」を利用量ではなく、安全に委譲できた業務領域の健全な成長と可逆性として説明可能にする</li>
+          <li>Drift Detectorのような監視機能自体もGovernance対象に含め、自己参照的に閉じた統制構造を実現する</li>
+        </ul>
+
+        <h4>Trust Level判定の考え方</h4>
+        <p style="font-size:14.5px;">
+          Impact(影響範囲) × Detectability(検出可能性) × Recoverability(回復可能性)による
+          <strong>Risk Classification</strong>に加え、Production IAM変更・本番データ破壊操作・
+          Security Policy bypass等については成熟度に関わらず上限Trust Levelを固定する
+          <strong>Explicit Deny Rule</strong>を設ける。単純な積算スコアとしては扱わない。
+        </p>
+        <table>
+          <tr><th>Trust Level</th><th>AIの役割</th><th>人間の関与</th></tr>
+          <tr><td class="mono">T1</td><td>提案・生成のみ</td><td>全変更を確認</td></tr>
+          <tr><td class="mono">T2</td><td>Branch上で変更・Test実行</td><td>Mergeを承認</td></tr>
+          <tr><td class="mono">T3</td><td>低リスク変更を自律実行</td><td>Exceptionのみ監督</td></tr>
+          <tr><td class="mono">T0 / Deny</td><td>実行不可(Explicit Deny)</td><td>常に人間が実行</td></tr>
+        </table>
+
+        <h4>具体的マイルストーン</h4>
+        <table>
+          <tr><th>Phase</th><th>内容</th><th>完了基準</th></tr>
+          <tr><td class="mono">M1</td><td>Capability Registry設計(初期Trust Levelは原則T0/T1)</td><td>パイロットScope内のCapabilityが100%登録。未登録Capabilityは Default Deny(Fail-Closed)</td></tr>
+          <tr><td class="mono">M2</td><td>判定式に基づくGate成熟度連動</td><td>Trust Level昇格条件が対応するVerification Evidence種別と明示的に紐付いていること</td></tr>
+          <tr><td class="mono">M3</td><td>Promotion/Demotionフロー実装(昇格=Human Decision、降格=Severity別自動トリガー)</td><td>Promotion実績1件以上、かつDemotion Drill(模擬降格演習)を実施済み</td></tr>
+          <tr><td class="mono">M4</td><td>Drift Detection等の監視Capability自体の組み込み</td><td>監視CapabilityのPrecision/Recallが定期計測され、閾値未達時に自動降格・Re-validationが機能すること</td></tr>
+        </table>
+
+        <h4>具体的なネクストアクション</h4>
+        <ol class="actions">
+          <li>パイロット機能に関わるCapability(コード生成/Test生成/Branch操作/Spec変更提案等)を洗い出し、Registry初版を作成する</li>
+          <li>各Capabilityについて Impact・Detectability・Recoverability を暫定評価し、初期Trust Levelを設定する</li>
+          <li>Critical/Major/Minorの降格トリガー一覧を確定し、CI/CD・監視基盤にアラートとして実装する</li>
+          <li>Drift Detection機能をCapability Registryへ登録し、Precision/Recallの計測方法を確立する</li>
+          <li>Capability Registryの状態(総数・Trust Level分布・昇格降格実績)を経営層向け報告に組み込む</li>
+        </ol>
+
+        <div class="principle-box">
+          Authorityは付与するものではなく、Evidenceによって獲得し、<br>
+          異常時には自動的に失うものとする。 ―― No AI Capability is outside Governance.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="issues">
+    <div class="section-head">
+      <p class="section-num">05 ― KEY AGREEMENTS</p>
+      <h2>ディスカウションにおける主要合意事項</h2>
+      <p class="section-desc">A・B・C間で提起され、合意に至った主要な論点を時系列で整理する。</p>
+    </div>
+    <div class="issues">
+      <table>
+        <tr><th>論点</th><th>結論</th><th></th></tr>
+        <tr>
+          <td>Specificationのexecutable化の範囲</td>
+          <td>単一フォーマットに統一せず、Why=自然言語 / Business Rule=Gherkin / API=OpenAPI 等のハイブリッド構造(Specification Type System)とする</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>Human Reviewをどこまで削減できるか</td>
+          <td>コードレビューは廃止せず、レビュー対象をRisk Basedに絞る。AI生成物であっても既存のSoftware Delivery Accountabilityに流す</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>Trust Levelを上げる条件</td>
+          <td>AIの性能ではなく、Impact × Detectability × Recoverability によるRisk Classification + Hard Constraint + Evidenceで判定。Capability単位で付与する</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>Communication LogのSpecification反映</td>
+          <td>Chat/Ticket → Drift Candidate → Human/Ruleによる Decision → Spec変更 → Test更新、という人間判断を挟むフローに限定する</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>Trust Levelの降格条件</td>
+          <td>昇格はHuman Decision、降格は原則Automatic。Critical即時／Major閾値超過／Minor監視強化のSeverity別設計とする</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>経営層の「AI実績」要求の置き換え</td>
+          <td>AI利用率ではなく「AI適用可能Capability数」および「Capability Registryの健全な成長と可逆性(昇格・降格双方の実績)」で説明する</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>Drift Detector自体の継続監視</td>
+          <td>監視機能自体も独立したCapabilityとしてRegistryに登録し、Precision/Recallに基づき自動降格・Re-validationを適用する</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>Capabilityの定義</td>
+          <td>「業務機能の最小単位」ではなく「AIへ委譲可能な操作・判断・生成・分析の最小統制単位」へ修正</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>未登録Capabilityの扱い</td>
+          <td>全Capabilityの網羅登録を完了基準とせず、Registry未登録CapabilityはDefault Deny(Fail-Closed原則)とする</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <section id="reporting">
+    <div class="section-head">
+      <p class="section-num">06 ― EXECUTIVE REPORTING</p>
+      <h2>経営層向け報告フレーム</h2>
+      <p class="section-desc">
+        「AI実績」の要求を、利用量ではなく安全なデリバリー能力の拡張として説明するため、
+        以下の3層構造で定期報告を行う。
+      </p>
+    </div>
+    <div class="tiers">
+      <div class="tier">
+        <p class="tier-eyebrow mono">01 ― Business Outcome</p>
+        <h4>デリバリー成果</h4>
+        <ul>
+          <li>Lead Time for Changes(Baseline対比の短縮率)</li>
+          <li>Change Failure Rate</li>
+          <li>Defect Escape Rate / Quality維持状況</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <p class="tier-eyebrow mono">02 ― AI Delegation</p>
+        <h4>委譲状況</h4>
+        <ul>
+          <li>Capability総数</li>
+          <li>Trust Level分布(T0〜T3)</li>
+          <li>Promotion / Demotion実績件数</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <p class="tier-eyebrow mono">03 ― Governance Health</p>
+        <h4>統制の健全性</h4>
+        <ul>
+          <li>Verification Evidence Coverage</li>
+          <li>Policy Violation件数</li>
+          <li>Drift Detection Coverage / Re-validation状況</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="closing" class="closing">
+    <div class="section-head">
+      <p class="section-num">07 ― CONCLUSION</p>
+      <h2>結論</h2>
+      <p class="section-desc">
+        A(Delivery Architecture)・B(Input &amp; Observation Architecture)・C(Delegation / Governance Architecture)の
+        三提言は、対立するものではなく、統合5層モデルとして完全に循環接続される一つのSoftware Delivery Control System
+        として収束した。今回対象となるチームに対しては、この統合モデルを土台に、まず本番影響の小さいパイロット機能1〜2件で
+        Intent→Spec→Generation→Verification→Governanceの全ループを実地検証することを推奨する。
+      </p>
+      <div class="closing-principles">
+        <div class="p-card">
+          <span class="k mono">Principle 01</span>
+          <div class="v">Authorityは付与するものではなく、Evidenceによって獲得し、異常時には自動的に失うものとする。</div>
+        </div>
+        <div class="p-card">
+          <span class="k mono">Principle 02</span>
+          <div class="v">No AI Capability is outside Governance. ―― Code Generatorであれ、Reviewerであれ、Drift Detectorであれ、統制の外に置かない。</div>
+        </div>
+      </div>
+      <p style="font-size:14.5px;">
+        AI導入の対象はDeveloper個人ではなく、Intent / Spec / Code / Test / CI/CD / IAM / Observability / Communication / Governance
+        を含むSoftware Delivery Systemそのものである。この前提に立つ限り、Executable Spec(B)、Deterministic Gate(A)、
+        Capability-based Trust(C)は矛盾なく一つのアーキテクチャとして成立する。
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="page" style="display:flex;justify-content:space-between;width:100%;flex-wrap:wrap;gap:10px;">
+    <span>PROPOSAL REPORT ― LLM in Large-Scale System Development</span>
+    <span>Discussion Members: A / B / C</span>
+  </div>
+</footer>
+
+</body>
+</html>

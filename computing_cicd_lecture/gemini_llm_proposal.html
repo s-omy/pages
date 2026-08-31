@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大規模システム開発におけるLLM活用プロポーザルレポート</title>
+<style>
+  :root {
+    --primary-color: #1e293b;
+    --secondary-color: #0f172a;
+    --accent-color: #2563eb;
+    --accent-light: #eff6ff;
+    --text-color: #334155;
+    --text-muted: #64748b;
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --success-color: #16a34a;
+    --warning-color: #d97706;
+    --danger-color: #dc2626;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.7;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: #ffffff;
+    padding: 3rem 2.5rem;
+    border-bottom: 4px solid var(--accent-color);
+  }
+
+  .header-tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+
+  header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+  }
+
+  header p {
+    color: #94a3b8;
+    font-size: 1rem;
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem 2.5rem;
+    background: #f1f5f9;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .meta-item strong {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .meta-item span {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+
+  .content {
+    padding: 2.5rem;
+  }
+
+  section {
+    margin-bottom: 3rem;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+    color: var(--primary-color);
+    border-left: 4px solid var(--accent-color);
+    padding-left: 0.8rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    color: var(--secondary-color);
+    margin: 1.5rem 0 0.75rem 0;
+  }
+
+  p {
+    margin-bottom: 1rem;
+  }
+
+  .principle-box {
+    background: var(--accent-light);
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .principle-box h3 {
+    margin-top: 0;
+    color: var(--accent-color);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.95rem;
+  }
+
+  th, td {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  th {
+    background-color: #f8fafc;
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+
+  tr:hover {
+    background-color: #f1f5f9;
+  }
+
+  .layer-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    background: #ffffff;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .layer-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .layer-title {
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .badge-primary { background: #dbeafe; color: #1e40af; }
+  .badge-success { background: #dcfce7; color: #166534; }
+  .badge-warning { background: #fef3c7; color: #92400e; }
+
+  ul, ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  li {
+    margin-bottom: 0.5rem;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    background: #f8fafc;
+  }
+
+  .action-btn {
+    display: inline-block;
+    background: var(--accent-color);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-top: 1rem;
+    cursor: pointer;
+    border: none;
+  }
+
+  .action-btn:hover {
+    background: #1d4ed8;
+  }
+
+  @media print {
+    body { padding: 0; background: white; }
+    .container { box-shadow: none; border: none; }
+    .action-btn { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <span class="header-tag">Executive Proposal Report</span>
+    <h1>大規模システム開発におけるLLM活用戦略<br><small style="font-size:1.1rem; font-weight:400; opacity:0.85;">クラウド・アジャイル移行チームのための「Software Delivery Control System」構築</small></h1>
+    <p>モノリス・ウォーターフォールからクラウド・アジャイルへの変革期における安全かつ高速なAI導入手法</p>
+  </header>
+
+  <div class="meta-grid">
+    <div class="meta-item">
+      <strong>対象組織</strong>
+      <span>クラウド・スクラム未経験チーム</span>
+    </div>
+    <div class="meta-item">
+      <strong>策定メンバー</strong>
+      <span>Member A, B, C & Facilitator</span>
+    </div>
+    <div class="meta-item">
+      <strong>コアモデル</strong>
+      <span>統合5層制御アーキテクチャ</span>
+    </div>
+    <div class="meta-item">
+      <strong>最終更新</strong>
+      <span>2026年8月29日</span>
+    </div>
+  </div>
+
+  <div class="content">
+    
+    <div class="principle-box">
+      <h3>アーキテクチャ基本原則</h3>
+      <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #1e3a8a;">
+        「Reasoning Plane（AI）と Control Plane（決定論的システム）の分離」
+      </p>
+      <p style="margin-bottom: 0;">
+        LLMには曖昧な情報の構造化と分析（考えさせること）を担当させ、決定論的な検証基盤（CI/CD、テスト、ポリシー解析）に判定・制約・実行を行わせる。確率論的な成果物は直接本番環境へ接続せず、必ず決定論的なGateを通じて検証する。
+      </p>
+    </div>
+
+    <section>
+      <h2>1. 現状整理とリスク分析</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>観点</th>
+            <th>現状認識・課題</th>
+            <th>LLM活用の方向性・対策</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>開発スタイルの変容</strong></td>
+            <td>ウォーターフォールの段階的変換から、アジャイルの短いフィードバックループへの変化。開発未成熟な状態で導入すると失敗を加速させる。</td>
+            <td>仕様・コード・テストの相互変換コストを下げ、ループを加速させる触媒として活用。変更バッチを最小化する。</td>
+          </tr>
+          <tr>
+            <td><strong>現場での活用事例</strong></td>
+            <td>コード補完、単体テスト生成、IaCテンプレート生成、PR一次レビュー等の個別適用が中心。</td>
+            <td>個別最適（Lines of Code）から、検証済み変更の提供速度（Validated Change / Lead Time）向上へシフト。</td>
+          </tr>
+          <tr>
+            <td><strong>インシデントとリスク</strong></td>
+            <td>LLMへの不可逆権限付与によるデータ削除、ハルシネーション起因のSupply Chain Attack（Slopsquatting）。</td>
+            <td>生成コードは信用せず「検証結果」を信用する。AIへの権限付与は最小権限の原則（Least Privilege）を適用。</td>
+          </tr>
+          <tr>
+            <td><strong>ミッションクリティカル適用</strong></td>
+            <td>非決定性と応答遅延から、本番実行時ロジックへの直接組み込みは高リスク。</td>
+            <td>SDLC内（仕様定義、テスト作成、静的解析、障害解析）におけるHuman-in-the-Loop前提の適用。</td>
+          </tr>
+          <tr>
+            <td><strong>コミュニケーションログ活用</strong></td>
+            <td>Chat, Ticket, Commit等に散在する非構造化データが活用されず、仕様の形骸化（Spec Drift）が発生。</td>
+            <td>LLMがログを横断分析し「仕様と実装の不一致（Drift Candidate）」を検出。意思決定は人間が行う。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>2. 統合モデル：「Software Delivery Control System」（5層構造）</h2>
+      <p>A・B・C 3名の提言を統合し、開発プロセス全体を閉ループで統制する5層アーキテクチャとして定義する。</p>
+
+      <div class="layer-card">
+        <div class="layer-title">
+          <span>1. Intent Layer（意図・要求層）</span>
+          <span class="badge badge-primary">Human Led</span>
+        </div>
+        <p>人間が「何を、なぜ作るか」を定義する層。Business Intent、Requirement、Architecture Decision Record (ADR) を含む。</p>
+      </div>
+
+      <div class="layer-card">
+        <div class="layer-title">
+          <span>2. Specification Layer（仕様構造化・観測層）</span>
+          <span class="badge badge-primary">Member B 担当</span>
+        </div>
+        <p>Intentを検証可能な形へ変換する層。自然言語（Why）、Gherkin（Business Rule）、OpenAPI（API Contract）等のハイブリッド構造（Type System）で管理。最小十分なコンテキスト（Minimum Sufficient Context）のみを抽出して抽出・供給する。</p>
+      </div>
+
+      <div class="layer-card">
+        <div class="layer-title">
+          <span>3. Reasoning / Generation Layer（AI思考・生成層）</span>
+          <span class="badge badge-warning">Probabilistic Plane</span>
+        </div>
+        <p>LLMが設計候補、コード、テスト、レビュー案、Drift Candidateを生成する層。この出力を直接事実（Fact）として扱わず、候補として次層へ渡す。</p>
+      </div>
+
+      <div class="layer-card">
+        <div class="layer-title">
+          <span>4. Control / Evidence Layer（決定論的検証層）</span>
+          <span class="badge badge-primary">Member A 担当</span>
+        </div>
+        <p>Build, Unit/Integration Test, SAST, SCA, Secret Scan, Policy as Code等の自動実行により、100%決定論的に Verification Evidence を作成・判定する層。</p>
+      </div>
+
+      <div class="layer-card">
+        <div class="layer-title">
+          <span>5. Delegation / Governance Layer（権限委譲・統制層）</span>
+          <span class="badge badge-primary">Member C 担当</span>
+        </div>
+        <p>Capability単位でTrust Level（T0〜T3）を管理。昇格はEvidenceに基づく人間判断（Promotion）、降格はSeverity（Critical/Major/Minor）別の自動降格（Automatic Downgrade）で制御する。</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>3. 段階的実装マイルストーン</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>フェーズ</th>
+            <th>マイルストーン概要</th>
+            <th>主な完了判定基準（Evidence）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Phase 0</strong></td>
+            <td>Baseline（現状値）の測定</td>
+            <td>過去プロジェクトまたは最低1スプリントの Lead Time, Change Failure Rate, Rework率 の取得完了。</td>
+          </tr>
+          <tr>
+            <td><strong>Phase 1</strong></td>
+            <td>Capability Registry設計と境界定義</td>
+            <td>全AI関与機能がCapability登録され、初期Trust Level（T0/T1）と権限境界がCI/CD・IAMで強制されていること。</td>
+          </tr>
+          <tr>
+            <td><strong>Phase 2</strong></td>
+            <td>Specification Type System & Verification Gate構築</td>
+            <td>Gherkin/OpenAPI化の確立。LLM生成物に対する自動テスト・セキュリティスキャン等のEvidence生成率100%。</td>
+          </tr>
+          <tr>
+            <td><strong>Phase 3</strong></td>
+            <td>Traceability Pipeline & Drift Detection稼働</td>
+            <td>要求からDeployまで1本のTraceで追跡可能。Chat/Jiraログから仕様不整合（Drift Candidate）を検知可能。</td>
+          </tr>
+          <tr>
+            <td><strong>Phase 4</strong></td>
+            <td>Delegation Governance運用と自己監視の組み込み</td>
+            <td>Drift Detector自身もCapabilityとして継続監視（Precision/Recall）。Severity別自動降格トリガーの検証完了。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>4. 経営層向け「AI実績」要求の置換モデル</h2>
+      <p>経営層が求める「AI利用率」「生成コード量」などの Vanity Metrics（虚栄の指標）を退け、デリバリー能力とガバナンス成熟度の持続的成長を示す**複合評価ビュー**へと翻訳・報告する。</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>報告軸</th>
+            <th>指標・提示内容</th>
+            <th>経営的価値</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Capability Registry 推移</strong></td>
+            <td>AI関与Capability総数、Trust Level（T0〜T3）分布状況</td>
+            <td>安全にAIへ委譲可能な業務領域の拡大範囲を視覚化</td>
+          </tr>
+          <tr>
+            <td><strong>Delegation 可逆性実績</strong></td>
+            <td>期間内の昇格件数、および自動降格（Demotion）の発生件数と要因</td>
+            <td>統制機構（Governance）が健全に機能していることの立証</td>
+          </tr>
+          <tr>
+            <td><strong>Delivery Capability 改善</strong></td>
+            <td>Lead Time for Changes（短縮率）、Change Failure Rate、Rework率</td>
+            <td>品質を維持・向上させた上での本質的な開発スピード向上</td>
+          </tr>
+          <tr>
+            <td><strong>Traceability 達成度</strong></td>
+            <td>Acceptance Criteria に対する Verification Evidence 網羅率</td>
+            <td>仕様と実装・テストの完全な透明性と説明責任の担保</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </div>
+
+  <footer>
+    <p>© 2026 Large-scale System Development LLM Proposal Group. All rights reserved.</p>
+    <button class="action-btn" onclick="window.print()">レポートを印刷 / PDF保存</button>
+  </footer>
+</div>
+
+</body>
+</html>

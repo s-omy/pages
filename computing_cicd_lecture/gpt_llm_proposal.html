@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>大規模システム開発におけるLLM活用 — 統合プロポーザル</title>
+<style>
+:root{
+  --bg:#f5f7fa;
+  --surface:#ffffff;
+  --surface-2:#eef2f6;
+  --text:#17202a;
+  --muted:#5d6b78;
+  --line:#d8e0e8;
+  --accent:#284b63;
+  --accent-2:#3c6e71;
+  --warn:#8a5a00;
+  --danger:#8b2e2e;
+  --ok:#2f6b4f;
+  --shadow:0 10px 28px rgba(20,35,50,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:linear-gradient(180deg,#f7f9fb 0,#f3f6f8 100%);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic UI",Meiryo,sans-serif;
+  line-height:1.8;
+}
+.wrapper{max-width:1180px;margin:0 auto;padding:36px 24px 72px}
+.hero{
+  background:linear-gradient(135deg,#213547,#2f566e 62%,#3c6e71);
+  color:#fff;border-radius:18px;padding:48px 50px;box-shadow:var(--shadow);margin-bottom:26px
+}
+.hero h1{font-size:2.25rem;line-height:1.35;margin:0 0 14px}
+.hero p{margin:0;color:rgba(255,255,255,.88);max-width:900px}
+.badges{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.badge{border:1px solid rgba(255,255,255,.28);padding:5px 10px;border-radius:999px;font-size:.86rem;background:rgba(255,255,255,.08)}
+.grid{display:grid;grid-template-columns:260px 1fr;gap:26px;align-items:start}
+nav{
+  position:sticky;top:18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow)
+}
+nav h3{margin:0 0 10px;font-size:1rem}
+nav a{display:block;color:var(--muted);text-decoration:none;padding:6px 8px;border-radius:8px;font-size:.92rem}
+nav a:hover{background:var(--surface-2);color:var(--accent)}
+main section{
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:30px 32px;margin-bottom:24px;box-shadow:var(--shadow)
+}
+h2{font-size:1.55rem;margin:0 0 18px;color:var(--accent)}
+h3{font-size:1.12rem;margin:24px 0 10px}
+h4{font-size:1rem;margin:18px 0 8px}
+p{margin:10px 0}
+blockquote{
+  margin:18px 0;padding:14px 18px;border-left:4px solid var(--accent-2);
+  background:#f4f8f8;border-radius:8px;color:#263945
+}
+.callout{padding:16px 18px;border:1px solid var(--line);border-radius:10px;background:#f8fafb;margin:14px 0}
+.callout strong{color:var(--accent)}
+.columns{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fbfcfd}
+.card h3{margin-top:0;color:var(--accent)}
+table{width:100%;border-collapse:collapse;margin:16px 0 6px;font-size:.93rem}
+th,td{border:1px solid var(--line);padding:10px 12px;vertical-align:top}
+th{background:#eef3f7;text-align:left;color:#243746}
+code{background:#eef2f5;padding:2px 5px;border-radius:5px}
+pre{
+  background:#17202a;color:#e8eef3;border-radius:10px;padding:18px;overflow:auto;
+  line-height:1.55;font-size:.91rem
+}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.kpi .card{background:#f9fbfc}
+.kpi strong{display:block;color:var(--accent-2);font-size:1.02rem;margin-bottom:6px}
+.small{font-size:.9rem;color:var(--muted)}
+.ok{color:var(--ok);font-weight:600}
+.warn{color:var(--warn);font-weight:600}
+.danger{color:var(--danger);font-weight:600}
+ul{padding-left:1.3rem}
+li{margin:4px 0}
+hr{border:0;border-top:1px solid var(--line);margin:26px 0}
+footer{color:var(--muted);font-size:.86rem;text-align:center;margin-top:26px}
+@media (max-width:920px){
+  .grid{grid-template-columns:1fr}
+  nav{position:relative;top:auto}
+  .columns,.kpi{grid-template-columns:1fr}
+  .hero{padding:34px 28px}
+  main section{padding:24px 20px}
+}
+@media print{
+  body{background:#fff}
+  nav{display:none}
+  .grid{display:block}
+  main section,.hero{box-shadow:none}
+  .wrapper{max-width:none;padding:0}
+  a{color:inherit}
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <header class="hero">
+    <h1>大規模システム開発におけるLLM活用<br>統合プロポーザル</h1>
+    <p>モノリス／オンプレミス／ウォーターフォールから、クラウド／アジャイル／仕様駆動開発へ移行するチームに対し、LLMを安全かつ実効的に組み込むためのSoftware Delivery Control Systemを提案する。</p>
+    <div class="badges">
+      <span class="badge">Spec-to-Evidence</span>
+      <span class="badge">Deterministic Gate</span>
+      <span class="badge">Specification & Context Engineering</span>
+      <span class="badge">Capability Registry</span>
+      <span class="badge">Delegation Governance</span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <nav>
+      <h3>目次</h3>
+      <a href="#executive">1. Executive Summary</a>
+      <a href="#context">2. 背景と現状認識</a>
+      <a href="#principles">3. 統合原則</a>
+      <a href="#model">4. 統合5層モデル</a>
+      <a href="#a">5. A提言</a>
+      <a href="#b">6. B提言</a>
+      <a href="#c">7. C提言</a>
+      <a href="#milestones">8. 統合ロードマップ</a>
+      <a href="#kpi">9. KPI / 経営報告</a>
+      <a href="#actions">10. Next Actions</a>
+      <a href="#conclusion">11. 結論</a>
+    </nav>
+
+    <main>
+      <section id="executive">
+        <h2>1. Executive Summary</h2>
+        <p>本ディスカッションでは、LLMを単なるコード生成ツールとして導入するのではなく、<strong>Software Delivery System全体へ組み込む</strong>ことが必要であるとの合意に至った。</p>
+        <blockquote>
+          <strong>LLMには考えさせ、決定論的な仕組みに判定・制約・実行させる。</strong>
+        </blockquote>
+        <p>そのため、要求・仕様・コード・テスト・CI/CD・IAM・Observability・コミュニケーションログ・Governanceを一体として扱い、LLMの確率的出力を決定論的な制御系の中へ封じ込める。</p>
+
+        <div class="columns">
+          <div class="card">
+            <h3>A：Delivery Architecture</h3>
+            <p>Spec-to-Evidence Pipeline、Deterministic Verification、Reasoning Plane / Control Plane分離。</p>
+          </div>
+          <div class="card">
+            <h3>B：Specification / Context / Observation</h3>
+            <p>Specification Type System、Minimum Sufficient Context、Communication Logを用いたDrift Detection。</p>
+          </div>
+          <div class="card">
+            <h3>C：Delegation Governance</h3>
+            <p>Capability Registry、Trust Level、Evidence-based Promotion、Automatic Demotion、Default Deny。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="context">
+        <h2>2. 背景と現状認識</h2>
+
+        <h3>2.1 開発モデル変容におけるLLMの役割</h3>
+        <p>従来のウォーターフォール型では、要求→要件→設計→実装→テスト→リリースを人間が段階的に変換してきた。一方、クラウド・アジャイル型では、要求→小さな仕様→実装→検証→デプロイ→観測→フィードバックという短いループが中心となる。</p>
+        <p>LLMの主価値はコード生成量ではなく、これら工程間の<strong>意味変換コストの削減</strong>にある。</p>
+
+        <h3>2.2 主な活用領域</h3>
+        <ul>
+          <li>Requirement / User Story / Acceptance Criteriaの構造化</li>
+          <li>コード、テスト、IaC、文書の生成</li>
+          <li>PRレビュー、ログ解析、設計レビュー支援</li>
+          <li>チケット・チャット・作業ログからのリスク／Drift候補抽出</li>
+          <li>障害初期解析、運用ログからの次アクション候補生成</li>
+        </ul>
+
+        <h3>2.3 LLM特有のリスク</h3>
+        <ul>
+          <li>ハルシネーションによる誤実装・不存在Dependency・脆弱Dependencyの混入</li>
+          <li>Prompt/Contextへの機密情報混入</li>
+          <li>ライセンス・Supply Chain・Security上の問題</li>
+          <li>Agentへ過大Authorityを付与することによる不可逆操作</li>
+          <li>監視AI自身のFalse Positive / False Negative</li>
+        </ul>
+      </section>
+
+      <section id="principles">
+        <h2>3. 三者合意による統合原則</h2>
+        <div class="callout"><strong>原則1：</strong> AI導入の対象はDeveloper個人ではなく、Software Delivery System全体である。</div>
+        <div class="callout"><strong>原則2：</strong> Reasoning Plane（AI）とControl Plane（決定論的システム）を分離する。</div>
+        <div class="callout"><strong>原則3：</strong> 生成物ではなくVerification Evidenceを信用する。</div>
+        <div class="callout"><strong>原則4：</strong> Specificationは巨大な単一文書ではなく、相互参照可能なSpecification Type Systemとして管理する。</div>
+        <div class="callout"><strong>原則5：</strong> LLMへ与えるContextはMaximum ContextではなくMinimum Sufficient Contextとする。</div>
+        <div class="callout"><strong>原則6：</strong> Chat / Ticket / LogはSignalでありSource of Truthではない。</div>
+        <div class="callout"><strong>原則7：</strong> AuthorityはEvidenceによって獲得し、異常時には原則自動的に失われる。</div>
+        <div class="callout"><strong>原則8：</strong> No AI Capability is outside Governance.</div>
+        <div class="callout"><strong>原則9：</strong> Registry未登録CapabilityはDefault Denyとする。</div>
+      </section>
+
+      <section id="model">
+        <h2>4. 統合5層モデル：Software Delivery Control System</h2>
+        <pre>1. Intent Layer
+   Business Intent / Requirement / Decision / ADR
+          ↓
+2. Specification & Context Layer
+   Gherkin / OpenAPI / Schema / Policy / ADR / Minimum Sufficient Context
+          ↓
+3. Reasoning / Generation Layer
+   LLM Analysis / Design / Code / Test / Review / Drift Candidate
+          ↓
+4. Control / Evidence Layer
+   Build / Test / SAST / SCA / Secret Scan / IaC Scan / Policy / Contract
+          ↓
+5. Delegation / Governance Layer
+   Capability Registry / Trust Level / Promotion / Demotion / Default Deny
+          ↓
+Execution / Deployment / Telemetry
+          ↓
+Observation / Drift Detection
+          ↓
+Human Decision → Specification Update → Re-validation</pre>
+
+        <p>Observation Layer自身もGovernance対象とする。Drift Detector、AI Reviewer、AI Security Analyzer等もCapability Registryに登録し、精度劣化時はTrust Levelを見直す。</p>
+      </section>
+
+      <section id="a">
+        <h2>5. A提言：Spec-to-Evidenceの統制されたDelivery Pipeline</h2>
+        <h3>提言</h3>
+        <p><strong>仕様駆動開発をAIコード生成手法ではなく、「Spec-to-Evidenceの統制されたDelivery Pipeline」として構築する。</strong></p>
+
+        <h3>目的</h3>
+        <ul>
+          <li>RequirementからProductionまでのTraceability確保</li>
+          <li>AI生成物の検証可能性確保</li>
+          <li>Cloud / Agile未経験による事故抑制</li>
+          <li>AI AgentのAuthority制御</li>
+          <li>AI導入成果をDelivery Capabilityとして測定</li>
+        </ul>
+
+        <h3>中核設計</h3>
+        <p>AIはReasoning / Generationを担当し、Merge・Deploy・Security・Policy判定などは決定論的Gateへ委譲する。AI生成コードも人間生成コードも同じ品質保証プロセスを通す。</p>
+      </section>
+
+      <section id="b">
+        <h2>6. B提言：Specification & Context Engineering + Drift Detection</h2>
+        <h3>提言</h3>
+        <p><strong>Executable SpecificationとVerification Evidenceを基盤とし、高品質なInput/Context供給とCommunication Log解析を組み込む。</strong></p>
+
+        <h3>Specification Type System</h3>
+        <table>
+          <thead>
+            <tr><th>仕様対象</th><th>推奨表現</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Why / Background</td><td>自然言語</td></tr>
+            <tr><td>Business Rule</td><td>Gherkin / Decision Table</td></tr>
+            <tr><td>API</td><td>OpenAPI</td></tr>
+            <tr><td>Event</td><td>AsyncAPI / Schema</td></tr>
+            <tr><td>Data</td><td>JSON Schema / DB Schema</td></tr>
+            <tr><td>Architecture</td><td>ADR</td></tr>
+            <tr><td>Security / Compliance</td><td>Policy / IAM Definition</td></tr>
+            <tr><td>SLO / Runtime</td><td>Observability Rule</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Drift Detection</h3>
+        <pre>Chat / Ticket / PR / Commit / Worklog
+        ↓
+LLM Drift Analysis
+        ↓
+Drift Candidate
+        ↓
+Human / Rule Decision
+        ↓
+Spec Update
+        ↓
+Verification Update</pre>
+
+        <p>Drift Detectionの評価はPrecisionとRecallの双方を継続監視し、特にFalse Negativeを重視する。Detector自身もCapabilityとしてGovernance対象に含める。</p>
+      </section>
+
+      <section id="c">
+        <h2>7. C提言：Capability RegistryによるDelegation Governance</h2>
+
+        <h3>Capability定義</h3>
+        <blockquote><strong>Capability = AIへ委譲可能な操作・判断・生成・分析の最小統制単位</strong></blockquote>
+
+        <h3>Trust Levelの考え方</h3>
+        <table>
+          <thead>
+            <tr><th>Level</th><th>例</th><th>Authority</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>T0</td><td>未承認 / Explicit Deny</td><td>実行不可</td></tr>
+            <tr><td>T1</td><td>提案・生成</td><td>Human確認必須</td></tr>
+            <tr><td>T2</td><td>Branch変更、限定的Test実行等</td><td>限定Authority</td></tr>
+            <tr><td>T3</td><td>低リスク・高検証可能・高回復可能な領域</td><td>条件付き自律実行</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Authority判定</h3>
+        <p>単純な数式ではなく、以下の4要素で判定する。</p>
+        <ul>
+          <li>Risk Assessment：Impact / Detectability / Recoverability</li>
+          <li>Mandatory Controls</li>
+          <li>Verification Evidence</li>
+          <li>Explicit Deny Rules / Trust Level上限</li>
+        </ul>
+
+        <p>Production IAM変更、本番データ破壊、Security Policy bypass、規制上Human Approval必須の操作等は、Gate成熟度に関係なく上限Authorityを固定する。</p>
+
+        <h3>Promotion / Demotion</h3>
+        <pre>Evidence蓄積
+   ↓
+Human Promotion
+   ↓
+Operation
+   ↓
+Anomaly / Policy Violation
+   ↓
+Automatic Demotion
+   ↓
+Investigation / Corrective Action
+   ↓
+Re-validation
+   ↓
+Human Re-promotion</pre>
+      </section>
+
+      <section id="milestones">
+        <h2>8. 統合ロードマップ</h2>
+        <table>
+          <thead>
+            <tr><th>Stage</th><th>主要アクション</th><th>完了基準</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>M0 Baseline</td>
+              <td>Lead Time、Change Failure Rate、Defect Escape、Review Time、Rework等を測定</td>
+              <td>比較可能なBaselineが存在する</td>
+            </tr>
+            <tr>
+              <td>M1 Registry & Policy</td>
+              <td>パイロットScopeのCapability登録、初期T0/T1、Default Deny、Explicit Deny定義</td>
+              <td>識別済みCapability 100%登録。未登録は実行不可</td>
+            </tr>
+            <tr>
+              <td>M2 Specification & Gate</td>
+              <td>Specification Type System、Context Selection、CI/CD Verification Evidence構築</td>
+              <td>Acceptance CriteriaとEvidenceがTrace可能</td>
+            </tr>
+            <tr>
+              <td>M3 Pilot Promotion</td>
+              <td>小規模機能でAI生成・Test・PR・Gate・Human承認を運用</td>
+              <td>対象CapabilityのEvidence-based Promotion実績</td>
+            </tr>
+            <tr>
+              <td>M4 Observation</td>
+              <td>Drift Detection、Precision/Recall監視、Detector自身をRegistry管理</td>
+              <td>精度劣化時のDemotion / Re-validationが機能</td>
+            </tr>
+            <tr>
+              <td>Continuous</td>
+              <td>Demotion Drill、再昇格、Trust Level再評価、Context/Spec更新</td>
+              <td>Governance Mechanismが継続検証される</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="kpi">
+        <h2>9. KPIと経営層向け「AI実績」の再定義</h2>
+        <p>AI利用率、Prompt数、生成コード行数を主要KPIとしない。AIによってDelivery Systemがどう改善したかを示す。</p>
+
+        <div class="kpi">
+          <div class="card">
+            <strong>Business Outcome</strong>
+            Lead Time / Deployment Frequency / Change Failure Rate / Defect Escape / Rework
+          </div>
+          <div class="card">
+            <strong>AI Delegation</strong>
+            Capability総数 / Trust Level分布 / Promotion / Demotion / Human Override
+          </div>
+          <div class="card">
+            <strong>Governance Health</strong>
+            Evidence Coverage / Policy Violation / Detection Coverage / Re-validation / Drift Precision-Recall
+          </div>
+        </div>
+
+        <h3>重要な評価原則</h3>
+        <ul>
+          <li>Lead Time短縮はBaseline取得後の改善仮説として扱い、固定値30%を絶対KGIにしない。</li>
+          <li>Speed改善時もChange Failure Rate / Defect Escape Rateが悪化していないことを条件とする。</li>
+          <li>「LLM起因バグゼロ」ではなく、Critical AI-related Incident 0、Major/MinorはSeverity別に追跡する。</li>
+          <li>Securityは「脆弱性検知率100%」ではなく、Mandatory Security Controls実行率100%、Critical Finding未解決0等で管理する。</li>
+          <li>降格件数単体をPositive KPIにせず、Severity、Root Cause、再発防止、再昇格Lead Timeと組み合わせる。</li>
+        </ul>
+      </section>
+
+      <section id="actions">
+        <h2>10. 具体的なNext Actions</h2>
+        <ol>
+          <li>本番影響の低い1〜2機能をパイロット対象に選定する。</li>
+          <li>対象機能に関わるCapabilityを洗い出し、Registry初版を作る。</li>
+          <li>Specification Type Systemと参照ルールを定義する。</li>
+          <li>LLMへ渡すMinimum Sufficient Contextの選択ルールを実装する。</li>
+          <li>CI/CDへUnit / Integration / Contract / SAST / SCA / Secret / IaC / Policy等のVerification Gateを組み込む。</li>
+          <li>CapabilityごとのRisk / Mandatory Controls / Evidence / Explicit Denyを定義する。</li>
+          <li>AI生成・人間生成に同一の品質保証プロセスを適用する。</li>
+          <li>Communication LogからDrift Candidateを抽出する仕組みを限定導入する。</li>
+          <li>Precision / RecallおよびFalse Negative監視を開始する。</li>
+          <li>Promotion / Demotion Drillを実施し、Authority縮小→再検証→Human再昇格を確認する。</li>
+          <li>経営向け報告をBusiness Outcome / AI Delegation / Governance Healthの3層で作成する。</li>
+        </ol>
+      </section>
+
+      <section id="conclusion">
+        <h2>11. 結論</h2>
+        <p>三者の提言は、最終的に一つの循環型アーキテクチャへ統合された。</p>
+        <blockquote>
+          <strong>Structured Intent → Controlled Generation → Deterministic Verification → Risk-based Delegation → Evidence → Observation → Feedback</strong>
+        </blockquote>
+
+        <p>このモデルでは、LLM導入は「AI Coding Toolを配布する施策」ではない。仕様、Context、コード、CI/CD、IAM、Observability、コミュニケーション、Governanceを一体化し、<strong>変更を小さく、速く、安全にProductionへ届ける能力そのものを高める</strong>取り組みとして位置づける。</p>
+
+        <p>最終的な成功条件は、AIの利用量ではなく、<strong>AIを含むSoftware Delivery Systemが、品質・速度・安全性・説明可能性を同時に向上させたか</strong>である。</p>
+      </section>
+    </main>
+  </div>
+
+  <footer>Generated from the A/B/C discussion on “大規模システム開発におけるLLMの活用”.</footer>
+</div>
+</body>
+</html>
