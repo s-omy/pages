@@ -1,15 +1,15 @@
 # VTuber / VSinger Daily Brief
 
-2026-10-23号の会話レポートを移植した、ビルド不要の静的HTML/CSSサイト。
+2026-10-20〜2026-10-23の4日分の会話レポートを移植した、ビルド不要の静的HTML/CSSサイト。
 現在のChatGPT Scheduledは変更せず、自動取得・更新も接続していません。
 
 ## ファイル
 
 - `index.html`: 最新号の全文
 - `archive/index.html`: 日付別一覧
-- `archive/2026-10-23.html`: 日付固定の全文
+- `archive/2026-10-20.html`〜`archive/2026-10-23.html`: 4日分の日付固定の全文
 - `assets/style.css`: 共通スタイル（モバイル・印刷対応）
-- `content/2026-10-23.md`: 取得した元レポート
+- `content/2026-10-20.md`〜`content/2026-10-23.md`: 取得した元レポート
 - `.nojekyll`: 静的ファイルとして公開するためのマーカー
 
 HTMLはJavaScript、外部フォント、外部ライブラリに依存せず閲覧できます。
