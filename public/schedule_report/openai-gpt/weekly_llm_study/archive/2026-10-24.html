@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="LLM・生成AI 技術インテリジェンス週報。モデル、Personal AI、仕様駆動開発の動向を学ぶ。"><title>2026-10-24 | LLM技術週報</title><link rel="stylesheet" href="../assets/style.css"></head><body><a class="skip" href="#main">本文へ</a><div class="top">WEEKLY INTELLIGENCE / OPENAI GPT</div><main id="main"><nav aria-label="レポートナビゲーション"><a href="../index.html">最新号</a><a href="../archive/index.html">週別アーカイブ</a><a href="../../index.html">レポート入口</a></nav><header><p class="eyebrow">MODEL / PERSONAL AI / DEVELOPMENT</p><h1>LLM・生成AI<br>技術インテリジェンス週報</h1><time datetime="2026-10-24">2026-10-24 発行</time><p class="lead">MuseとCometから見る、Personal AIと仕様駆動開発の現在。</p><p class="meta"><a class="source" href="../content/2026-10-24.md" download>元レポートをダウンロード（Markdown）</a> · <a href="../archive/2026-10-24.html">この号の固定ページ</a></p></header><aside class="notice">添付された過去週報の移植版です。本文は当時の記述を保持しており、事実・数値・提供状況の独立した再検証は行っていません。記事URLが添付に残っていない出典はその旨を表示しています。検索画像・出典アイコンは本文表示から省き、元Markdownに保存しています。</aside><details class="toc"><summary>この号の目次（23項目）</summary><ol><li><a href="#section-1">1. Executive Summary</a></li><li><a href="#section-2">2. 今週の重要トピック Top 7</a></li><li><a href="#section-3">3. フロンティアモデルと周辺技術</a></li><li><a href="#section-4">3.1 今週の主役：Meta Muse family</a></li><li><a href="#section-6">3.2 Muse Glimmer 30Bは別方向で重要</a></li><li><a href="#section-8">3.3 Google：Gemini 4 Argon</a></li><li><a href="#section-9">4. エンドユーザー向けAI：今週もっとも重視すべき領域</a></li><li><a href="#section-10">4.1 Meta Muse — 今週最大のニュース</a></li><li><a href="#section-11">4.2 Museが示すPersonal AIの次の形</a></li><li><a href="#section-12">5. Perplexity / Comet — 現在の利用価値をどう見るか</a></li><li><a href="#section-14">5.1 Perplexity自体も「検索」から離れ始めている</a></li><li><a href="#section-15">6. 仕様駆動開発 — 今週から「学習コーナー」として扱う</a></li><li><a href="#section-16">今週のテーマ：「Specを書くこと」が目的ではない</a></li><li><a href="#section-17">7. 今週のSDD参考文献</a></li><li><a href="#section-22">8. 今週のSDD実践事例：AMOREPACIFIC</a></li><li><a href="#section-23">9. ガバナンス — 今週はここだけ押さえる</a></li><li><a href="#section-24">10. AI企業の動向</a></li><li><a href="#section-29">11. 法制度・政策</a></li><li><a href="#section-34">12. 今週の「自分で試すなら」</a></li><li><a href="#section-38">13. 今週の学習優先順位</a></li><li><a href="#section-39">14. 今週の見取り図</a></li><li><a href="#section-40">15. 今後の週報での重点配分</a></li><li><a href="#section-41">今週の結論</a></li></ol></details><article><p><strong>Vol. 9 Revised｜2026年10月24日（土）</strong>  <br><strong>主対象：2026年10月17日〜10月24日</strong>  <br><strong>補足範囲：直近1〜3か月</strong></p>
-<h2 id="section-1">1. Executive Summary</h2>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="LLM・生成AI 技術インテリジェンス週報。モデル、Personal AI、仕様駆動開発の動向を学ぶ。"><title>2026-10-24 | LLM技術週報</title><link rel="stylesheet" href="../assets/style.css"></head><body><a class="skip" href="#main">本文へ</a><div class="top">WEEKLY INTELLIGENCE / OPENAI GPT</div><main id="main"><nav aria-label="レポートナビゲーション"><a href="../index.html">最新号</a><a href="../archive/index.html">週別アーカイブ</a><a href="../../index.html">レポート入口</a></nav><header><p class="eyebrow">MODEL / PERSONAL AI / DEVELOPMENT</p><h1>LLM・生成AI<br>技術インテリジェンス週報</h1><time datetime="2026-10-24">2026-10-24 発行</time><p class="lead">MuseとCometから見る、Personal AIと仕様駆動開発の現在。</p><p class="meta"><a class="source" href="../content/2026-10-24.md" download>元レポートをダウンロード（Markdown）</a> · <a href="../archive/2026-10-24.html">この号の固定ページ</a></p></header><aside class="notice">添付された過去週報の移植版です。本文は当時の記述を保持しており、事実・数値・提供状況の独立した再検証は行っていません。記事URLが添付に残っていない出典はその旨を表示しています。検索画像・出典アイコンは本文表示から省き、元Markdownに保存しています。</aside><details class="toc"><summary>この号の目次（23項目）</summary><ol><li><a href="#section-1">1. Executive Summary</a></li><li><a href="#section-2">2. 今週の重要トピック Top 7</a></li><li><a href="#section-3">3. フロンティアモデルと周辺技術</a></li><li><a href="#section-4">3.1 今週の主役：Meta Muse family</a></li><li><a href="#section-6">3.2 Muse Glimmer 30Bは別方向で重要</a></li><li><a href="#section-8">3.3 Google：Gemini 4 Argon</a></li><li><a href="#section-9">4. エンドユーザー向けAI：今週もっとも重視すべき領域</a></li><li><a href="#section-10">4.1 Meta Muse — 今週最大のニュース</a></li><li><a href="#section-11">4.2 Museが示すPersonal AIの次の形</a></li><li><a href="#section-12">5. Perplexity / Comet — 現在の利用価値をどう見るか</a></li><li><a href="#section-14">5.1 Perplexity自体も「検索」から離れ始めている</a></li><li><a href="#section-15">6. 仕様駆動開発 — 今週から「学習コーナー」として扱う</a></li><li><a href="#section-16">今週のテーマ：「Specを書くこと」が目的ではない</a></li><li><a href="#section-17">7. 今週のSDD参考文献</a></li><li><a href="#section-22">8. 今週のSDD実践事例：AMOREPACIFIC</a></li><li><a href="#section-23">9. ガバナンス — 今週はここだけ押さえる</a></li><li><a href="#section-24">10. AI企業の動向</a></li><li><a href="#section-29">11. 法制度・政策</a></li><li><a href="#section-34">12. 今週の「自分で試すなら」</a></li><li><a href="#section-38">13. 今週の学習優先順位</a></li><li><a href="#section-39">14. 今週の見取り図</a></li><li><a href="#section-40">15. 今後の週報での重点配分</a></li><li><a href="#section-41">今週の結論</a></li></ol></details><article><p class="issue-marker"><strong>Vol. 9 Revised｜2026年10月24日（土）</strong>  <br><strong>主対象：2026年10月17日〜10月24日</strong>  <br><strong>補足範囲：直近1〜3か月</strong></p>
+<h2 id="section-1" class="chapter"><span class="chapter-number">1.</span> Executive Summary</h2>
 <p>今週を象徴するニュースは、Metaの<strong>Muse日本上陸</strong>です。</p>
 <p>Metaは10月23日、パーソナルAIエージェント「Muse」を日本で提供開始しました。北米以外では日本が最初の提供地域です。Museは質問に回答するChatbotではなく、Gmail、Google Calendar、Instagramなどと接続し、Webブラウザ操作、フォーム入力、旅行予約などをユーザーの代わりに進める<strong>Personal AI Agent</strong>として設計されています。日本ではメルカリ、マネーフォワード ME、チケットぴあとの連携も進めるとしています。 <a href="https://about.fb.com/ja/news/2026/10/muse-personal-ai-agent-launches-in-japan/?utm_source=chatgpt.com" rel="noreferrer">Facebook</a></p>
 <p>これは単に「Meta版ChatGPTが出た」というニュースではありません。</p>
@@ -23,11 +23,11 @@
 <blockquote><strong>「どのLLMが一番賢いか」だけでなく、「どのAIが自分のWeb・アプリ・ファイル・予定・行動へ最も自然に接続されるか」が、個人利用では重要な競争軸になった</strong></blockquote>
 <p>という点です。</p>
 <hr>
-<h2 id="section-2">2. 今週の重要トピック Top 7</h2>
+<h2 id="section-2" class="chapter"><span class="chapter-number">2.</span> 今週の重要トピック Top 7</h2>
 <div class="table-wrap"><table><thead><tr><th scope="col">順位</th><th scope="col">トピック</th><th scope="col">分野</th><th scope="col">今週の意味</th></tr></thead><tbody><tr><td>1</td><td>Meta Muse 日本提供開始</td><td>Personal AI</td><td>Personal Agent競争が日本でも本格化</td></tr><tr><td>2</td><td>Muse Wonder / Glimmer</td><td>Frontier Model</td><td>Metaがモデル競争へ本格復帰</td></tr><tr><td>3</td><td>Comet Assistant刷新</td><td>AI Browser</td><td>Browser Agentが検索から実作業へ</td></tr><tr><td>4</td><td>Perplexity Computer Local</td><td>Personal AI</td><td>Cloud＋Local Hybridの重要性上昇</td></tr><tr><td>5</td><td>Google Agent Compute Engine</td><td>Agent基盤</td><td>Agent専用Runtimeが独立カテゴリ化</td></tr><tr><td>6</td><td>SDDの実証研究が増加</td><td>AI駆動開発</td><td>「流行」から検証フェーズへ</td></tr><tr><td>7</td><td>日本・EUのAI制度整備</td><td>社会・政策</td><td>AI普及を前提に制度実装フェーズへ</td></tr></tbody></table></div>
 <hr>
-<h2 id="section-3">3. フロンティアモデルと周辺技術</h2>
-<h2 id="section-4">3.1 今週の主役：Meta Muse family</h2>
+<h2 id="section-3" class="chapter"><span class="chapter-number">3.</span> フロンティアモデルと周辺技術</h2>
+<h2 id="section-4" class="subheading">3.1 今週の主役：Meta Muse family</h2>
 <h3 id="section-5">Muse Wonder / Wonder Full</h3>
 <p>MetaはMuse Wonderシリーズを「personal and professional agentic tasks」向けの最上位モデルとして位置付けています。</p>
 <p>重要なのはベンチマーク数値以上に、</p>
@@ -41,7 +41,7 @@
 <p>がFrontier Model評価の中心へ入っています。</p>
 <p>これはGPT、Claude、Geminiにも共通する流れです。</p>
 <hr>
-<h2 id="section-6">3.2 Muse Glimmer 30Bは別方向で重要</h2>
+<h2 id="section-6" class="subheading">3.2 Muse Glimmer 30Bは別方向で重要</h2>
 <p>10月19日にMetaが公開したMuse Glimmer 30Bは、今回の週報ではかなり注目したい技術です。</p>
 <p>30Bという比較的小規模なモデルで、</p>
 <ul><li>Text + Image入力</li><li>Multi-step reasoning</li><li>Tool use</li><li>Failure recovery</li><li>100以上の言語</li><li>約4bit量子化</li><li>Consumer GPUでのローカル実行</li></ul>
@@ -59,15 +59,15 @@
 <p>というHybrid AIがかなり現実的になる可能性があります。</p>
 <p>PerplexityもComputerのLocal実行を強化しており、これは偶然ではありません。 <a href="https://www.perplexity.ai/en-GB/hub/blog?utm_source=chatgpt.com" rel="noreferrer">Perplexity AI</a></p>
 <hr>
-<h2 id="section-8">3.3 Google：Gemini 4 Argon</h2>
+<h2 id="section-8" class="subheading">3.3 Google：Gemini 4 Argon</h2>
 <p>直近7日より少し前ですが、10月14日にGemini 4 Argonが一般ユーザー向けGeminiアプリへ入りました。</p>
 <p>Google AI Pro / Ultraで利用可能で、長時間タスク、複雑なWorkflow、Codingを重点強化しています。Google AntigravityのCoding interfaceもGemini Macアプリへ統合されました。 <a href="https://blog.google/intl/ja-jp/company-news/technology/gemini-4-argon-gemini/?utm_source=chatgpt.com" rel="noreferrer">blog.google</a></p>
 <p>これも「モデル単体」より、</p>
 <p><strong>Gemini + Workspace + Agent + Coding</strong></p>
 <p>を一つのPersonal/Professional AIとして売る流れです。</p>
 <hr>
-<h2 id="section-9">4. エンドユーザー向けAI：今週もっとも重視すべき領域</h2>
-<h2 id="section-10">4.1 Meta Muse — 今週最大のニュース</h2>
+<h2 id="section-9" class="chapter"><span class="chapter-number">4.</span> エンドユーザー向けAI：今週もっとも重視すべき領域</h2>
+<h2 id="section-10" class="subheading">4.1 Meta Muse — 今週最大のニュース</h2>
 <p>Museの特徴は、「AIに質問する」のではなく、</p>
 <blockquote><strong>やってほしいことを渡す</strong></blockquote>
 <p>ことを前提にしている点です。</p>
@@ -82,7 +82,7 @@
 <p><strong>「ユーザーの代わりに安全に操作できるComputer」</strong></p>
 <p>まで必要だからです。</p>
 <hr>
-<h2 id="section-11">4.2 Museが示すPersonal AIの次の形</h2>
+<h2 id="section-11" class="subheading">4.2 Museが示すPersonal AIの次の形</h2>
 <p>Museでは、</p>
 <ul><li>Memory</li><li>Browser</li><li>Connectors</li><li>Background Task</li><li>Approval</li><li>Notifications</li></ul>
 <p>が一つになっています。 <a href="https://about.fb.com/ja/news/2026/10/muse-personal-ai-agent-launches-in-japan/?utm_source=chatgpt.com" rel="noreferrer">Facebook</a></p>
@@ -101,7 +101,7 @@ User Approval</code></pre>
 <p>です。</p>
 <p>これは今後「Personal AI Agent」の基本形になる可能性があります。</p>
 <hr>
-<h2 id="section-12">5. Perplexity / Comet — 現在の利用価値をどう見るか</h2>
+<h2 id="section-12" class="chapter"><span class="chapter-number">5.</span> Perplexity / Comet — 現在の利用価値をどう見るか</h2>
 <p>最近Cometの利用率が上がっているのであれば、これはかなり理にかなっています。</p>
 <p>CometはChatGPTやClaudeとは入口が違います。</p>
 <p><strong>ChatGPT / Claude</strong><br>→ 「AIに相談する」が起点</p>
@@ -116,7 +116,7 @@ User Approval</code></pre>
 <p>を一つの操作系へ統合する方向へ進んでいます。</p>
 <p>これは従来ブラウザとの大きな違いです。</p>
 <hr>
-<h2 id="section-14">5.1 Perplexity自体も「検索」から離れ始めている</h2>
+<h2 id="section-14" class="subheading">5.1 Perplexity自体も「検索」から離れ始めている</h2>
 <p>現在のPerplexityのChangelogを見ると、</p>
 <ul><li>Computer</li><li>Automations</li><li>Skills</li><li>Projects</li><li>Brain</li><li>Hybrid Compute</li><li>Local Computer</li><li>Agent API</li></ul>
 <p>がかなり中心になっています。 <a href="https://www.perplexity.ai/changelog?utm_source=chatgpt.com" rel="noreferrer">Perplexity AI</a></p>
@@ -124,13 +124,13 @@ User Approval</code></pre>
 <blockquote><strong>Research-centric Personal AI Platform</strong></blockquote>
 <p>と考える方が実態に近くなっています。</p>
 <hr>
-<h2 id="section-15">6. 仕様駆動開発 — 今週から「学習コーナー」として扱う</h2>
+<h2 id="section-15" class="chapter"><span class="chapter-number">6.</span> 仕様駆動開発 — 今週から「学習コーナー」として扱う</h2>
 <p>これまでの週報では、いきなりControl PlaneやEvidence Gateの話まで進みすぎていました。</p>
 <p>今後は、</p>
 <blockquote><strong>「SDDとは何なのか」→「何が効くのか」→「どの程度使うべきか」</strong></blockquote>
 <p>の順に学べる形にします。</p>
 <hr>
-<h2 id="section-16">今週のテーマ：「Specを書くこと」が目的ではない</h2>
+<h2 id="section-16" class="subheading">今週のテーマ：「Specを書くこと」が目的ではない</h2>
 <p>Specification-Driven Developmentの本質は、</p>
 <blockquote>AIに大量の仕様書を読ませる</blockquote>
 <p>ことではありません。</p>
@@ -139,7 +139,7 @@ User Approval</code></pre>
 <p>の途中で生じる「意味の損失」を減らす方法としてSDDを説明しています。 <a href="https://developer.microsoft.com/blog/spec-driven-development-ai-native-engineering/?utm_source=chatgpt.com" rel="noreferrer">Microsoft Developer</a></p>
 <p>この理解から始めることを推奨します。</p>
 <hr>
-<h2 id="section-17">7. 今週のSDD参考文献</h2>
+<h2 id="section-17" class="chapter"><span class="chapter-number">7.</span> 今週のSDD参考文献</h2>
 <p>読む順番を付けると、次の4本がよいです。</p>
 <h3 id="section-18">① 入門：Microsoft — Spec-Driven Development: A Spec-First Approach</h3>
 <p>最初に読むならこれです。</p>
@@ -178,7 +178,7 @@ User Approval</code></pre>
 <blockquote><strong>複雑・長期・複数制約がある作業ほどSpecを厚くする</strong></blockquote>
 <p>のが現実的です。</p>
 <hr>
-<h2 id="section-22">8. 今週のSDD実践事例：AMOREPACIFIC</h2>
+<h2 id="section-22" class="chapter"><span class="chapter-number">8.</span> 今週のSDD実践事例：AMOREPACIFIC</h2>
 <p>今週公開されたAWSのAMOREPACIFIC事例はかなり面白いです。</p>
 <p>SAP ECC環境でKiro Spec Modeを使い、</p>
 <p><strong>Jira Ticket → Kiro Spec → Code → FS/TS documentation</strong></p>
@@ -192,7 +192,7 @@ User Approval</code></pre>
 <p>という点で参考になります。</p>
 <p>Java＋業務共通Frameworkという環境にも近い発想です。</p>
 <hr>
-<h2 id="section-23">9. ガバナンス — 今週はここだけ押さえる</h2>
+<h2 id="section-23" class="chapter"><span class="chapter-number">9.</span> ガバナンス — 今週はここだけ押さえる</h2>
 <p>ガバナンスを軽くするのではなく、<strong>理解しやすい粒度にします。</strong></p>
 <p>今週覚えることは一つです。</p>
 <blockquote><strong>Agentに「やってはいけない」と伝えることと、実際にできなくすることは別。</strong></blockquote>
@@ -203,7 +203,7 @@ User Approval</code></pre>
 <p><strong>AI SafetyはPrompt Engineeringだけでは成立しない</strong></p>
 <p>ということだけ今週は押さえておけば十分です。</p>
 <hr>
-<h2 id="section-24">10. AI企業の動向</h2>
+<h2 id="section-24" class="chapter"><span class="chapter-number">10.</span> AI企業の動向</h2>
 <h3 id="section-25">Meta：本格的にAIプラットフォーム企業へ</h3>
 <p>今週最も評価を更新すべき企業です。</p>
 <p>Metaは現在、</p>
@@ -232,7 +232,7 @@ User Approval</code></pre>
 <p>Anthropicは10月18日、株式の一部を拠出する<strong>Anthropic Public Benefit Fund</strong>を発表しました。 <a href="https://www.anthropic.com/news?cam=claude&amp;utm_source=chatgpt.com" rel="noreferrer">Anthropic</a></p>
 <p>モデル性能競争だけでなく、「Frontier AI企業として社会的責任をどう制度化するか」という企業ガバナンスも競争領域になっています。</p>
 <hr>
-<h2 id="section-29">11. 法制度・政策</h2>
+<h2 id="section-29" class="chapter"><span class="chapter-number">11.</span> 法制度・政策</h2>
 <h3 id="section-30">日本：AI・デジタル改革推進会議が始動</h3>
 <p>日本では10月22日、政府の<strong>AI・デジタル改革推進会議</strong>が初開催されました。</p>
 <p>政府は年末までに、</p>
@@ -264,7 +264,7 @@ User Approval</code></pre>
 <p><strong>「AI Actの運用が始まった」</strong></p>
 <p>というフェーズです。</p>
 <hr>
-<h2 id="section-34">12. 今週の「自分で試すなら」</h2>
+<h2 id="section-34" class="chapter chapter-practical"><span class="chapter-number">12.</span> 今週の「自分で試すなら」</h2>
 <p>今回は実運用基盤を構築するPoCではなく、利用者として試せるものを中心にします。</p>
 <h3 id="section-35">① Museを触る</h3>
 <p>日本提供が始まったばかりなので、まず、</p>
@@ -291,7 +291,7 @@ User Approval</code></pre>
 <p>「普通にCodexへ依頼する場合と何が違うか」</p>
 <p>を見るだけで十分です。</p>
 <hr>
-<h2 id="section-38">13. 今週の学習優先順位</h2>
+<h2 id="section-38" class="chapter"><span class="chapter-number">13.</span> 今週の学習優先順位</h2>
 <p>今週ならこの順です。</p>
 <p><strong>1. Meta Museを実際に触る</strong>  <br>Personal AI Agentがどこまで来たかを体感する。</p>
 <p><strong>2. MicrosoftのSDD入門を読む</strong>  <br>SDDを高度なGovernance論より先に、Requirements Engineeringの延長として理解する。 <a href="https://developer.microsoft.com/blog/spec-driven-development-ai-native-engineering/?utm_source=chatgpt.com" rel="noreferrer">Microsoft Developer</a></p>
@@ -299,7 +299,7 @@ User Approval</code></pre>
 <p><strong>4. Muse Glimmer 30Bについて読む</strong>  <br>Local AgentがPersonal AIにどう入るかを見る。 <a href="https://ai.meta.com/research/publications/muse-glimmer-30b-an-on-device-agentic-model?utm_source=chatgpt.com" rel="noreferrer">AI Meta</a></p>
 <p><strong>5. 日本のAI・デジタル改革推進会議を把握する</strong>  <br>国内の制度・社会実装の方向を見る。 <a href="https://www.digital.go.jp/councils/ai_digital?utm_source=chatgpt.com" rel="noreferrer">デジタル庁</a></p>
 <hr>
-<h2 id="section-39">14. 今週の見取り図</h2>
+<h2 id="section-39" class="chapter"><span class="chapter-number">14.</span> 今週の見取り図</h2>
 <p>現在のPersonal AI市場は、かなり面白い形になっています。</p>
 <pre><code>                   Personal AI
                        │
@@ -332,12 +332,12 @@ Connectors
 Secure Runtime</code></pre>
 <p>の組み合わせ競争になっています。</p>
 <hr>
-<h2 id="section-40">15. 今後の週報での重点配分</h2>
+<h2 id="section-40" class="chapter"><span class="chapter-number">15.</span> 今後の週報での重点配分</h2>
 <p>今回の再構成を踏まえると、今後は概ね次の比重が適切だと考えます。</p>
 <div class="table-wrap"><table><thead><tr><th scope="col">領域</th><th scope="col">比重</th></tr></thead><tbody><tr><td>Frontier Model・モデル技術</td><td><strong>25%</strong></td></tr><tr><td>Personal / Consumer AI</td><td><strong>25%</strong></td></tr><tr><td>AI駆動開発・SDD・学習資料</td><td><strong>25%</strong></td></tr><tr><td>企業・市場・法制度</td><td><strong>15%</strong></td></tr><tr><td>Governance / Runtime / Security</td><td><strong>10%</strong></td></tr></tbody></table></div>
 <p>もちろん重要インシデントがあればGovernance比率は一時的に上げます。</p>
 <hr>
-<h2 id="section-41">今週の結論</h2>
+<h2 id="section-41" class="chapter chapter-practical">今週の結論</h2>
 <p>これまでのレポートは、AIを「企業システムへ安全に導入するエンジニア」の視点に寄りすぎていました。</p>
 <p>今週のMuseは、その視点だけでは拾い切れない重要な変化です。</p>
 <p>現在生成AIで最も大きな動きの一つは、</p>
