@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大規模システム開発におけるLLM活用 ― 提言レポート</title>
+<link href="../assets/fonts-computing.css" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f5f6f3;
+    --surface:#ffffff;
+    --ink:#161b22;
+    --ink-soft:#4a5160;
+    --ink-faint:#7c8291;
+    --line:#dde1e6;
+    --line-strong:#c3c9d1;
+    --indigo:#35406b;
+    --indigo-tint:#edeff6;
+    --teal:#1f6f63;
+    --teal-tint:#e9f3f0;
+    --amber:#b4692a;
+    --amber-tint:#faf1e7;
+    --radius:2px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Inter",-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    font-size:16px;
+    line-height:1.8;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:"IBM Plex Mono",monospace;}
+  a{color:var(--indigo);}
+
+  /* ---------- Layout shell ---------- */
+  .page{max-width:960px;margin:0 auto;padding:0 32px;}
+
+  /* ---------- Cover ---------- */
+  .cover{
+    background:linear-gradient(180deg,#181d27 0%,#242b3a 100%);
+    color:#f2f3f0;
+    padding:96px 0 72px;
+    position:relative;
+    overflow:hidden;
+  }
+  .cover::after{
+    content:"";
+    position:absolute;
+    right:-120px;top:-120px;
+    width:420px;height:420px;
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:50%;
+  }
+  .cover::before{
+    content:"";
+    position:absolute;
+    right:-40px;top:-40px;
+    width:280px;height:280px;
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:50%;
+  }
+  .cover .page{position:relative;z-index:1;}
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12.5px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:#9aa4c4;
+    margin:0 0 22px;
+  }
+  .cover h1{
+    font-family:"Source Serif 4",serif;
+    font-weight:600;
+    font-size:44px;
+    line-height:1.35;
+    margin:0 0 20px;
+    max-width:680px;
+  }
+  .cover .sub{
+    font-size:16.5px;
+    color:#c7cbd8;
+    max-width:600px;
+    margin:0 0 44px;
+    line-height:1.9;
+  }
+  .cover-meta{
+    display:flex;
+    gap:48px;
+    flex-wrap:wrap;
+    padding-top:32px;
+    border-top:1px solid rgba(255,255,255,0.14);
+  }
+  .cover-meta div{min-width:120px;}
+  .cover-meta .label{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:#8890a8;
+    margin-bottom:6px;
+  }
+  .cover-meta .value{font-size:15px;color:#eef0f5;}
+
+  /* ---------- TOC ---------- */
+  .toc-band{
+    background:var(--surface);
+    border-bottom:1px solid var(--line);
+  }
+  .toc{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 0;
+    padding:20px 0;
+  }
+  .toc a{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    text-decoration:none;
+    padding:6px 16px;
+    border-right:1px solid var(--line);
+  }
+  .toc a:first-child{padding-left:0;}
+  .toc a:last-child{border-right:none;}
+  .toc a:hover{color:var(--indigo);}
+
+  /* ---------- Sections ---------- */
+  section{padding:64px 0;border-bottom:1px solid var(--line);}
+  section:last-of-type{border-bottom:none;}
+  .section-head{margin-bottom:36px;}
+  .section-num{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:12.5px;
+    letter-spacing:0.14em;
+    color:var(--indigo);
+    margin:0 0 10px;
+  }
+  h2{
+    font-family:"Source Serif 4",serif;
+    font-weight:600;
+    font-size:30px;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .section-desc{color:var(--ink-soft);font-size:15px;max-width:640px;margin:14px 0 0;}
+  h3{
+    font-family:"Source Serif 4",serif;
+    font-weight:600;
+    font-size:21px;
+    margin:0 0 12px;
+  }
+  h4{
+    font-size:14.5px;
+    font-weight:600;
+    margin:28px 0 10px;
+    color:var(--ink);
+  }
+  p{margin:0 0 16px;color:var(--ink-soft);}
+  strong{color:var(--ink);font-weight:600;}
+
+  /* ---------- Synthesis cards ---------- */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:8px;}
+  .grid3 .cell{background:var(--surface);padding:22px 20px;}
+  .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:8px;}
+  .grid2 .cell{background:var(--surface);padding:22px 20px;}
+  .cell .tag{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    margin-bottom:8px;
+    display:block;
+  }
+  .cell p{font-size:14.5px;margin:0;color:var(--ink-soft);}
+  .cell p:not(:last-child){margin-bottom:10px;}
+
+  /* ---------- Diagram (signature element) ---------- */
+  .diagram{
+    background:#12161f;
+    border-radius:var(--radius);
+    padding:52px 40px 44px;
+    margin:32px 0 8px;
+    position:relative;
+  }
+  .diagram-caption{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    color:#7b84a0;
+    letter-spacing:0.06em;
+    text-align:center;
+    margin-bottom:34px;
+  }
+  .layer-stack{display:flex;flex-direction:column;gap:0;max-width:620px;margin:0 auto;}
+  .layer{
+    display:grid;
+    grid-template-columns:64px 1fr auto;
+    align-items:center;
+    gap:18px;
+    padding:16px 20px;
+    background:#1a2030;
+    border:1px solid #2a3346;
+    color:#e7e9f0;
+  }
+  .layer + .layer{margin-top:0;}
+  .layer .lnum{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    color:#6d7694;
+  }
+  .layer .lname{font-family:"Source Serif 4",serif;font-size:17px;font-weight:600;}
+  .layer .lsub{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:#8891ac;margin-top:3px;}
+  .layer .lowner{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:10.5px;
+    letter-spacing:0.06em;
+    padding:4px 9px;
+    border-radius:100px;
+    white-space:nowrap;
+  }
+  .owner-A{background:rgba(53,64,107,0.35);color:#a9b3e0;border:1px solid rgba(169,179,224,0.35);}
+  .owner-B{background:rgba(31,111,99,0.3);color:#8fd6c6;border:1px solid rgba(143,214,198,0.35);}
+  .owner-C{background:rgba(180,105,42,0.28);color:#e6b183;border:1px solid rgba(230,177,131,0.35);}
+  .owner-common{background:rgba(255,255,255,0.06);color:#c7cbd8;border:1px solid rgba(255,255,255,0.22);}
+  .connector{
+    height:20px;
+    margin-left:32px;
+    border-left:1px dashed #3a4360;
+  }
+  .loop-note{
+    max-width:620px;
+    margin:26px auto 0;
+    padding-top:22px;
+    border-top:1px dashed #2a3346;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .loop-note svg{flex:none;width:18px;height:18px;stroke:#8fd6c6;}
+  .loop-note span{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:#a7b0cc;line-height:1.7;}
+
+  /* ---------- Proposal blocks ---------- */
+  .proposal{
+    border:1px solid var(--line);
+    background:var(--surface);
+    margin-top:8px;
+  }
+  .proposal-head{
+    padding:26px 28px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .proposal-head .letter{
+    font-family:"Source Serif 4",serif;
+    font-size:38px;
+    font-weight:600;
+    line-height:1;
+  }
+  .proposal[data-owner="A"] .letter{color:var(--indigo);}
+  .proposal[data-owner="B"] .letter{color:var(--teal);}
+  .proposal[data-owner="C"] .letter{color:var(--amber);}
+  .proposal-titles{flex:1;min-width:260px;}
+  .arch-label{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    margin-bottom:6px;
+  }
+  .proposal-titles h3{margin-bottom:8px;}
+  .proposal-titles .lede{font-size:14.5px;color:var(--ink-soft);margin:0;max-width:520px;}
+  .proposal-body{padding:0 28px 28px;}
+  .proposal[data-owner="A"] .proposal-head{border-top:3px solid var(--indigo);}
+  .proposal[data-owner="B"] .proposal-head{border-top:3px solid var(--teal);}
+  .proposal[data-owner="C"] .proposal-head{border-top:3px solid var(--amber);}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0 20px;font-size:14px;}
+  th,td{text-align:left;padding:10px 14px;border:1px solid var(--line);vertical-align:top;}
+  th{
+    background:var(--indigo-tint);
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--indigo);
+    font-weight:600;
+  }
+  td{color:var(--ink-soft);}
+  .proposal[data-owner="B"] th{background:var(--teal-tint);color:var(--teal);}
+  .proposal[data-owner="C"] th{background:var(--amber-tint);color:var(--amber);}
+
+  ol.actions, ul.plain{margin:0 0 18px;padding-left:22px;color:var(--ink-soft);font-size:14.5px;}
+  ol.actions li, ul.plain li{margin-bottom:8px;}
+
+  .principle-box{
+    border:1px solid var(--line-strong);
+    background:var(--indigo-tint);
+    padding:20px 24px;
+    margin:18px 0;
+    font-family:"Source Serif 4",serif;
+    font-size:17px;
+    font-style:italic;
+    color:var(--indigo);
+    line-height:1.7;
+  }
+  .proposal[data-owner="C"] .principle-box{background:var(--amber-tint);color:var(--amber);}
+
+  /* ---------- Issue log table ---------- */
+  .issues{
+    margin-top:8px;
+    background:var(--surface);
+    border:1px solid var(--line);
+  }
+  .issues table{font-size:13.5px;margin:0;}
+  .issues th,.issues td{border-left:none;border-right:none;}
+  .issues tr:last-child td{border-bottom:none;}
+  .issues th:nth-child(1),.issues td:nth-child(1){width:28%;}
+  .issues th:nth-child(3),.issues td:nth-child(3){width:84px;text-align:center;}
+  .refs{margin-top:8px;background:var(--surface);border:1px solid var(--line);overflow-x:auto;}
+  .refs table{font-size:13px;margin:0;min-width:640px;}
+  .refs th,.refs td{border-left:none;border-right:none;}
+  .refs tr:last-child td{border-bottom:none;}
+  .note{font-size:12.5px;color:var(--ink-faint);margin:10px 0 0;}
+  .status{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11px;
+    padding:2px 8px;
+    border-radius:100px;
+    background:var(--teal-tint);
+    color:var(--teal);
+    white-space:nowrap;
+  }
+
+  /* ---------- Reporting tiers ---------- */
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:8px;}
+  .tier{background:var(--surface);padding:24px 22px;}
+  .tier .tier-eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;}
+  .tier:nth-child(1) .tier-eyebrow{color:var(--indigo);}
+  .tier:nth-child(2) .tier-eyebrow{color:var(--amber);}
+  .tier:nth-child(3) .tier-eyebrow{color:var(--teal);}
+  .tier h4{margin-top:0;font-size:15.5px;}
+  .tier ul{margin:0;padding-left:18px;font-size:13.5px;color:var(--ink-soft);}
+  .tier ul li{margin-bottom:6px;}
+
+  /* ---------- Closing ---------- */
+  section.closing{
+    background:var(--surface);
+    border:1px solid var(--line);
+    padding:56px 40px;
+    margin:40px 0 48px;
+  }
+  .closing .section-desc{max-width:none;}
+  .closing-principles{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:24px 0 32px;}
+  .closing-principles .p-card{
+    border:1px solid var(--line-strong);
+    padding:22px 24px;
+    background:#12161f;
+    color:#e7e9f0;
+  }
+  .closing-principles .p-card .k{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:#8fd6c6;
+    margin-bottom:10px;
+    display:block;
+  }
+  .closing-principles .p-card .v{
+    font-family:"Source Serif 4",serif;
+    font-size:17px;
+    line-height:1.7;
+  }
+
+  footer{
+    padding:36px 0 56px;
+    font-family:"IBM Plex Mono",monospace;
+    font-size:11.5px;
+    color:var(--ink-faint);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  @media(max-width:760px){
+    .cover h1{font-size:32px;}
+    .grid3,.grid2,.tiers,.closing-principles{grid-template-columns:1fr;}
+    .layer{grid-template-columns:40px 1fr;}
+    .layer .lowner{grid-column:1/-1;justify-self:start;margin-top:6px;}
+    .cover-meta{gap:24px;}
+    .toc{overflow-x:auto;flex-wrap:nowrap;}
+    section.closing{padding:40px 20px;}
+  }
+
+  @media print{
+    .cover::after,.cover::before{display:none;}
+    section{break-inside:avoid;}
+  }
+td a{word-break:break-all;}
+
+  .back-link{display:inline-block;margin:0 0 20px;font-size:.88rem;line-height:1.4;color:#c7cbd8;text-decoration:none;border-bottom:1px solid transparent;}
+  .back-link:hover,.back-link:focus-visible{color:#ffffff;border-bottom-color:currentColor;}
+  .to-top{position:fixed;right:24px;bottom:24px;z-index:1000;width:48px;height:48px;padding:0;border:none;border-radius:50%;
+    background:var(--indigo);color:#fff;font-size:1.4rem;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);
+    opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,visibility .2s,transform .2s;}
+  .to-top.is-visible{opacity:1;visibility:visible;pointer-events:auto;}
+  .to-top:hover{transform:translateY(-2px);}
+  .to-top:focus-visible{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 0 5px var(--indigo);}
+  @media (prefers-reduced-motion:reduce){.to-top{transition:none;}}
+  @media print{.back-link,.to-top{display:none !important;}}
+</style>
+</head>
+<body>
+
+<div class="cover" id="page-header">
+  <div class="page">
+    <a class="back-link" href="https://pages.oro-9.org/computing_cicd_lecture/">← 提言レポート一覧へ戻る</a>
+    <p class="eyebrow">提言レポート ― ディスカッション要約</p>
+    <h1>大規模システム開発における<br>LLM活用のガバナンス設計</h1>
+    <p class="sub">
+      モノリス・オンプレミス・ウォーターフォールからクラウド・アジャイルへの移行期において、
+      LLMを安全かつ効果的に組み込むためのデリバリー・観測・ガバナンスのアーキテクチャを、
+      3名のディスカッションメンバーによる検討を通じて統合した提言レポート。
+    </p>
+    <div class="cover-meta">
+      <div><div class="label">メンバー</div><div class="value">OpenAI.GPT<br>Anthropic.Claude<br>Google Gemini</div></div>
+      <div><div class="label">テーマ</div><div class="value">大規模システム開発におけるLLMの活用</div></div>
+      <div><div class="label">成果物</div><div class="value">統合5層モデル ／ 三提言</div></div>
+      <div><div class="label">状況</div><div class="value">合意形成完了</div></div>
+      <div><div class="label">改訂</div><div class="value">初版 2026年8月29日<br>改訂 2026年11月（調査基準日 11月1日）</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toc-band">
+  <div class="page">
+    <nav class="toc">
+      <a href="#overview">00 ／ 背景と全体像</a>
+      <a href="#model">01 ／ 統合5層モデル</a>
+      <a href="#proposal-a">02 ／ OpenAI.GPT提言</a>
+      <a href="#proposal-b">03 ／ Anthropic.Claude提言</a>
+      <a href="#proposal-c">04 ／ Google Gemini提言</a>
+      <a href="#issues">05 ／ 主要合意事項</a>
+      <a href="#reporting">06 ／ 経営層向け報告フレーム</a>
+      <a href="#agentic">07 ／ エージェント実務導入</a>
+      <a href="#standards">08 ／ 標準化動向</a>
+      <a href="#regulation">09 ／ 規制動向</a>
+      <a href="#closing">10 ／ 結論</a>
+      <a href="#sources">付録 ／ 出典一覧</a>
+    </nav>
+  </div>
+</div>
+
+<div class="page">
+
+  <section id="overview">
+    <div class="section-head">
+      <p class="section-num">00 ― 背景</p>
+      <h2>背景と全体像</h2>
+      <p class="section-desc">
+        モノリス・オンプレミス・ウォーターフォール開発からクラウドコンピューティング・アジャイル開発への変容が進む中、
+        変化の受容と加速するデリバリーへの対応には生産性向上と開発全体の柔軟性・機敏さが不可欠である。
+        この文脈でLLMが果たす役割は大きいが、従来の決定論的なシステム構成技術と異なり、
+        LLMは確率論的に出力を行うため、これまでとは異なる観点での評価・注意が求められる。
+      </p>
+    </div>
+
+    <div class="grid3">
+      <div class="cell">
+        <span class="tag">対象チームの状況</span>
+        <p>クラウド・アジャイルへ移行を始めたチーム。スクラム・クラウド技術の知識はあるが実績はない。</p>
+        <p>経営層より「AI実績」が新プロジェクトの目標として掲げられ、仕様駆動開発（SDD）の推進が決定している。</p>
+      </div>
+      <div class="cell">
+        <span class="tag">中核的な論点</span>
+        <p>LLMの確率的出力特性を、決定論的な統制がなじむ大規模システム開発の中でどう安全に扱うか。</p>
+        <p>「AI実績」という経営要求が、利用量偏重の虚栄の指標に陥るリスク。</p>
+        <p>エージェント型開発が実務導入の段階にあり、ハーネスコントロールとオーケストレーションの統制が論点になっている（2026年11月改訂）。</p>
+      </div>
+      <div class="cell">
+        <span class="tag">ディスカッションの成果</span>
+        <p>OpenAI.GPT・Anthropic.Claude・Google Geminiそれぞれの提言が、独立した施策ではなく相互接続する一つの統制システムへ収束した。</p>
+        <p>三提言を貫く原則:<br><em>権限（Authority）は付与するものではなく、エビデンスによって獲得し、異常時には原則として自動的に失うもの。</em></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="model">
+    <div class="section-head">
+      <p class="section-num">01 ― 統合モデル</p>
+      <h2>統合5層モデル</h2>
+      <p class="section-desc">
+        OpenAI.GPT・Anthropic.Claude・Google Geminiの三者の提言は、ディスカッションを通じて以下の5層から成る一つの循環構造
+        ―― ソフトウェアデリバリー統制システム（Software Delivery Control System）―― として統合された。
+        第2・4・5層は特定のメンバーの提言が中心的に担う一方、層をまたぐ接続によって全体が自己修正的なループを形成する。
+      </p>
+    </div>
+
+    <div class="diagram">
+      <p class="diagram-caption mono">図1 ― 意図からエビデンスまでのループ ／ 各層の主担当を色で示す</p>
+      <div class="layer-stack">
+        <div class="layer">
+          <span class="lnum mono">01</span>
+          <div><div class="lname">意図層</div><div class="lsub mono">ビジネス意図 ／ 要求 ／ 意思決定 ／ ADR</div></div>
+          <span class="lowner owner-common">共通基盤</span>
+        </div>
+        <div class="connector"></div>
+        <div class="layer">
+          <span class="lnum mono">02</span>
+          <div><div class="lname">仕様・コンテキスト層</div><div class="lsub mono">実行可能な仕様 ／ 仕様タイプ体系 ／ コンテキスト選定</div></div>
+          <span class="lowner owner-B">Anthropic.Claude ― 入力</span>
+        </div>
+        <div class="connector"></div>
+        <div class="layer">
+          <span class="lnum mono">03</span>
+          <div><div class="lname">推論・生成層</div><div class="lsub mono">LLMによる分析・設計候補・コード・テスト・仕様乖離候補の生成</div></div>
+          <span class="lowner owner-common">共通基盤</span>
+        </div>
+        <div class="connector"></div>
+        <div class="layer">
+          <span class="lnum mono">04</span>
+          <div><div class="lname">制御・エビデンス層</div><div class="lsub mono">ビルド ／ テスト ／ SAST ／ SCA ／ ポリシー ／ 契約の検証</div></div>
+          <span class="lowner owner-A">OpenAI.GPT ― デリバリー</span>
+        </div>
+        <div class="connector"></div>
+        <div class="layer">
+          <span class="lnum mono">05</span>
+          <div><div class="lname">委譲・ガバナンス層</div><div class="lsub mono">ケイパビリティレジストリ ／ 信頼レベル ／ 昇格・降格</div></div>
+          <span class="lowner owner-C">Google Gemini ― ガバナンス</span>
+        </div>
+      </div>
+      <div class="loop-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M4 12a8 8 0 1 1 2.7 6M4 12V6M4 12h6"/></svg>
+        <span>デプロイ → テレメトリ／コミュニケーションログ → 仕様乖離検知 → 人間の意思決定 → 仕様更新 として意図層へ還流する。</span>
+      </div>
+    </div>
+    <p class="section-desc" style="margin-top:20px;max-width:none;">第4層の制御・エビデンス層には、CI/CDによる事後検証に加えて、エージェントが動作する時点の統制（ハーネスコントロール）を含める（07章）。</p>
+  </section>
+
+  <section id="proposal-a">
+    <div class="section-head">
+      <p class="section-num">02 ― OpenAI.GPT</p>
+      <h2>OpenAI.GPT提言</h2>
+    </div>
+
+    <div class="proposal" data-owner="A">
+      <div class="proposal-head">
+        <span class="letter mono">A</span>
+        <div class="proposal-titles">
+          <p class="arch-label">デリバリーアーキテクチャ</p>
+          <h3>仕様からエビデンスまでを統制するデリバリーパイプラインを構築する</h3>
+          <p class="lede">
+            仕様駆動開発をAIコード生成手法としてではなく、要求から実装・検証・エビデンスまでを一貫して追跡できる
+            デリバリーパイプラインとして設計する。LLMには推論・生成を担わせ、決定論的な仕組みには判定・制約・実行を担わせる
+            ―― 推論面と制御面の分離を基本原則とする。
+          </p>
+        </div>
+      </div>
+      <div class="proposal-body">
+        <h4>提言の目的</h4>
+        <ul class="plain">
+          <li>要求から実装までのトレーサビリティ（追跡可能性）を確保する</li>
+          <li>AI生成物の検証可能性を確保し、確率的出力をそのままシステムリスクにしない</li>
+          <li>クラウド・アジャイル経験不足に起因する事故を構造的に抑制する</li>
+          <li>AIエージェントが持つ権限を、影響範囲に応じて、エージェントハーネスのコントロールを含めて統制する</li>
+        </ul>
+
+        <h4>具体的マイルストーン <span class="mono" style="font-weight:400;font-size:11.5px;color:var(--ink-faint);">※フェーズ番号は本提言内の区切り</span></h4>
+        <table>
+          <tr><th>フェーズ</th><th>内容</th><th>完了基準</th></tr>
+          <tr><td class="mono">フェーズ0</td><td>ベースライン測定（DORAの5指標：変更リードタイム／デプロイ頻度／失敗デプロイ復旧時間／変更失敗率／デプロイ手戻り率、および補助指標：欠陥流出率／レビュー時間）</td><td>計測開始の最低期間（1スプリント）を満たし、観測期間の延長要否と未観測項目が記録されている</td></tr>
+          <tr><td class="mono">フェーズ1</td><td>AI利用境界の定義（許可／条件付き許可／拒否）</td><td>IAM・CI/CD・リポジトリルール・エージェントハーネスの権限設定として機械的に強制できていること</td></tr>
+          <tr><td class="mono">フェーズ2</td><td>仕様を意図の単一情報源（SSoT）にする（パイロット機能）</td><td>任意のコード変更を仕様まで逆引きできること</td></tr>
+          <tr><td class="mono">フェーズ3</td><td>決定論的な検証ゲート構築（テスト／SAST／SCA／ポリシー等）</td><td>AI生成・人間生成を問わず同一ゲートを通過しなければマージ不可</td></tr>
+          <tr><td class="mono">フェーズ4</td><td>仕様からエビデンスまでのパイプライン完成、ハーネスコントロールとオーケストレーションの導入（複数エージェント運用）</td><td>要求→仕様→コード→テスト→PR→CI→デプロイ→メトリクスを一つのトレースとして追跡可能</td></tr>
+        </table>
+
+        <h4>具体的な次のアクション</h4>
+        <ol class="actions">
+          <li>本番影響の小さい機能を1件選定する</li>
+          <li>要求 → 仕様 → 受け入れ基準を作成する</li>
+          <li>AIエージェントには専用ブランチと開発環境のみを付与し、エージェントハーネスの権限モード・ツール許可・サンドボックスで機械的に強制する</li>
+          <li>作業時間・修正回数・レビュー時間・欠陥・AI介入箇所を記録する</li>
+          <li>「品質（変更失敗率・欠陥流出率）を悪化させずに、変更リードタイムをベースライン対比で短縮できた」という実績を最初の改善仮説とし、短縮率の目標値はベースライン取得後に設定する</li>
+          <li>AIが提案した依存パッケージの検証（存在・公開元・ロックファイル）を、ハーネスのフックとCIの両方に実装する</li>
+        </ol>
+
+        <div class="principle-box">
+          「AIを使いこなすこと」を最初の課題にしない。<br>
+          最初に構築すべきは「AIが間違えても事故にならないソフトウェアデリバリーシステム」である。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="proposal-b">
+    <div class="section-head">
+      <p class="section-num">03 ― Anthropic.Claude</p>
+      <h2>Anthropic.Claude提言</h2>
+    </div>
+
+    <div class="proposal" data-owner="B">
+      <div class="proposal-head">
+        <span class="letter mono">B</span>
+        <div class="proposal-titles">
+          <p class="arch-label">仕様・コンテキスト・観測アーキテクチャ</p>
+          <h3>仕様・コンテキストエンジニアリングと仕様乖離検知</h3>
+          <p class="lede">
+            仕様を対象の性質に応じたハイブリッド構造（背景=自然言語 / ビジネスルール=Gherkin / API=OpenAPI 等）で
+            実行可能にし、LLMには最小十分なコンテキストのみを渡す。加えてチャット・チケット等の非構造化ログを
+            継続的に解析し、仕様とコードの乖離を人間の意思決定前に検知する。
+            「コンテキスト駆動型ガードレール」として、ガードレールを自動テストから多角的な検証エビデンスへ拡張する提言である。
+          </p>
+        </div>
+      </div>
+      <div class="proposal-body">
+        <h4>提言の目的とOpenAI.GPT提言への補完ポイント</h4>
+        <ul class="plain">
+          <li>ウォーターフォール出身チームが巨大な自然言語仕様を投入し検証不能に陥るリスクを防ぐ</li>
+          <li>仕様タイプごとに適した表現手段を使い分ける仕様タイプ体系を定義する</li>
+          <li>チャット／Jira等のコミュニケーションログを仕様乖離検知に活用し、仕様の形骸化を防ぐ</li>
+          <li>ガードレールを「自動テスト」から「多角的な検証エビデンス」へ拡張する</li>
+        </ul>
+
+        <h4>具体的マイルストーン <span class="mono" style="font-weight:400;font-size:11.5px;color:var(--ink-faint);">※フェーズ番号は本提言内の区切り</span></h4>
+        <table>
+          <tr><th>フェーズ</th><th>内容</th><th>完了基準</th></tr>
+          <tr><td class="mono">フェーズ1</td><td>仕様タイプ体系の定義と検証エビデンスパイプライン構築</td><td>仕様タイプ定義済み・CIガードレール稼働・AI権限境界定義済み・ベースライン計測済み</td></tr>
+          <tr><td class="mono">フェーズ2</td><td>限定機能でのパイロット運用（仕様→テスト→コード生成サイクル）</td><td>トレーサビリティ成立・受け入れ基準へのエビデンス存在・変更リードタイム／変更失敗率／欠陥流出率の悪化なし</td></tr>
+          <tr><td class="mono">フェーズ3</td><td>スプリント標準プラクティスへの本格組み込み、仕様乖離検知の拡大</td><td>エビデンスに基づく昇格により次段階のケイパビリティへ順次拡張</td></tr>
+        </table>
+
+        <h4>具体的な次のアクション</h4>
+        <ol class="actions">
+          <li>仕様記述を対象別（背景／ビジネスルール／API／データ／アーキテクチャ等）に定型化するワークショップを実施</li>
+          <li>Gherkinはステップ定義とアサーションへ、OpenAPIは契約テスト・バリデーションへ接続する。仕様形式の選定と検証への接続は別の完了条件とする。自然言語の目的やADR等、自動検証しない仕様については、人間のレビュー方法と責任者を定める。</li>
+          <li>LLMへ渡すコンテキストを「関連要求→契約→ADR→コード→テスト」のみに絞る最小十分なコンテキスト設計を導入</li>
+          <li>Slack／Jira／PR／コミット／CI／インシデント／作業ログをLLMで横断解析し、仕様乖離候補を抽出する仕組みを構築</li>
+          <li>仕様乖離検知は適合率／再現率の双方で評価する。再現率は TP／(TP＋FN) で表され、見逃した真の乖離（FN）を把握する必要がある。AIが出した候補だけを人間が確認しても未検知の乖離は分からず、再現率を算出できない。このため、評価用の正解付きデータセットと、未検知対象を含む独立したサンプリング監査を設ける。対象期間・母数・判定基準・測定誤差を明示し、本番全体の再現率と標本上の推定値を区別する。閾値未達による自動降格は、この測定に基づいて運用する。検出後は人間の承認を経て仕様更新に反映する。仕様の意味を変える変更は、人間が承認する。採番・リンク修正・生成物の同期など、機械的で意味を変えない更新のみ、人間が承認したルールによる自動更新を例外として許可する。</li>
+        </ol>
+
+        <h4>KPI（補正後）</h4>
+        <table>
+          <tr><th>指標</th><th>内容</th></tr>
+          <tr><td>検証エビデンス網羅率</td><td>受け入れ基準に対して検証エビデンスが存在する割合（単純カバレッジ率から置換）</td></tr>
+          <tr><td>クリティカルインシデント件数</td><td>「バグ流出ゼロ」ではなく重大度別（クリティカル=0件、メジャー／マイナーは閾値運用）</td></tr>
+          <tr><td>仕様乖離検知の適合率／再現率</td><td>検知の適合率と再現率（見逃しの少なさ）の双方を継続計測</td></tr>
+        </table>
+
+        <div class="principle-box">
+          チャット／チケットは シグナル であって SSoT（信頼できる唯一の情報源）ではない。<br>
+          仕様乖離候補は人間の意思決定を経て仕様変更に反映する（機械的で意味を変えない更新のみ、人間が承認したルールによる自動更新を例外とする）。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="proposal-c">
+    <div class="section-head">
+      <p class="section-num">04 ― Google Gemini</p>
+      <h2>Google Gemini提言</h2>
+    </div>
+
+    <div class="proposal" data-owner="C">
+      <div class="proposal-head">
+        <span class="letter mono">C</span>
+        <div class="proposal-titles">
+          <p class="arch-label">委譲ガバナンスアーキテクチャ</p>
+          <h3>ケイパビリティレジストリによる委譲ガバナンス</h3>
+          <p class="lede">
+            AIエージェントへの権限付与を、システム単位・チーム単位の一括判断ではなく、ケイパビリティ
+            （AIへ委譲可能な操作・判断・生成・分析の最小統制単位）ごとに信頼レベル（T0〜T3）を
+            独立して付与・運用する。昇格はエビデンスに基づく人間判断、降格は重大度別の自動トリガーとする。
+          </p>
+        </div>
+      </div>
+      <div class="proposal-body">
+        <h4>提言の目的</h4>
+        <ul class="plain">
+          <li>権限を一括で拡大・収縮させる粗い運用による重大事故を構造的に排除する</li>
+          <li>OpenAI.GPTの決定論的ゲート、Anthropic.Claudeの実行可能な仕様／仕様乖離検知を「どこまでAIに委ねてよいか」を継続管理するガバナンス機構として接続する</li>
+          <li>「AI実績」を利用量ではなく、安全に委譲できた業務領域の健全な成長と可逆性として説明可能にする</li>
+          <li>仕様乖離検知機能のような監視機能自体もガバナンス対象に含め、自己参照的に閉じた統制構造を実現する</li>
+        </ul>
+
+        <h4>信頼レベル判定の考え方</h4>
+        <p style="font-size:14.5px;">
+          影響範囲 × 検出可能性 × 回復可能性による
+          <strong>リスク分類</strong>に加え、本番IAM変更・本番データ破壊操作・
+          セキュリティポリシーの迂回等については成熟度に関わらず上限の信頼レベルを固定する
+          <strong>明示的拒否ルール</strong>を設ける。単純な積算スコアとしては扱わない。
+        </p>
+        <table>
+          <tr><th>信頼レベル</th><th>AIの役割</th><th>人間の関与</th></tr>
+          <tr><td class="mono">T1</td><td>提案・生成のみ</td><td>全変更を確認</td></tr>
+          <tr><td class="mono">T2</td><td>事前承認した範囲内でブランチ編集・テストを自動実行</td><td>マージを承認</td></tr>
+          <tr><td class="mono">T3</td><td>低リスク変更を自律実行</td><td>例外のみ監督</td></tr>
+          <tr><td class="mono">T0 ／ 拒否</td><td>実行不可（明示的拒否）</td><td>常に人間が実行</td></tr>
+        </table>
+        <p style="font-size:14.5px;">信頼レベルは、エージェントハーネスの権限モード・ツール許可設定・サンドボックスとして機械的に強制する（07章）。</p>
+
+        <h4>具体的マイルストーン <span class="mono" style="font-weight:400;font-size:11.5px;color:var(--ink-faint);">※フェーズ番号は本提言内の区切り</span></h4>
+        <table>
+          <tr><th>フェーズ</th><th>内容</th><th>完了基準</th></tr>
+          <tr><td class="mono">フェーズ1</td><td>ケイパビリティレジストリ設計（初期の信頼レベルは原則T0/T1）</td><td>パイロット範囲内のケイパビリティが100%登録。未登録のケイパビリティはデフォルト拒否（フェイルクローズ）</td></tr>
+          <tr><td class="mono">フェーズ2</td><td>判定式に基づくゲート成熟度との連動</td><td>信頼レベルの昇格条件が、対応する検証エビデンスの種別と明示的に紐付いていること</td></tr>
+          <tr><td class="mono">フェーズ3</td><td>昇格／降格フローの実装（昇格=人間の意思決定、降格=重大度別の自動トリガー）</td><td>昇格実績1件以上、かつ降格訓練（模擬降格演習）を実施済み</td></tr>
+          <tr><td class="mono">フェーズ4</td><td>仕様乖離検知等の監視ケイパビリティ自体の組み込み</td><td>監視ケイパビリティの適合率／再現率が定期計測され、閾値未達時に自動降格・再検証が機能すること（再現率は、独立した正解データとサンプリング監査で測定する）</td></tr>
+        </table>
+
+        <h4>具体的な次のアクション</h4>
+        <ol class="actions">
+          <li>パイロット機能に関わるケイパビリティ（コード生成／テスト生成／ブランチ操作／仕様変更提案等）を洗い出し、レジストリ初版を作成する</li>
+          <li>各ケイパビリティについて影響範囲・検出可能性・回復可能性を暫定評価し、初期の信頼レベルを設定する</li>
+          <li>クリティカル／メジャー／マイナーの降格トリガー一覧を確定し、CI/CD・監視基盤にアラートとして実装する</li>
+          <li>仕様乖離検知機能をケイパビリティレジストリへ登録し、適合率／再現率の計測方法を確立する</li>
+          <li>ケイパビリティレジストリの状態（総数・信頼レベル分布・昇格降格実績）を経営層向け報告に組み込む</li>
+        </ol>
+
+        <div class="principle-box">
+          権限は付与するものではなく、エビデンスによって獲得し、<br>
+          異常時には原則として自動的に失うものとする。 ―― いかなるAIケイパビリティもガバナンスの外に置かない。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="issues">
+    <div class="section-head">
+      <p class="section-num">05 ― 主要合意事項</p>
+      <h2>ディスカッションにおける主要合意事項</h2>
+      <p class="section-desc">OpenAI.GPT・Anthropic.Claude・Google Gemini間で提起され、合意に至った主要な論点を時系列で整理する。</p>
+    </div>
+    <div class="issues">
+      <table>
+        <tr><th>論点</th><th>結論</th><th>状況</th></tr>
+        <tr>
+          <td>仕様の実行可能化の範囲</td>
+          <td>単一フォーマットに統一せず、背景=自然言語 / ビジネスルール=Gherkin / API=OpenAPI 等のハイブリッド構造（仕様タイプ体系）とする</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>人間によるレビューをどこまで削減できるか</td>
+          <td>コードレビューは廃止せず、レビュー対象をリスクベースで絞る。AI生成物であっても既存のソフトウェアデリバリーにおける説明責任の枠組みで扱う。自動化バイアス（AIの判断への過信）に注意し、AI事業者ガイドライン第1.2版の「人間の判断の介在」と整合させる</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>信頼レベルを上げる条件</td>
+          <td>AIの性能ではなく、影響範囲 × 検出可能性 × 回復可能性によるリスク分類 + ハード制約 + エビデンスで判定。ケイパビリティ単位で付与する</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>コミュニケーションログの仕様への反映</td>
+          <td>チャット／チケット → 仕様乖離候補 → 人間による判断 → 仕様変更（人間承認。機械的で意味を変えない更新のみ承認済みルールで例外許可）→ テスト更新、という人間判断を挟むフローに限定する</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>信頼レベルの降格条件</td>
+          <td>昇格は人間の意思決定、降格は原則自動。クリティカル即時／メジャー閾値超過／マイナー監視強化の重大度別設計とする</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>経営層の「AI実績」要求の置き換え</td>
+          <td>AI利用率ではなく「AI適用可能ケイパビリティ数」および「ケイパビリティレジストリの健全な成長と可逆性（昇格・降格双方の実績）」で説明する</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>仕様乖離検知機能自体の継続監視</td>
+          <td>監視機能自体も独立したケイパビリティとしてレジストリに登録し、適合率／再現率に基づき自動降格・再検証を適用する</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>ケイパビリティの定義</td>
+          <td>「業務機能の最小単位」ではなく「AIへ委譲可能な操作・判断・生成・分析の最小統制単位」へ修正</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+        <tr>
+          <td>未登録ケイパビリティの扱い</td>
+          <td>全ケイパビリティの網羅登録を完了基準とせず、レジストリ未登録のケイパビリティはデフォルト拒否（フェイルクローズ原則）とする</td>
+          <td><span class="status">合意済</span></td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <section id="reporting">
+    <div class="section-head">
+      <p class="section-num">06 ― 経営層向け報告</p>
+      <h2>経営層向け報告フレーム</h2>
+      <p class="section-desc">
+        「AI実績」の要求を、利用量ではなく安全なデリバリー能力の拡張として説明するため、
+        以下の3層構造で定期報告を行う。
+      </p>
+    </div>
+    <div class="tiers">
+      <div class="tier">
+        <p class="tier-eyebrow mono">01 ― ビジネス成果</p>
+        <h4>デリバリー成果</h4>
+        <ul>
+          <li>変更リードタイム（ベースライン対比の短縮率）</li>
+          <li>デプロイ頻度</li>
+          <li>失敗デプロイ復旧時間</li>
+          <li>変更失敗率</li>
+          <li>デプロイ手戻り率</li>
+          <li>補助：欠陥流出率／品質維持状況</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <p class="tier-eyebrow mono">02 ― AIへの委譲</p>
+        <h4>委譲状況</h4>
+        <ul>
+          <li>ケイパビリティ総数</li>
+          <li>信頼レベル分布（T0〜T3）</li>
+          <li>昇格／降格の実績件数</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <p class="tier-eyebrow mono">03 ― ガバナンスの健全性</p>
+        <h4>統制の健全性</h4>
+        <ul>
+          <li>検証エビデンス網羅率</li>
+          <li>ポリシー違反件数</li>
+          <li>仕様乖離検知の網羅率／再検証状況</li>
+        </ul>
+      </div>
+    </div>
+    <h4 style="margin-top:36px;">指標の定義（DORA）</h4>
+    <div class="refs">
+<table>
+<thead><tr><th>区分</th><th>指標（正式名称）</th><th>定義</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>スループット</td><td>変更リードタイム（Change lead time）</td><td>変更がバージョン管理へコミットされてから、本番環境へデプロイされるまでの時間</td><td></td></tr>
+<tr><td>スループット</td><td>デプロイ頻度（Deployment frequency）</td><td>一定期間のデプロイ回数（またはデプロイ間隔）</td><td></td></tr>
+<tr><td>スループット</td><td>失敗デプロイ復旧時間（Failed deployment recovery time）</td><td>即時の対応を要する失敗デプロイから復旧するまでの時間</td><td>従来のMTTR（平均復旧時間）に代わる指標名</td></tr>
+<tr><td>不安定性</td><td>変更失敗率（Change fail rate）</td><td>デプロイ後に即時の対応（ロールバック・緊急修正等）を要したデプロイの割合</td><td></td></tr>
+<tr><td>不安定性</td><td>デプロイ手戻り率（Deployment rework rate）</td><td>本番インシデントを原因として発生した計画外デプロイの割合</td><td>レビュー指摘による差戻しとは別の指標</td></tr>
+<tr><td>補助（DORA外）</td><td>欠陥流出率</td><td>リリース後（本番）に発見された欠陥の、総欠陥に対する割合</td><td>独自定義。分母・分子の数え方を事前に固定する</td></tr>
+<tr><td>補助（DORA外）</td><td>レビュー時間</td><td>プルリクエストの作成からレビュー完了までの時間</td><td>独自定義</td></tr>
+</tbody>
+</table>
+    </div>
+    <p class="note">出典：DORA（Google Cloud）公式ガイド「DORA metrics」（dora.dev/guides/dora-metrics）。補助指標は本提言の独自定義である。</p>
+    <p style="font-size:14.5px;margin-top:14px;">DORAの2025年報告（State of AI-assisted Software Development）では、AI導入が不安定性（変更失敗率・手戻り）の上昇と関連する傾向が示され、基盤（バージョン管理・オブザーバビリティ・内部プラットフォーム）が弱い組織ほど悪化しやすいとされる★。このため、スループット指標の改善は、不安定性指標が悪化していないことを条件に評価する。また「デプロイ」の定義（本番反映の単位）を事前に固定し、指標はチームの継続的な改善確認に用いる。 計測は1スプリントを開始の最低期間とし、変更量・障害件数・リリース周期に応じて観測期間を延長する。観測されなかった事象（例：失敗デプロイがなく復旧時間を算出できない場合）は、0や改善とせず「未観測・算出不能」と明記する。DORA指標はデリバリー性能の指標であり、顧客成果やAI導入の因果効果を直接測るものではないため、顧客成果・総費用・レビュー負荷等を併記し、単純な導入前後比較だけでAIの効果を断定しない。ケイパビリティ数・昇格件数も、分割粒度や運用方針で増減するため、単独で成果とみなさない。</p>
+  </section>
+
+  <section id="agentic">
+    <div class="section-head">
+      <p class="section-num">07 ― エージェント実務導入</p>
+      <h2>エージェント実務導入：ハーネスコントロールとオーケストレーション</h2>
+      <p class="section-desc">2026年11月時点で、コーディングエージェントは「補完機能」ではなく、モデルにツール実行・コンテキスト管理・安全制御・オーケストレーションを結合した実行基盤（以下「エージェントハーネス」）として運用される段階にある。実務上の論点は、どのモデルを使うかよりも、ハーネスをどう設計し統制するかに移っている。したがって本提言の制御面は、CI/CDによる事後検証に加えて、エージェントが動作する時点の統制（ハーネスコントロール）を含むものと再定義する。本節は改訂時に追加した実務動向の認識であり、特定製品の仕様を前提としない。</p>
+    </div>
+    <h4>ハーネスコントロールの統制点</h4>
+    <div class="refs">
+<table>
+<thead><tr><th>統制点</th><th>内容</th><th>対応する信頼レベル・提言の要素</th></tr></thead>
+<tbody>
+<tr><td>権限モード</td><td>読取専用／編集ごとに承認／範囲内の自動承認</td><td>T1＝読取専用・提案のみ、T2＝事前承認した範囲内のブランチ編集・テストを自動実行（マージは人間が承認）、T3＝範囲を限定した自動承認。信頼レベルは本提言独自の運用分類であり、製品の権限モードとの対応は別途定義する</td></tr>
+<tr><td>ツール許可・拒否リスト</td><td>実行できるコマンド・ツール・MCPサーバを明示的に許可。未登録は拒否。ケイパビリティの許可単位と、実際のツール・API・実行環境の対応を定義する（コード生成を許可しても、生成コードが後で実行する業務操作は、接続先サービスの認可で別途制御する）</td><td>デフォルト拒否／明示的拒否（T0）</td></tr>
+<tr><td>サンドボックス</td><td>ファイル・ネットワーク・認証情報の隔離（OS・コンテナ・VM等の制約、ネットワーク制御、資格情報の分離）。ブランチ分離は変更管理の手段であり、セキュリティ境界ではない</td><td>信頼レベルに関わらず固定する、権限の物理的な上限</td></tr>
+<tr><td>フック（実行前後の決定論的検査）</td><td>ツール実行の前後でルールにより検査・拒否（危険なコマンド、未検証パッケージの追加、機密情報の書込み等）。補助統制であり、すべての実行経路を遮断できるとは限らない。事後フックは発生済みの副作用を防げない。保護設定・CI・認可設定は、エージェント自身が変更できないようにする</td><td>決定論的ゲートを補う、エージェント実行時の補助統制</td></tr>
+<tr><td>承認ゲート</td><td>本番影響・不可逆操作・権限変更は人間が承認</td><td>昇格の人間判断、上限を固定する領域</td></tr>
+<tr><td>監査ログ・テレメトリ</td><td>操作履歴、ツール呼び出し、承認結果の記録</td><td>エビデンス、降格トリガーの入力、操作履歴の定期確認</td></tr>
+<tr><td>コンテキスト供給</td><td>リポジトリ内の指示ファイル（AGENTS.md等）・仕様への参照を、最小十分なコンテキストとして提供。指示ファイルは文脈の伝達手段であり、権限制御の手段ではない</td><td>仕様・コンテキスト層</td></tr>
+</tbody>
+</table>
+    </div>
+    <h4>オーケストレーションの統制</h4>
+    <ul class="plain"><li><strong>役割分離</strong>：計画・実装・レビュー・検証のエージェントを分離する。ただしAIレビュアー同士の相互確認は独立した検証とみなさず、最終判定は決定論的ゲートと人間が行う。</li><li><strong>並列実行の隔離</strong>：エージェントごとにブランチ・作業ディレクトリ・実行環境（OS・コンテナ・VM等）を分離し、マージは決定論的ゲートを通す。</li><li><strong>権限の単調縮小</strong>：委譲先エージェント（サブエージェント）の権限は委譲元を超えない。オーケストレータ自体もケイパビリティとして登録し、信頼レベルを付与する。</li><li><strong>エージェント間通信とツール接続</strong>：エージェント間の通信・タスク連携にはA2A Protocol、外部ツール・データへの接続にはMCPを用いる。プロトコルの採用とは別に、認証・認可・同意・アクセス制御を実装し、受信した内容は信頼できない入力として扱う。</li><li><strong>失敗モードの監視</strong>：委譲の往復（ループ）、コンテキストの断絶、責任の所在の拡散を、実行回数・時間・コストの上限と実行トレースで検知する。</li><li><strong>観測</strong>：実行トレースを共通形式（OpenTelemetry）で収集し、降格トリガーとドリフト検知の入力にする。</li></ul>
+    <p class="note">上記は本提言の設計方針であり、標準として確立したものではない。</p>
+    <h4>決定論的検証の保証範囲</h4>
+    <p style="font-size:14.5px;">固定した入力・環境・ルールに基づき、可能な範囲で再現可能な検証と機械判定を行う。ゲート通過は定義済み検査への合格を意味し、完全な正しさや安全性を保証しない。自動テストには並行処理・時刻・外部サービス・実行環境に起因する非決定性があり得、SAST・SCA等にも検出範囲の限界と誤検知・見逃しがある。AIがコードとテストを同じ誤解から生成した場合、両者が整合していても要求を満たさないことがある。要求・テスト観点の独立した確認と、残余リスクの評価を組み合わせる。</p>
+    <h4>エージェント特有のリスクと対策</h4>
+    <div class="refs">
+<table>
+<thead><tr><th>リスク</th><th>内容</th><th>対策</th><th>参照</th></tr></thead>
+<tbody>
+<tr><td>プロンプトインジェクション（間接を含む）</td><td>Issue・PR・Webページ・文書など外部コンテンツ内の指示により、エージェントが意図しない操作を行う</td><td>外部入力を信頼できないデータとして扱う。ツール権限を最小化し、機密情報の参照と外部への送信を同じエージェントに同時に与えない。不可逆操作は承認ゲートを通す</td><td>OWASP Top 10 for LLM Applications 2025 LLM01／OWASP Top 10 for Agentic Applications 2026 ASI01（Agent Goal Hijack）★</td></tr>
+<tr><td>ツール連携（MCPサーバ等）の信頼性</td><td>ツール説明文や接続先サーバが改ざん・悪性であり、エージェントが誤った操作や情報流出を行う</td><td>接続先をレジストリ登録制にし、未登録は拒否する。バージョンを固定し、出所を確認する。ツール説明を信頼しない</td><td>MCP仕様 2026-07-28版（Security and Trust & Safety）／OWASP ASI02・ASI04★</td></tr>
+<tr><td>エージェントの識別・権限の濫用</td><td>人間の資格情報の流用、過大・長期の権限付与により、侵害時の影響が拡大する</td><td>エージェントを非人間IDとして個別に発行し、短寿命の認可を与える。人間の資格情報を共有しない</td><td>NIST NCCoE ドラフト概念ペーパー／OAuth 2.0（RFC 6749）／OpenID Connect／SPIFFE／OWASP ASI03★</td></tr>
+<tr><td>依存パッケージの幻覚（スロップスクワッティング）</td><td>AIが存在しないパッケージ名を提案し、攻撃者がその名前で悪性パッケージを登録し得る攻撃手法。2026年1月には、幻覚されたパッケージ名react-codeshiftがAIエージェント用スキルファイル経由で多数のリポジトリに拡散し、取得試行につながった事例が研究者により報告された。同名は研究者が防御的に登録した無害なプレースホルダーであり、この事例で悪性コードによる被害は確認されていない。大規模な悪用キャンペーンについては、CSA（Cloud Security Alliance）の調査ノート「Slopsquatting: AI Hallucinations as Supply Chain Attack Vectors」（2026-05-03、Key Takeaways）が、執筆時点で公に確認された事例はないとしている。ただし同ノートは、AI支援で作成されCSAの正式な査読・承認を経ていないと明記している。同機関の2026-04-19付ノートも、表紙に「Unofficial AI-assisted Research」とあり、同じく正式な査読・承認を経ていないと明記している。同ノートは（Security Analysis「Confirmed Real-World Exploitation」で）悪性パッケージが実際に存在し数万回ダウンロードされたと述べているが、その主張は本改訂では未検証である。両資料とも非公式のAI支援調査として扱い、大規模キャンペーンと個別の悪性パッケージの存在は区別する</td><td>AIが提案したパッケージ名を未検証の入力として扱う。追加前に存在・公開元・登録日を検証する。ロックファイルに従うインストールに限定し、社内ミラーまたは許可リストを使う。ハーネスのフックとCIの両方で未検証パッケージの追加を拒否する。SBOM（SPDX／CycloneDX）とSCAで追跡する</td><td>Aikido研究者のブログ（2026-01公開）／CSA調査ノート（2026-05-03、2026-04-19）／SLSA／SPDX／CycloneDX</td></tr>
+<tr><td>人間レビューにおける自動化バイアス</td><td>人間がAIの判断を過度に信頼し、最終確認を怠る</td><td>レビュー対象をリスクベースで絞り、観点を提示する。操作履歴を定期的に確認・報告する</td><td>AI事業者ガイドライン 第1.2版（総務省・経済産業省）★</td></tr>
+</tbody>
+</table>
+    </div>
+    <p class="note">★は、本改訂の調査で二次情報（法律事務所・解説記事等）のみで確認した項目である。無印は「一次資料で確認済み」を意味しない。確認状態は、末尾の出典一覧で項目ごとに示す。外部の事実と本提言の設計判断も、同一覧で区別する。</p>
+  </section>
+
+  <section id="standards">
+    <div class="section-head">
+      <p class="section-num">08 ― 標準化動向</p>
+      <h2>標準化動向と標準への対応づけ</h2>
+      <p class="section-desc">2026年11月の改訂で、標準化を重視する方針を追加した。独自概念（ケイパビリティレジストリ、信頼レベル等）を設計する際は、実装を既存の標準・仕様の上に載せ、独自部分と標準との対応を明記する。確定前のドラフトや策定中の仕様は『準拠』ではなく『整合』を目指す対象として扱う。</p>
+    </div>
+    <div class="refs">
+<table>
+<thead><tr><th>領域</th><th>標準・仕様（正式名称）</th><th>策定・管理主体</th><th>本提言との対応</th></tr></thead>
+<tbody>
+<tr><td>AIマネジメントシステム</td><td>ISO/IEC 42001:2023（AI management system）／ISO/IEC 42006:2025★（認証機関の要求事項）</td><td>ISO/IEC JTC 1/SC 42</td><td>委譲・ガバナンス層の運用体制（ケイパビリティレジストリの管理責任・見直し・監査）</td></tr>
+<tr><td>AIリスク管理</td><td>NIST AI Risk Management Framework 1.0（NIST AI 100-1）／NIST AI 600-1（Generative AI Profile）／ISO/IEC 23894:2023</td><td>NIST、ISO/IEC</td><td>リスク分類（影響範囲・検出可能性・回復可能性）の参照枠組み</td></tr>
+<tr><td>セキュア開発</td><td>NIST SP 800-218（SSDF）／SP 800-218A（生成AI・デュアルユース基盤モデル向けコミュニティプロファイル）</td><td>NIST</td><td>制御・エビデンス層（検証ゲート）の参照</td></tr>
+<tr><td>LLM・エージェントの脅威</td><td>OWASP Top 10 for LLM Applications 2025（LLM01: Prompt Injection ほか）／OWASP Top 10 for Agentic Applications 2026（ASI01〜ASI10）★</td><td>OWASP GenAI Security Project（OWASP Foundation）</td><td>リスク対策の網羅性確認（エージェント特有のリスクを含む）</td></tr>
+<tr><td>エージェントとツール・データの接続</td><td>Model Context Protocol（MCP）仕様 2026-07-28版</td><td>Agentic AI Foundation（Linux Foundation）</td><td>LLMアプリケーションと外部ツール・データ等の接続プロトコル。接続先はレジストリ登録制とし、MCP仕様の安全原則（ツール注釈の非信頼扱い、ツール実行前の明示的同意）に従う。プロトコルだけでは安全原則を強制できないため、同意・認可・アクセス制御は別途実装する</td></tr>
+<tr><td>エージェント間の通信・タスク連携</td><td>Agent2Agent（A2A）Protocol v1.0</td><td>Linux Foundation（Agentic AI Foundation所属）</td><td>独立したエージェントシステム間の通信・タスク連携。プロトコルの採用だけでは認証・認可は成立せず、別途実装する</td></tr>
+<tr><td>コーディングエージェント向けの指示ファイル</td><td>AGENTS.md</td><td>Agentic AI Foundation（Linux Foundation）</td><td>コーディングエージェントに文脈・作業指示を伝えるMarkdown形式。通信プロトコルでも権限制御機構でもなく、拘束力のある統制には用いない（統制は権限設定・CI等で実装する）</td></tr>
+<tr><td>統制の実装（プロトコル採用とは別項目）</td><td>認証・認可・同意・アクセス制御</td><td>各組織（接続先サービス側を含む）</td><td>接続プロトコルの採用と、認証・認可・同意・アクセス制御の実装は別の統制項目として扱う。後者は、次行のエージェントの識別・認可と、接続先サービス側の認可で実装する</td></tr>
+<tr><td>エージェントの識別・認可</td><td>OAuth 2.0（RFC 6749）／OpenID Connect／SPIFFE／IETF WIMSEワーキンググループのドラフト★／NIST NCCoE ドラフト概念ペーパー</td><td>IETF、OpenID Foundation、CNCF、NIST</td><td>エージェントを非人間IDとして個別に識別し、短寿命の認可を与える。信頼レベルと認可スコープを対応づける</td></tr>
+<tr><td>ソフトウェアサプライチェーン</td><td>SLSA（Supply-chain Levels for Software Artifacts）／SPDX（ISO/IEC 5962:2021）／CycloneDX（ECMA-424）／SARIF（OASIS標準）</td><td>OpenSSF、Linux Foundation、Ecma International、OASIS</td><td>AI生成コードの来歴・SBOM・静的解析結果を共通形式でエビデンス化</td></tr>
+<tr><td>仕様表現</td><td>OpenAPI Specification／AsyncAPI／JSON Schema（Draft 2020-12）／Gherkin</td><td>OpenAPI Initiative、AsyncAPI Initiative、JSON Schema、Cucumber</td><td>仕様タイプ体系の各表現。標準仕様をそのまま用い、独自拡張は最小限にする</td></tr>
+<tr><td>ポリシー・アズ・コード</td><td>Open Policy Agent（OPA）／Rego</td><td>CNCF</td><td>決定論的ゲートのポリシー判定</td></tr>
+<tr><td>オブザーバビリティ</td><td>OpenTelemetry（GenAIセマンティック規約は策定中）</td><td>CNCF</td><td>エージェントの実行トレース・監査ログの共通形式</td></tr>
+<tr><td>デリバリー指標</td><td>DORAの5つのソフトウェアデリバリー指標</td><td>DORA（Google Cloud）</td><td>KPI・ベースラインの定義（前掲の表）</td></tr>
+</tbody>
+</table>
+    </div>
+    <p class="note">★は、本改訂の調査で二次情報（法律事務所・解説記事等）のみで確認した項目である。無印は「一次資料で確認済み」を意味しない。確認状態は、末尾の出典一覧で項目ごとに示す。外部の事実と本提言の設計判断も、同一覧で区別する。</p>
+  </section>
+
+  <section id="regulation">
+    <div class="section-head">
+      <p class="section-num">09 ― 規制動向</p>
+      <h2>規制動向（米国・EU・日本）</h2>
+      <p class="section-desc">以下は2026年11月の改訂時点（調査基準日 2026年11月1日）の整理であり、法的助言ではない。国ごとに規制の強さは異なるが、リスクベースの統制、人間の判断の介在、透明性・記録の保持という方向は共通している。本提言の昇格／降格、承認ゲート、監査ログ、エビデンスは、これらの要請に対する説明手段として位置づけられる。</p>
+    </div>
+    <div class="refs">
+<table>
+<thead><tr><th>地域</th><th>制度・文書（正式名称／発行主体）</th><th>状況（調査基準日 2026年11月1日）</th><th>本提言への含意</th></tr></thead>
+<tbody>
+<tr><td><span style="white-space:nowrap">米国</span></td><td>Ensuring a National Policy Framework for Artificial Intelligence（大統領令14365、2025-12-11）★</td><td>州ごとのAI規制を連邦の統一的な枠組みへ寄せる方針で、司法省にAI訴訟タスクフォースを設置。大統領令のみで州法は無効にならないとされ、州法は有効</td><td>連邦はガイダンス・標準主導で、州法が併存する。州法（例: Colorado AI Act、Texas TRAIGA〔2026-01-01施行〕）の適用有無は個別に確認する★</td></tr>
+<tr><td><span style="white-space:nowrap">米国</span></td><td>NIST AI Risk Management Framework 1.0（NIST AI 100-1）／Generative AI Profile（NIST AI 600-1、2024-07）</td><td>任意の枠組み。2025年のAI行動計画を受けた見直しの動きがある★</td><td>ガバナンス層のリスク評価・統制設計の参照枠組み</td></tr>
+<tr><td><span style="white-space:nowrap">米国</span></td><td>NIST SP 800-218A（Secure Software Development Practices for Generative AI and Dual-Use Foundation Models）</td><td>SSDF（SP 800-218）のAIモデル開発向けコミュニティプロファイル。確定版</td><td>セキュア開発（検証ゲート）の参照</td></tr>
+<tr><td><span style="white-space:nowrap">米国</span></td><td>NIST AI Agent Standards Initiative（CAISI、2026-02開始）／NCCoE ドラフト概念ペーパー「Accelerating the Adoption of Software and AI Agent Identity and Authorization」／SP 800-53 制御オーバーレイ（COSAiS）★</td><td>エージェントのセキュリティ・ID・認可の標準化を推進。概念ペーパーはドラフト、COSAiSのエージェント向けオーバーレイは策定中</td><td>エージェントID・認可・信頼レベル設計の参照。確定前のため、準拠ではなく整合を目指す</td></tr>
+<tr><td><span style="white-space:nowrap">EU</span></td><td>Regulation (EU) 2024/1689（AI Act）</td><td>禁止慣行は2025-02-02、汎用目的AI（GPAI）モデルの義務は2025-08-02から適用済み。透明性義務（第50条）の多くは2026-08-02適用★</td><td>LLMの利用側として透明性・AIリテラシーを確認する。開発対象システムが高リスク（附属書III等）に該当するかを個別に判定する</td></tr>
+<tr><td><span style="white-space:nowrap">EU</span></td><td>Digital Omnibus on AI（AI Actの改正。Regulation (EU) 2026/1744、2026-07に官報掲載・発効と報じられている）★</td><td>高リスクAIの義務適用を延期：附属書III（独立型）は2027-12-02、附属書I（規制対象製品に組み込まれるもの）は2028-08-02</td><td>高リスクに該当するシステムの開発では、延期後も必要となる記録（エビデンス・トレーサビリティ）を前倒しで整備する</td></tr>
+<tr><td><span style="white-space:nowrap">EU</span></td><td>EN 18286:2026（Artificial intelligence — Quality management system for EU AI Act regulatory purposes）／CEN-CENELEC JTC 21 整合規格（標準化要請 M/613）</td><td>EN 18286:2026は、欧州委員会実施決定 (EU) 2026/2274により官報参照が掲載済み（欧州委員会の2026-10-19の公表）。他の整合規格は今後公表される見込みで、名称・時期は未確認</td><td>適合推定は、同規格がカバーするAI Act第17条（品質マネジメントシステム）の要求に限られ、AI Act全体への適合保証ではない。ISO/IEC 42001の取得のみでは同じ効果は得られない。他の整合規格の公表状況を継続確認する</td></tr>
+<tr><td><span style="white-space:nowrap">EU</span></td><td>Regulation (EU) 2024/2847（Cyber Resilience Act）</td><td>脆弱性・重大インシデントの報告義務は2026-09-11、主要義務は2027-12-11から適用</td><td>デジタル要素を含む製品の開発では、SBOM・脆弱性管理・AI生成コードの依存関係管理が直接関係する</td></tr>
+<tr><td><span style="white-space:nowrap">日本</span></td><td>人工知能関連技術の研究開発及び活用の推進に関する法律（AI推進法）★</td><td>2025年9月に全面施行。推進を主眼とする法律で、活用事業者にAI活用への努力と国・地方公共団体の施策への協力を定めている。事業者の個別行為に対する罰則は置かれていないと整理されている</td><td>罰則の有無と法的責務の有無を区別する。活用事業者の努力義務・施策協力に加え、個人情報保護法・著作権法等の関係法令を別途確認する。国の指針・調査への協力と自主的なガバナンスが論点となる</td></tr>
+<tr><td><span style="white-space:nowrap">日本</span></td><td>人工知能基本計画（2026-07-14閣議決定。初回策定は2025-12-23）</td><td>AI推進法に基づく政府の基本計画。2026-07-14閣議決定の版が現行（内閣府ページで確認。計画の内容は本改訂では未確認）</td><td>国の方針の参照。提言との対応は2026年版の内容で確認する（未実施）</td></tr>
+<tr><td><span style="white-space:nowrap">日本</span></td><td>AI事業者ガイドライン 第1.2版（総務省・経済産業省、2026-03-31公表）★</td><td>AIエージェント・フィジカルAIの定義とリスクを追記。自律性の高いAIへの「人間の判断の介在」、操作履歴の定期確認、自動化バイアスへの注意を明記</td><td>信頼レベル・承認ゲート・監査ログ・レビュー設計の直接の参照。法的拘束力のない指針で、2026年度以降も見直しが予定されている</td></tr>
+</tbody>
+</table>
+    </div>
+    <p class="note">★は、本改訂の調査で二次情報（法律事務所・解説記事等）のみで確認した項目である。無印は「一次資料で確認済み」を意味しない。確認状態は、末尾の出典一覧で項目ごとに示す。外部の事実と本提言の設計判断も、同一覧で区別する。</p>
+  </section>
+
+  <section id="closing" class="closing">
+    <div class="section-head">
+      <p class="section-num">10 ― 結論</p>
+      <h2>結論</h2>
+      <p class="section-desc">
+        OpenAI.GPT（デリバリーアーキテクチャ）・Anthropic.Claude（仕様・コンテキスト・観測アーキテクチャ）・Google Gemini（委譲ガバナンスアーキテクチャ）の
+        三提言は、対立するものではなく、統合5層モデルとして完全に循環接続される一つのソフトウェアデリバリー統制システム
+        として収束した。今回対象となるチームに対しては、この統合モデルを土台に、まず本番影響の小さいパイロット機能1〜2件で
+        意図→仕様→生成→検証→ガバナンスの全ループを実地検証することを推奨する。あわせて、エージェントハーネスのコントロールとオーケストレーションの統制、標準・規制との対応づけ（07〜09章）を並行して進める。
+      </p>
+      <div class="closing-principles">
+        <div class="p-card">
+          <span class="k mono">原則01</span>
+          <div class="v">権限は付与するものではなく、エビデンスによって獲得し、異常時には原則として自動的に失うものとする。</div>
+        </div>
+        <div class="p-card">
+          <span class="k mono">原則02</span>
+          <div class="v">いかなるAIケイパビリティもガバナンスの外に置かない。 ―― コード生成器であれ、レビュアーであれ、仕様乖離検知機能であれ、統制の外に置かない。</div>
+        </div>
+      </div>
+      <p style="font-size:14.5px;">
+        AI導入の対象は開発者個人ではなく、意図／仕様／コード／テスト／CI/CD／IAM／オブザーバビリティ／コミュニケーション／ガバナンス
+        を含むソフトウェアデリバリーシステムそのものである。この前提に立つ限り、実行可能な仕様（Anthropic.Claude）、決定論的ゲート（OpenAI.GPT）、
+        ケイパビリティに基づく信頼（Google Gemini）は矛盾なく一つのアーキテクチャとして成立する。
+      </p>
+    </div>
+  </section>
+
+  <section id="sources">
+    <div class="section-head">
+      <p class="section-num">付録 ― 出典</p>
+      <h2>出典・確認状態の一覧</h2>
+      <p class="section-desc">各事実について、確認状態と、外部の事実か本提言の設計判断かを示す。3つのLLMが合意したことは、外部事実の正確性や実装の有効性の検証を代替しない。「未取得」は、本改訂で一次資料のURLを取得・確認していないことを示す。本一覧は確認状態の可視化であり、出典検証の完了を意味しない。</p>
+    </div>
+    <div class="refs">
+<table>
+<thead><tr><th>項目</th><th>正式名称・版・日付</th><th>一次資料</th><th>確認状態</th><th>区分</th></tr></thead>
+<tbody>
+<tr><td>DORA指標</td><td>DORA software delivery metrics（5指標）</td><td><a href="https://dora.dev/guides/dora-metrics/">https://dora.dev/guides/dora-metrics/</a></td><td>一次確認済み</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>DORA 2025年報告のAIに関する知見</td><td>State of AI-assisted Software Development（2025）</td><td>未取得</td><td>二次のみ</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>MCP</td><td>Model Context Protocol 仕様 2026-07-28版</td><td><a href="https://modelcontextprotocol.io/specification/2026-07-28">https://modelcontextprotocol.io/specification/2026-07-28</a></td><td>一次確認済み</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>A2A</td><td>Agent2Agent（A2A）Protocol v1.0</td><td><a href="https://a2a-protocol.org/latest/">https://a2a-protocol.org/latest/</a></td><td>一次確認済み（版・運営主体。認証方式は未確認）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>AGENTS.md</td><td>AGENTS.md</td><td><a href="https://agents.md/">https://agents.md/</a></td><td>未確認（本改訂では未取得）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>Agentic AI Foundation</td><td>Linux Foundation配下でのMCP等の運営</td><td>未取得</td><td>二次のみ（A2A公式サイトがAAIF所属と記載）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>人工知能基本計画</td><td>人工知能基本計画（2026-07-14閣議決定。初回2025-12-23）</td><td><a href="https://www8.cao.go.jp/cstp/ai/ai_plan/ai_plan.html">https://www8.cao.go.jp/cstp/ai/ai_plan/ai_plan.html</a></td><td>一次確認済み（閣議決定日のみ。計画の内容は未確認）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>AI推進法</td><td>人工知能関連技術の研究開発及び活用の推進に関する法律（令和7年法律第53号）</td><td><a href="https://laws.e-gov.go.jp/law/507AC0000000053">https://laws.e-gov.go.jp/law/507AC0000000053</a></td><td>二次のみ（条文は取得できず、解説で確認）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>AI事業者ガイドライン</td><td>第1.2版（総務省・経済産業省、2026-03-31公表）</td><td><a href="https://www.meti.go.jp/shingikai/mono_info_service/ai_shakai_jisso/20260331_report.html">https://www.meti.go.jp/shingikai/mono_info_service/ai_shakai_jisso/20260331_report.html</a></td><td>二次のみ（改訂点は解説記事で確認。経済産業省サイトは取得できず）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>EN 18286</td><td>EN 18286:2026／欧州委員会実施決定 (EU) 2026/2274</td><td><a href="https://digital-strategy.ec.europa.eu/en/library/first-harmonised-standard-supporting-ai-act-published-official-journal">https://digital-strategy.ec.europa.eu/en/library/first-harmonised-standard-supporting-ai-act-published-official-journal</a></td><td>一次確認済み（欧州委員会の公表。官報原文は未確認）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>デジタル・オムニバス</td><td>Regulation (EU) 2026/1744</td><td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX%3A32026R1744">https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX%3A32026R1744</a></td><td>二次のみ（原文は取得できず）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>AI Act</td><td>Regulation (EU) 2024/1689</td><td>未取得</td><td>未確認（既知情報。再確認なし）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>Cyber Resilience Act</td><td>Regulation (EU) 2024/2847</td><td>未取得</td><td>未確認（既知情報。再確認なし）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>米国大統領令</td><td>Executive Order 14365（2025-12-11）</td><td>未取得</td><td>二次のみ</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>NIST AI Agent Standards Initiative</td><td>NIST CAISI（2026-02開始）／NCCoE ドラフト概念ペーパー</td><td><a href="https://www.nist.gov/caisi/ai-agent-standards-initiative">https://www.nist.gov/caisi/ai-agent-standards-initiative</a></td><td>一次確認済み</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>NIST COSAiS</td><td>SP 800-53 制御オーバーレイ（策定中）</td><td>未取得</td><td>二次のみ</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>NIST AI RMF等</td><td>NIST AI 100-1／AI 600-1（2024-07）／SP 800-218／SP 800-218A</td><td>未取得</td><td>二次のみ（AI 600-1・SP 800-218Aは検索結果で確認）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>OWASP</td><td>Top 10 for LLM Applications 2025／Top 10 for Agentic Applications 2026</td><td>未取得</td><td>二次のみ</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>ISO/IEC</td><td>42001:2023／42006:2025／23894:2023</td><td>未取得</td><td>未確認（42006は二次のみ）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>サプライチェーン関連標準</td><td>SLSA／SPDX（ISO/IEC 5962:2021）／CycloneDX（ECMA-424）／SARIF</td><td>未取得</td><td>未確認（既知情報。再確認なし）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>仕様表現・運用基盤の標準</td><td>OpenAPI／AsyncAPI／JSON Schema／Gherkin／OPA／OpenTelemetry／OAuth 2.0／OpenID Connect／SPIFFE／IETF WIMSE</td><td>未取得</td><td>未確認（IETF WIMSEのドラフトは二次のみ）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>react-codeshift</td><td>Aikido研究者のブログ（2026-01-21公開、2026-03-17更新）</td><td><a href="https://www.aikido.dev/blog/agent-skills-spreading-hallucinated-npx-commands">https://www.aikido.dev/blog/agent-skills-spreading-hallucinated-npx-commands</a></td><td>一次確認済み（研究者による報告）</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>CSA調査ノート（2件）</td><td>(1) Slopsquatting: AI Hallucinations as Supply Chain Attack Vectors（CSA、2026-05-03）。該当節：Key Takeaways（4つ目の項目）<br>(2) Slopsquatting: AI Code Hallucinations Fuel Supply Chain Attacks（CSA、2026-04-19）。該当節：Key Takeaways、Security Analysis「Confirmed Real-World Exploitation」</td><td>(1) <a href="https://labs.cloudsecurityalliance.org/wp-content/uploads/2026/05/CSA_research_note_slopsquatting-ai-coding-assistant-supply-chain_20260503-csa-styled.pdf">https://labs.cloudsecurityalliance.org/wp-content/uploads/2026/05/CSA_research_note_slopsquatting-ai-coding-assistant-supply-chain_20260503-csa-styled.pdf</a><br>(2) <a href="https://labs.cloudsecurityalliance.org/research/csa-research-note-slopsquatting-ai-supply-chain-20260419-csa/">https://labs.cloudsecurityalliance.org/research/csa-research-note-slopsquatting-ai-supply-chain-20260419-csa/</a><br>(2) PDF: <a href="https://labs.cloudsecurityalliance.org/wp-content/uploads/2026/04/CSA_research_note_slopsquatting-ai-supply-chain_20260419-csa-styled-1.pdf">https://labs.cloudsecurityalliance.org/wp-content/uploads/2026/04/CSA_research_note_slopsquatting-ai-supply-chain_20260419-csa-styled-1.pdf</a></td><td>一次確認済み（記載内容の確認）。両資料とも非公式のAI支援調査で、CSAの正式な査読・承認は未実施と明記（(1)は冒頭の注記、(2)は表紙「Unofficial AI-assisted Research」と2ページ目の注記）。(2)の被害に関する主張は未検証</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>米国州法</td><td>Colorado AI Act、Texas TRAIGA（HB 149）等</td><td>未取得</td><td>二次のみ</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>統合5層モデル・信頼レベル（T0〜T3）・ケイパビリティ</td><td>本提言の設計</td><td>—</td><td>外部検証なし（3つのLLMの合意に基づく）</td><td style="white-space:nowrap">設計判断</td></tr>
+<tr><td>ハーネスコントロールの統制点・オーケストレーション方針</td><td>本提言の設計（2026年11月改訂で追加）</td><td>—</td><td>外部検証なし（3つのLLMの合意に基づく）</td><td style="white-space:nowrap">設計判断</td></tr>
+<tr><td>ロードマップ・KPIの構成</td><td>本提言の設計</td><td>—</td><td>外部検証なし（3つのLLMの合意に基づく）</td><td style="white-space:nowrap">設計判断</td></tr>
+</tbody>
+</table>
+    </div>
+    <p class="note">出典検証は未完了である。残作業は次のとおり。(1) 各事実について、根拠となる条項・節を特定して記載する（現状は、CSA調査ノート等の一部を除き未記載）。(2) 「二次のみ」の項目について、確認に用いた二次資料のURLを記録する。(3) 人工知能基本計画（2026-07-14閣議決定）の内容を確認し、本提言との対応を整理する。</p>
+  </section>
+
+</div>
+
+<footer>
+  <div class="page" style="display:flex;justify-content:space-between;width:100%;flex-wrap:wrap;gap:10px;">
+    <span>提言レポート ― 大規模システム開発におけるLLM活用</span>
+    <span>ディスカッションメンバー：OpenAI.GPT／Anthropic.Claude／Google Gemini</span>
+  </div>
+</footer>
+
+<button type="button" class="to-top" id="to-top" aria-label="ページの最上部へ戻る" title="ページの最上部へ戻る">&uarr;</button>
+<script>
+(function () {
+  var btn = document.getElementById('to-top');
+  var head = document.getElementById('page-header');
+  if (!btn || !head) return;
+  function toggle(show) { btn.classList.toggle('is-visible', show); }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) { toggle(!entries[0].isIntersecting); }).observe(head);
+  } else {
+    window.addEventListener('scroll', function () { toggle(head.getBoundingClientRect().bottom < 0); }, { passive: true });
+  }
+  btn.addEventListener('click', function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>
