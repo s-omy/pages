@@ -407,12 +407,24 @@
     section{break-inside:avoid;}
   }
 td a{word-break:break-all;}
+
+  .back-link{display:inline-block;margin:0 0 20px;font-size:.88rem;line-height:1.4;color:#c7cbd8;text-decoration:none;border-bottom:1px solid transparent;}
+  .back-link:hover,.back-link:focus-visible{color:#ffffff;border-bottom-color:currentColor;}
+  .to-top{position:fixed;right:24px;bottom:24px;z-index:1000;width:48px;height:48px;padding:0;border:none;border-radius:50%;
+    background:var(--indigo);color:#fff;font-size:1.4rem;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);
+    opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,visibility .2s,transform .2s;}
+  .to-top.is-visible{opacity:1;visibility:visible;pointer-events:auto;}
+  .to-top:hover{transform:translateY(-2px);}
+  .to-top:focus-visible{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 0 5px var(--indigo);}
+  @media (prefers-reduced-motion:reduce){.to-top{transition:none;}}
+  @media print{.back-link,.to-top{display:none !important;}}
 </style>
 </head>
 <body>
 
-<div class="cover">
+<div class="cover" id="page-header">
   <div class="page">
+    <a class="back-link" href="https://pages.oro-9.org/computing_cicd_lecture/">← 提言レポート一覧へ戻る</a>
     <p class="eyebrow">提言レポート ― ディスカッション要約</p>
     <h1>大規模システム開発における<br>LLM活用のガバナンス設計</h1>
     <p class="sub">
@@ -1007,8 +1019,8 @@ td a{word-break:break-all;}
 <tr><td>ロードマップ・KPIの構成</td><td>本提言の設計</td><td>—</td><td>外部検証なし（3つのLLMの合意に基づく）</td><td style="white-space:nowrap">設計判断</td></tr>
 </tbody>
 </table>
-<p class="note">出典検証は未完了である。残作業は次のとおり。(1) 各事実について、根拠となる条項・節を特定して記載する（現状は、CSA調査ノート等の一部を除き未記載）。(2) 「二次のみ」の項目について、確認に用いた二次資料のURLを記録する。(3) 人工知能基本計画（2026-07-14閣議決定）の内容を確認し、本提言との対応を整理する。</p>
     </div>
+    <p class="note">出典検証は未完了である。残作業は次のとおり。(1) 各事実について、根拠となる条項・節を特定して記載する（現状は、CSA調査ノート等の一部を除き未記載）。(2) 「二次のみ」の項目について、確認に用いた二次資料のURLを記録する。(3) 人工知能基本計画（2026-07-14閣議決定）の内容を確認し、本提言との対応を整理する。</p>
   </section>
 
 </div>
@@ -1020,5 +1032,23 @@ td a{word-break:break-all;}
   </div>
 </footer>
 
+<button type="button" class="to-top" id="to-top" aria-label="ページの最上部へ戻る" title="ページの最上部へ戻る">&uarr;</button>
+<script>
+(function () {
+  var btn = document.getElementById('to-top');
+  var head = document.getElementById('page-header');
+  if (!btn || !head) return;
+  function toggle(show) { btn.classList.toggle('is-visible', show); }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) { toggle(!entries[0].isIntersecting); }).observe(head);
+  } else {
+    window.addEventListener('scroll', function () { toggle(head.getBoundingClientRect().bottom < 0); }, { passive: true });
+  }
+  btn.addEventListener('click', function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+  });
+})();
+</script>
 </body>
 </html>

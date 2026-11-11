@@ -235,12 +235,24 @@
     .action-btn { display: none; }
   }
 td a{word-break:break-all;}
+
+  .back-link{display:inline-block;margin:0 0 20px;font-size:.88rem;line-height:1.4;color:#cbd5e1;text-decoration:none;border-bottom:1px solid transparent;}
+  .back-link:hover,.back-link:focus-visible{color:#ffffff;border-bottom-color:currentColor;}
+  .to-top{position:fixed;right:24px;bottom:24px;z-index:1000;width:48px;height:48px;padding:0;border:none;border-radius:50%;
+    background:var(--accent-color);color:#fff;font-size:1.4rem;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);
+    opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,visibility .2s,transform .2s;}
+  .to-top.is-visible{opacity:1;visibility:visible;pointer-events:auto;}
+  .to-top:hover{transform:translateY(-2px);}
+  .to-top:focus-visible{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 0 5px var(--accent-color);}
+  @media (prefers-reduced-motion:reduce){.to-top{transition:none;}}
+  @media print{.back-link,.to-top{display:none !important;}}
 </style>
 </head>
 <body>
 
 <div class="container">
-  <header>
+  <header id="page-header">
+    <a class="back-link" href="https://pages.oro-9.org/computing_cicd_lecture/">← 提言レポート一覧へ戻る</a><br>
     <span class="header-tag">経営層向け提言レポート</span>
     <h1>大規模システム開発におけるLLM活用戦略<br><small style="font-size:1.1rem; font-weight:400; opacity:0.85;">クラウド・アジャイル移行チームのための「ソフトウェアデリバリー統制システム（Software Delivery Control System）」構築</small></h1>
     <p>モノリス・ウォーターフォールからクラウド・アジャイルへの変革期における安全かつ高速なAI導入手法</p>
@@ -600,5 +612,23 @@ td a{word-break:break-all;}
   </footer>
 </div>
 
+<button type="button" class="to-top" id="to-top" aria-label="ページの最上部へ戻る" title="ページの最上部へ戻る">&uarr;</button>
+<script>
+(function () {
+  var btn = document.getElementById('to-top');
+  var head = document.getElementById('page-header');
+  if (!btn || !head) return;
+  function toggle(show) { btn.classList.toggle('is-visible', show); }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) { toggle(!entries[0].isIntersecting); }).observe(head);
+  } else {
+    window.addEventListener('scroll', function () { toggle(head.getBoundingClientRect().bottom < 0); }, { passive: true });
+  }
+  btn.addEventListener('click', function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+  });
+})();
+</script>
 </body>
 </html>
