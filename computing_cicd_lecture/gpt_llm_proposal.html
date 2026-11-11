@@ -107,7 +107,9 @@ footer{color:var(--muted);font-size:.86rem;text-align:center;margin-top:26px}
       <span class="badge">仕様・コンテキストエンジニアリング</span>
       <span class="badge">ケイパビリティレジストリ</span>
       <span class="badge">委譲ガバナンス</span>
+      <span class="badge">ハーネスコントロール</span>
     </div>
+    <p style="margin-top:18px;font-size:.88rem;">初版：2026年8月29日 ／ 改訂：2026年11月（調査基準日：2026年11月1日）</p>
   </header>
 
   <div class="grid">
@@ -122,8 +124,11 @@ footer{color:var(--muted);font-size:.86rem;text-align:center;margin-top:26px}
       <a href="#c">7. Google Gemini提言</a>
       <a href="#milestones">8. 統合ロードマップ</a>
       <a href="#kpi">9. KPI／経営報告</a>
-      <a href="#actions">10. 次のアクション</a>
-      <a href="#conclusion">11. 結論</a>
+      <a href="#agentic">10. エージェント実務導入</a>
+      <a href="#standards">11. 標準化動向</a>
+      <a href="#regulation">12. 規制動向</a>
+      <a href="#actions">13. 次のアクション</a>
+      <a href="#conclusion">14. 結論</a>
     </nav>
 
     <main>
@@ -134,6 +139,7 @@ footer{color:var(--muted);font-size:.86rem;text-align:center;margin-top:26px}
           <strong>LLMには考えさせ、決定論的な仕組みに判定・制約・実行させる。</strong>
         </blockquote>
         <p>そのため、要求・仕様・コード・テスト・CI/CD・IAM・オブザーバビリティ・コミュニケーションログ・ガバナンスを一体として扱い、LLMの確率的出力を決定論的な制御系の中へ封じ込める。</p>
+        <p>2026年11月の改訂では、エージェント型開発の実務導入（ハーネスコントロール／オーケストレーション）、標準化動向、米国・EU・日本の規制動向、DORA指標の最新定義、依存パッケージ幻覚（スロップスクワッティング）の現況を反映した。</p>
 
         <div class="columns">
           <div class="card">
@@ -165,15 +171,20 @@ footer{color:var(--muted);font-size:.86rem;text-align:center;margin-top:26px}
           <li>PRレビュー、ログ解析、設計レビュー支援</li>
           <li>チケット・チャット・作業ログからのリスク／仕様乖離候補の抽出</li>
           <li>障害初期解析、運用ログからの次アクション候補生成</li>
+          <li>エージェントによるタスク単位の自律実行（ブランチ作成・実装・テスト実行・PR作成）と、複数エージェントのオーケストレーション</li>
         </ul>
 
         <h3>2.3 LLM特有のリスク</h3>
         <ul>
-          <li>ハルシネーションによる誤実装・存在しない依存パッケージ・脆弱な依存パッケージの混入</li>
+          <li>ハルシネーションによる誤実装・存在しない依存パッケージ（スロップスクワッティングの温床）・脆弱な依存パッケージの混入</li>
           <li>プロンプト／コンテキストへの機密情報混入</li>
           <li>ライセンス・サプライチェーン・セキュリティ上の問題</li>
           <li>エージェントへ過大な権限（Authority）を付与することによる不可逆操作</li>
           <li>監視AI自身のフォールスポジティブ／フォールスネガティブ</li>
+          <li>外部コンテンツ経由のプロンプトインジェクション（間接を含む）</li>
+          <li>MCPサーバ等のツール連携の信頼性</li>
+          <li>エージェントの識別・認可（非人間ID）の不備</li>
+          <li>人間レビューにおける自動化バイアス</li>
         </ul>
       </section>
 
@@ -188,6 +199,9 @@ footer{color:var(--muted);font-size:.86rem;text-align:center;margin-top:26px}
         <div class="callout"><strong>原則7：</strong> 権限はエビデンスによって獲得し、異常時には原則自動的に失われる。</div>
         <div class="callout"><strong>原則8：</strong> いかなるAIケイパビリティもガバナンスの外に置かない。</div>
         <div class="callout"><strong>原則9：</strong> レジストリ未登録のケイパビリティはデフォルト拒否とする。</div>
+        <div class="callout"><strong>原則10：</strong> 制御面には、CI/CDによる事後検証に加え、エージェント実行時の統制（ハーネスコントロール）を含める。</div>
+        <div class="callout"><strong>原則11：</strong> 独自概念は既存の標準・仕様の上に載せ、独自部分と標準との対応を明記する。</div>
+        <p class="small">原則10・11は2026年11月の改訂で追加した。</p>
       </section>
 
       <section id="model">
@@ -215,6 +229,7 @@ footer{color:var(--muted);font-size:.86rem;text-align:center;margin-top:26px}
 
         <p>担当は、第2層＝Anthropic.Claude、第4層＝OpenAI.GPT、第5層＝Google Geminiとする。第1層・第3層は共通基盤とする。</p>
         <p>観測層自体もガバナンス対象とする。仕様乖離検知機能、AIレビュアー、AIセキュリティ分析機能等もケイパビリティレジストリに登録し、精度劣化時は信頼レベルを見直す。</p>
+        <p>制御・エビデンス層には、CI/CDによる事後検証に加え、エージェント実行時の統制（ハーネスコントロール）を含める（第10章）。</p>
       </section>
 
       <section id="a">
@@ -232,7 +247,7 @@ footer{color:var(--muted);font-size:.86rem;text-align:center;margin-top:26px}
         </ul>
 
         <h3>中核設計</h3>
-        <p>AIは推論・生成を担当し、マージ・デプロイ・セキュリティ・ポリシー判定などは決定論的ゲートへ委譲する。AI生成コードも人間生成コードも同じ品質保証プロセスを通す。</p>
+        <p>AIは推論・生成を担当し、マージ・デプロイ・セキュリティ・ポリシー判定などは決定論的ゲートへ委譲する。AI生成コードも人間生成コードも同じ品質保証プロセスを通す。エージェントの実行時統制は、ハーネスの権限・ツール許可・サンドボックス・フックとして実装する（第10章）。</p>
       </section>
 
       <section id="b">
@@ -303,6 +318,8 @@ LLMによる仕様乖離分析
 
         <p>本番IAM変更、本番データ破壊、セキュリティポリシーの迂回、規制上人間の承認が必須の操作等は、ゲート成熟度に関係なく上限の権限を固定する。</p>
 
+        <p>信頼レベルは、エージェントハーネスの権限モード・ツール許可設定・サンドボックスとして機械的に強制する（第10章）。</p>
+
         <h3>昇格／降格</h3>
         <pre>エビデンス蓄積
    ↓
@@ -330,22 +347,22 @@ LLMによる仕様乖離分析
           <tbody>
             <tr>
               <td>フェーズ0 ベースライン</td>
-              <td>リードタイム、デプロイ頻度、変更失敗率、欠陥流出率、レビュー時間、手戻り率、MTTR等を測定</td>
+              <td>DORAの5指標（変更リードタイム、デプロイ頻度、失敗デプロイ復旧時間、変更失敗率、デプロイ手戻り率）と補助指標（欠陥流出率、レビュー時間）を測定</td>
               <td>比較可能なベースラインが存在する</td>
             </tr>
             <tr>
               <td>フェーズ1 レジストリ・ポリシー</td>
-              <td>パイロット範囲のケイパビリティ登録、初期T0/T1、デフォルト拒否、明示的拒否の定義</td>
+              <td>パイロット範囲のケイパビリティ登録、初期T0/T1、デフォルト拒否、明示的拒否の定義、エージェントハーネスの標準構成（権限・ツール許可・サンドボックス）の定義</td>
               <td>識別済みケイパビリティ100%登録。未登録は実行不可</td>
             </tr>
             <tr>
               <td>フェーズ2 仕様・ゲート</td>
-              <td>仕様タイプ体系、コンテキスト選定、CI/CD検証エビデンスの構築</td>
+              <td>仕様タイプ体系、コンテキスト選定、CI/CD検証エビデンスの構築、依存パッケージ検証（ハーネスのフックとCI）</td>
               <td>受け入れ基準とエビデンスがトレース可能</td>
             </tr>
             <tr>
               <td>フェーズ3 昇格パイロット</td>
-              <td>小規模機能でAI生成・テスト・PR・ゲート・人間承認を運用</td>
+              <td>ハーネスコントロール下の小規模機能で、AI生成・テスト・PR・ゲート・人間承認を運用</td>
               <td>対象ケイパビリティのエビデンスに基づく昇格実績</td>
             </tr>
             <tr>
@@ -369,7 +386,7 @@ LLMによる仕様乖離分析
         <div class="kpi">
           <div class="card">
             <strong>ビジネス成果</strong>
-            変更リードタイム／デプロイ頻度／変更失敗率／欠陥流出率／手戻り率
+            変更リードタイム／デプロイ頻度／失敗デプロイ復旧時間／変更失敗率／デプロイ手戻り率（DORA）。補助：欠陥流出率
           </div>
           <div class="card">
             <strong>AIへの委譲</strong>
@@ -381,18 +398,121 @@ LLMによる仕様乖離分析
           </div>
         </div>
 
+        <h3>指標の定義（DORA）</h3>
+        <div style="overflow-x:auto;">
+<table>
+<thead><tr><th>区分</th><th>指標（正式名称）</th><th>定義</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>スループット</td><td>変更リードタイム（Change lead time）</td><td>変更がバージョン管理へコミットされてから、本番環境へデプロイされるまでの時間</td><td></td></tr>
+<tr><td>スループット</td><td>デプロイ頻度（Deployment frequency）</td><td>一定期間のデプロイ回数（またはデプロイ間隔）</td><td></td></tr>
+<tr><td>スループット</td><td>失敗デプロイ復旧時間（Failed deployment recovery time）</td><td>即時の対応を要する失敗デプロイから復旧するまでの時間</td><td>従来のMTTR（平均復旧時間）に代わる指標名</td></tr>
+<tr><td>不安定性</td><td>変更失敗率（Change fail rate）</td><td>デプロイ後に即時の対応（ロールバック・緊急修正等）を要したデプロイの割合</td><td></td></tr>
+<tr><td>不安定性</td><td>デプロイ手戻り率（Deployment rework rate）</td><td>本番インシデントを原因として発生した計画外デプロイの割合</td><td>レビュー指摘による差戻しとは別の指標</td></tr>
+<tr><td>補助（DORA外）</td><td>欠陥流出率</td><td>リリース後（本番）に発見された欠陥の、総欠陥に対する割合</td><td>独自定義。分母・分子の数え方を事前に固定する</td></tr>
+<tr><td>補助（DORA外）</td><td>レビュー時間</td><td>プルリクエストの作成からレビュー完了までの時間</td><td>独自定義</td></tr>
+</tbody>
+</table>
+</div>
+        <p class="small">出典：DORA（Google Cloud）公式ガイド「DORA metrics」（dora.dev/guides/dora-metrics）。補助指標は本提言の独自定義である。</p>
+        <p>DORAの2025年報告（State of AI-assisted Software Development）では、AI導入が不安定性（変更失敗率・手戻り）の上昇と関連する傾向が示され、基盤（バージョン管理・オブザーバビリティ・内部プラットフォーム）が弱い組織ほど悪化しやすいとされる★。このため、スループット指標の改善は、不安定性指標が悪化していないことを条件に評価する。また「デプロイ」の定義（本番反映の単位）を事前に固定し、指標はチームの継続的な改善確認に用いる。</p>
+
         <h3>重要な評価原則</h3>
         <ul>
-          <li>リードタイム短縮はベースライン取得後の改善仮説として扱い、固定値30%を絶対的なKGIにしない。</li>
-          <li>速度改善時も変更失敗率／欠陥流出率が悪化していないことを条件とする。</li>
+          <li>変更リードタイムの短縮はベースライン取得後の改善仮説として扱い、固定値30%を絶対的なKGIにしない。</li>
+          <li>速度改善時も変更失敗率／デプロイ手戻り率／欠陥流出率が悪化していないことを条件とする。</li>
           <li>「LLM起因バグゼロ」ではなく、クリティカルなAI関連インシデント0、メジャー／マイナーは重大度別に追跡する。</li>
           <li>セキュリティは「脆弱性検知率100%」ではなく、必須セキュリティ統制の実行率100%、クリティカルな指摘の未解決0等で管理する。</li>
           <li>降格件数単体をポジティブなKPIにせず、重大度、根本原因、再発防止、再昇格リードタイムと組み合わせる。</li>
         </ul>
       </section>
 
+      <section id="agentic">
+        <h2>10. エージェント実務導入：ハーネスコントロールとオーケストレーション</h2>
+        <p>2026年11月時点で、コーディングエージェントは「補完機能」ではなく、モデルにツール実行・コンテキスト管理・安全制御・オーケストレーションを結合した実行基盤（以下「エージェントハーネス」）として運用される段階にある。実務上の論点は、どのモデルを使うかよりも、ハーネスをどう設計し統制するかに移っている。したがって本提言の制御面は、CI/CDによる事後検証に加えて、エージェントが動作する時点の統制（ハーネスコントロール）を含むものと再定義する。本節は改訂時に追加した実務動向の認識であり、特定製品の仕様を前提としない。</p>
+        <h3>ハーネスコントロールの統制点</h3>
+        <div style="overflow-x:auto;">
+<table>
+<thead><tr><th>統制点</th><th>内容</th><th>対応する信頼レベル・提言の要素</th></tr></thead>
+<tbody>
+<tr><td>権限モード</td><td>読取専用／編集ごとに承認／範囲内の自動承認</td><td>T1＝読取専用・提案のみ、T2＝ブランチ内の編集・テスト実行は承認付き、T3＝範囲を限定した自動承認</td></tr>
+<tr><td>ツール許可・拒否リスト</td><td>実行できるコマンド・ツール・MCPサーバを明示的に許可。未登録は拒否</td><td>デフォルト拒否／明示的拒否（T0）</td></tr>
+<tr><td>サンドボックス</td><td>ファイル・ネットワーク・認証情報の隔離。専用ブランチ・開発環境のみに限定</td><td>信頼レベルに関わらず固定する、権限の物理的な上限</td></tr>
+<tr><td>フック（実行前後の決定論的検査）</td><td>ツール実行の前後でルールにより検査・拒否（危険なコマンド、未検証パッケージの追加、機密情報の書込み等）</td><td>決定論的ゲートの、エージェント実行時版</td></tr>
+<tr><td>承認ゲート</td><td>本番影響・不可逆操作・権限変更は人間が承認</td><td>昇格の人間判断、上限を固定する領域</td></tr>
+<tr><td>監査ログ・テレメトリ</td><td>操作履歴、ツール呼び出し、承認結果の記録</td><td>エビデンス、降格トリガーの入力、操作履歴の定期確認</td></tr>
+<tr><td>コンテキスト供給</td><td>リポジトリ内の指示ファイル（AGENTS.md等）・仕様への参照を、最小十分なコンテキストとして提供</td><td>仕様・コンテキスト層</td></tr>
+</tbody>
+</table>
+</div>
+        <h3>オーケストレーションの統制</h3>
+        <ul><li><strong>役割分離</strong>：計画・実装・レビュー・検証のエージェントを分離する。ただしAIレビュアー同士の相互確認は独立した検証とみなさず、最終判定は決定論的ゲートと人間が行う。</li><li><strong>並列実行の隔離</strong>：エージェントごとにブランチ・作業ディレクトリ・実行環境を分離し、マージは決定論的ゲートを通す。</li><li><strong>権限の単調縮小</strong>：委譲先エージェント（サブエージェント）の権限は委譲元を超えない。オーケストレータ自体もケイパビリティとして登録し、信頼レベルを付与する。</li><li><strong>エージェント間通信</strong>：認証・認可を伴う標準プロトコル（A2A Protocol、MCP）を用い、受信した内容は信頼できない入力として扱う。</li><li><strong>失敗モードの監視</strong>：委譲の往復（ループ）、コンテキストの断絶、責任の所在の拡散を、実行回数・時間・コストの上限と実行トレースで検知する。</li><li><strong>観測</strong>：実行トレースを共通形式（OpenTelemetry）で収集し、降格トリガーとドリフト検知の入力にする。</li></ul>
+        <p class="small">上記は本提言の設計方針であり、標準として確立したものではない。</p>
+        <h3>エージェント特有のリスクと対策</h3>
+        <div style="overflow-x:auto;">
+<table>
+<thead><tr><th>リスク</th><th>内容</th><th>対策</th><th>参照</th></tr></thead>
+<tbody>
+<tr><td>プロンプトインジェクション（間接を含む）</td><td>Issue・PR・Webページ・文書など外部コンテンツ内の指示により、エージェントが意図しない操作を行う</td><td>外部入力を信頼できないデータとして扱う。ツール権限を最小化し、機密情報の参照と外部への送信を同じエージェントに同時に与えない。不可逆操作は承認ゲートを通す</td><td>OWASP Top 10 for LLM Applications 2025 LLM01／OWASP Top 10 for Agentic Applications 2026 ASI01（Agent Goal Hijack）★</td></tr>
+<tr><td>ツール連携（MCPサーバ等）の信頼性</td><td>ツール説明文や接続先サーバが改ざん・悪性であり、エージェントが誤った操作や情報流出を行う</td><td>接続先をレジストリ登録制にし、未登録は拒否する。バージョンを固定し、出所を確認する。ツール説明を信頼しない</td><td>MCP仕様 2026-07-28版（Security and Trust & Safety）／OWASP ASI02・ASI04★</td></tr>
+<tr><td>エージェントの識別・権限の濫用</td><td>人間の資格情報の流用、過大・長期の権限付与により、侵害時の影響が拡大する</td><td>エージェントを非人間IDとして個別に発行し、短寿命の認可を与える。人間の資格情報を共有しない</td><td>NIST NCCoE ドラフト概念ペーパー／OAuth 2.0（RFC 6749）／OpenID Connect／SPIFFE／OWASP ASI03★</td></tr>
+<tr><td>依存パッケージの幻覚（スロップスクワッティング）</td><td>AIが存在しないパッケージ名を提案し、攻撃者がその名前で悪性パッケージを登録する。2026年1月には、AIが推奨していた未登録のパッケージ名が実際に登録された事例（react-codeshift）が報告されている。一方、大規模な攻撃キャンペーンの確認は報告されていない（CSA調査ノート、2026年5月）★</td><td>AIが提案したパッケージ名を未検証の入力として扱う。追加前に存在・公開元・登録日を検証する。ロックファイルに従うインストールに限定し、社内ミラーまたは許可リストを使う。ハーネスのフックとCIの両方で未検証パッケージの追加を拒否する。SBOM（SPDX／CycloneDX）とSCAで追跡する</td><td>CSA調査ノート（2026年5月）★／SLSA／SPDX／CycloneDX</td></tr>
+<tr><td>人間レビューにおける自動化バイアス</td><td>人間がAIの判断を過度に信頼し、最終確認を怠る</td><td>レビュー対象をリスクベースで絞り、観点を提示する。操作履歴を定期的に確認・報告する</td><td>AI事業者ガイドライン 第1.2版（総務省・経済産業省）★</td></tr>
+</tbody>
+</table>
+</div>
+        <p class="small">★は、本改訂の調査で二次情報（法律事務所・解説記事等）のみで確認した項目である。運用前に一次資料（官報・各団体・官公庁サイト）で確認すること。無印は、一次資料で確認した項目、または2026年以前に確立済みの情報である。</p>
+      </section>
+
+      <section id="standards">
+        <h2>11. 標準化動向と標準への対応づけ</h2>
+        <p>2026年11月の改訂で、標準化を重視する方針を追加した。独自概念（ケイパビリティレジストリ、信頼レベル等）を設計する際は、実装を既存の標準・仕様の上に載せ、独自部分と標準との対応を明記する。確定前のドラフトや策定中の仕様は『準拠』ではなく『整合』を目指す対象として扱う。</p>
+        <div style="overflow-x:auto;">
+<table>
+<thead><tr><th>領域</th><th>標準・仕様（正式名称）</th><th>策定・管理主体</th><th>本提言との対応</th></tr></thead>
+<tbody>
+<tr><td>AIマネジメントシステム</td><td>ISO/IEC 42001:2023（AI management system）／ISO/IEC 42006:2025★（認証機関の要求事項）</td><td>ISO/IEC JTC 1/SC 42</td><td>委譲・ガバナンス層の運用体制（ケイパビリティレジストリの管理責任・見直し・監査）</td></tr>
+<tr><td>AIリスク管理</td><td>NIST AI Risk Management Framework 1.0（NIST AI 100-1）／NIST AI 600-1（Generative AI Profile）／ISO/IEC 23894:2023</td><td>NIST、ISO/IEC</td><td>リスク分類（影響範囲・検出可能性・回復可能性）の参照枠組み</td></tr>
+<tr><td>セキュア開発</td><td>NIST SP 800-218（SSDF）／SP 800-218A（生成AI・デュアルユース基盤モデル向けコミュニティプロファイル）</td><td>NIST</td><td>制御・エビデンス層（検証ゲート）の参照</td></tr>
+<tr><td>LLM・エージェントの脅威</td><td>OWASP Top 10 for LLM Applications 2025（LLM01: Prompt Injection ほか）／OWASP Top 10 for Agentic Applications 2026（ASI01〜ASI10）★</td><td>OWASP GenAI Security Project（OWASP Foundation）</td><td>リスク対策の網羅性確認（エージェント特有のリスクを含む）</td></tr>
+<tr><td>エージェントとツールの接続</td><td>Model Context Protocol（MCP）仕様 2026-07-28版／Agent2Agent（A2A）Protocol v1.0／AGENTS.md</td><td>Agentic AI Foundation（Linux Foundation）</td><td>ツール・エージェント間接続の標準。接続先はレジストリ登録制とし、MCP仕様が定める安全原則（ツール注釈の非信頼扱い、ツール実行前の明示的同意）に従う</td></tr>
+<tr><td>エージェントの識別・認可</td><td>OAuth 2.0（RFC 6749）／OpenID Connect／SPIFFE／IETF WIMSEワーキンググループのドラフト★／NIST NCCoE ドラフト概念ペーパー</td><td>IETF、OpenID Foundation、CNCF、NIST</td><td>エージェントを非人間IDとして個別に識別し、短寿命の認可を与える。信頼レベルと認可スコープを対応づける</td></tr>
+<tr><td>ソフトウェアサプライチェーン</td><td>SLSA（Supply-chain Levels for Software Artifacts）／SPDX（ISO/IEC 5962:2021）／CycloneDX（ECMA-424）／SARIF（OASIS標準）</td><td>OpenSSF、Linux Foundation、Ecma International、OASIS</td><td>AI生成コードの来歴・SBOM・静的解析結果を共通形式でエビデンス化</td></tr>
+<tr><td>仕様表現</td><td>OpenAPI Specification／AsyncAPI／JSON Schema（Draft 2020-12）／Gherkin</td><td>OpenAPI Initiative、AsyncAPI Initiative、JSON Schema、Cucumber</td><td>仕様タイプ体系の各表現。標準仕様をそのまま用い、独自拡張は最小限にする</td></tr>
+<tr><td>ポリシー・アズ・コード</td><td>Open Policy Agent（OPA）／Rego</td><td>CNCF</td><td>決定論的ゲートのポリシー判定</td></tr>
+<tr><td>オブザーバビリティ</td><td>OpenTelemetry（GenAIセマンティック規約は策定中）</td><td>CNCF</td><td>エージェントの実行トレース・監査ログの共通形式</td></tr>
+<tr><td>デリバリー指標</td><td>DORAの5つのソフトウェアデリバリー指標</td><td>DORA（Google Cloud）</td><td>KPI・ベースラインの定義（前掲の表）</td></tr>
+</tbody>
+</table>
+</div>
+        <p class="small">★は、本改訂の調査で二次情報（法律事務所・解説記事等）のみで確認した項目である。運用前に一次資料（官報・各団体・官公庁サイト）で確認すること。無印は、一次資料で確認した項目、または2026年以前に確立済みの情報である。</p>
+      </section>
+
+      <section id="regulation">
+        <h2>12. 規制動向（米国・EU・日本）</h2>
+        <p>以下は2026年11月の改訂時点（調査基準日 2026年11月1日）の整理であり、法的助言ではない。国ごとに規制の強さは異なるが、リスクベースの統制、人間の判断の介在、透明性・記録の保持という方向は共通している。本提言の昇格／降格、承認ゲート、監査ログ、エビデンスは、これらの要請に対する説明手段として位置づけられる。</p>
+        <div style="overflow-x:auto;">
+<table>
+<thead><tr><th>地域</th><th>制度・文書（正式名称／発行主体）</th><th>状況（調査基準日 2026年11月1日）</th><th>本提言への含意</th></tr></thead>
+<tbody>
+<tr><td><span style="white-space:nowrap">米国</span></td><td>Ensuring a National Policy Framework for Artificial Intelligence（大統領令14365、2025-12-11）★</td><td>州ごとのAI規制を連邦の統一的な枠組みへ寄せる方針で、司法省にAI訴訟タスクフォースを設置。大統領令のみで州法は無効にならないとされ、州法は有効</td><td>連邦はガイダンス・標準主導で、州法が併存する。州法（例: Colorado AI Act、Texas TRAIGA〔2026-01-01施行〕）の適用有無は個別に確認する★</td></tr>
+<tr><td><span style="white-space:nowrap">米国</span></td><td>NIST AI Risk Management Framework 1.0（NIST AI 100-1）／Generative AI Profile（NIST AI 600-1、2024-07）</td><td>任意の枠組み。2025年のAI行動計画を受けた見直しの動きがある★</td><td>ガバナンス層のリスク評価・統制設計の参照枠組み</td></tr>
+<tr><td><span style="white-space:nowrap">米国</span></td><td>NIST SP 800-218A（Secure Software Development Practices for Generative AI and Dual-Use Foundation Models）</td><td>SSDF（SP 800-218）のAIモデル開発向けコミュニティプロファイル。確定版</td><td>セキュア開発（検証ゲート）の参照</td></tr>
+<tr><td><span style="white-space:nowrap">米国</span></td><td>NIST AI Agent Standards Initiative（CAISI、2026-02開始）／NCCoE ドラフト概念ペーパー「Accelerating the Adoption of Software and AI Agent Identity and Authorization」／SP 800-53 制御オーバーレイ（COSAiS）★</td><td>エージェントのセキュリティ・ID・認可の標準化を推進。概念ペーパーはドラフト、COSAiSのエージェント向けオーバーレイは策定中</td><td>エージェントID・認可・信頼レベル設計の参照。確定前のため、準拠ではなく整合を目指す</td></tr>
+<tr><td><span style="white-space:nowrap">EU</span></td><td>Regulation (EU) 2024/1689（AI Act）</td><td>禁止慣行は2025-02-02、汎用目的AI（GPAI）モデルの義務は2025-08-02から適用済み。透明性義務（第50条）の多くは2026-08-02適用★</td><td>LLMの利用側として透明性・AIリテラシーを確認する。開発対象システムが高リスク（附属書III等）に該当するかを個別に判定する</td></tr>
+<tr><td><span style="white-space:nowrap">EU</span></td><td>Digital Omnibus on AI（AI Actの改正。Regulation (EU) 2026/1744、2026-07に官報掲載・発効と報じられている）★</td><td>高リスクAIの義務適用を延期：附属書III（独立型）は2027-12-02、附属書I（規制対象製品に組み込まれるもの）は2028-08-02</td><td>高リスクに該当するシステムの開発では、延期後も必要となる記録（エビデンス・トレーサビリティ）を前倒しで整備する</td></tr>
+<tr><td><span style="white-space:nowrap">EU</span></td><td>CEN-CENELEC JTC 21 整合規格（標準化要請 M/613）／EN 18286（AI品質マネジメントシステム）★</td><td>整合規格を策定中。EN 18286が最初の整合規格として報じられている</td><td>ISO/IEC 42001との関係を含め、整合規格の公表状況を継続確認する</td></tr>
+<tr><td><span style="white-space:nowrap">EU</span></td><td>Regulation (EU) 2024/2847（Cyber Resilience Act）</td><td>脆弱性・重大インシデントの報告義務は2026-09-11、主要義務は2027-12-11から適用</td><td>デジタル要素を含む製品の開発では、SBOM・脆弱性管理・AI生成コードの依存関係管理が直接関係する</td></tr>
+<tr><td><span style="white-space:nowrap">日本</span></td><td>人工知能関連技術の研究開発及び活用の推進に関する法律（AI推進法）★</td><td>2025年9月に全面施行。研究開発・活用の推進を主眼とし、事業者に直接の罰則を課す規制法ではないと整理されている</td><td>遵守義務ではなく、国の指針・調査への協力と自主的なガバナンスが論点となる</td></tr>
+<tr><td><span style="white-space:nowrap">日本</span></td><td>人工知能基本計画（2025-12-23閣議決定）★</td><td>AI推進法に基づく政府の基本計画</td><td>国の方針の参照</td></tr>
+<tr><td><span style="white-space:nowrap">日本</span></td><td>AI事業者ガイドライン 第1.2版（総務省・経済産業省、2026-03-31公表）★</td><td>AIエージェント・フィジカルAIの定義とリスクを追記。自律性の高いAIへの「人間の判断の介在」、操作履歴の定期確認、自動化バイアスへの注意を明記</td><td>信頼レベル・承認ゲート・監査ログ・レビュー設計の直接の参照。法的拘束力のない指針で、2026年度以降も見直しが予定されている</td></tr>
+</tbody>
+</table>
+</div>
+        <p class="small">★は、本改訂の調査で二次情報（法律事務所・解説記事等）のみで確認した項目である。運用前に一次資料（官報・各団体・官公庁サイト）で確認すること。無印は、一次資料で確認した項目、または2026年以前に確立済みの情報である。</p>
+      </section>
+
       <section id="actions">
-        <h2>10. 具体的な次のアクション</h2>
+        <h2>13. 具体的な次のアクション</h2>
         <ol>
           <li>本番影響の低い1〜2機能をパイロット対象に選定する。</li>
           <li>対象機能に関わるケイパビリティを洗い出し、レジストリ初版を作る。</li>
@@ -405,11 +525,15 @@ LLMによる仕様乖離分析
           <li>適合率／再現率およびフォールスネガティブの監視を開始する。</li>
           <li>昇格／降格訓練を実施し、権限縮小→再検証→人間による再昇格を確認する。</li>
           <li>経営向け報告をビジネス成果／AIへの委譲／ガバナンスの健全性の3層で作成する。</li>
+          <li>エージェントハーネスの標準構成（権限モード・ツール許可・サンドボックス・フック・監査ログ）を定義し、信頼レベルと対応づける。</li>
+          <li>MCPサーバ等ツール連携の接続先をレジストリ登録制にし、未登録を拒否する。</li>
+          <li>依存パッケージ追加の検証（存在・公開元・ロックファイル）を、ハーネスのフックとCIの両方に実装する。</li>
+          <li>適用される規制・標準（第11章・第12章）と本提言の統制項目の対応表を作成し、法務・セキュリティ部門と確認する。</li>
         </ol>
       </section>
 
       <section id="conclusion">
-        <h2>11. 結論</h2>
+        <h2>14. 結論</h2>
         <p>三者の提言は、最終的に一つの循環型アーキテクチャへ統合された。</p>
         <blockquote>
           <strong>構造化された意図 → 制御された生成 → 決定論的検証 → リスクベースの委譲 → エビデンス → 観測 → フィードバック</strong>
