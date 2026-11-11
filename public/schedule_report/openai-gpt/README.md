@@ -1,6 +1,6 @@
 # デイリーブリーフの入口と独立更新
 
-配置先: s-omy/pages、main、schedule_report/openai-gpt/。
+配置先: s-omy/pages、main、`public/schedule_report/openai-gpt/`(2026-11-12 以降、公開ディレクトリは `public/`。リポジトリ直下の `schedule_report/` に書いても公開されません)。
 index.html と hub.js は共通の入口。各カテゴリの latest.json を閲覧時に個別取得します。
 ゲームとVTuberの公開日が異なる場合も、それぞれの発行日を表示します。
 メタデータが読めない場合は一般的な紹介文とリンクを残し、日付取得失敗を表示します。
@@ -33,3 +33,9 @@ Git CLIを使う場合も最新状態を取り込み、自分の変更だけをr
 入口と独立メタデータは実装済みです。既存ChatGPT Scheduledの設定と、HTML化・GitHub投稿の自動処理は今回変更していません。
 今後スケジューラから自動コミットする処理を設ける際は、上記担当範囲・再試行手順とlatest.jsonの更新をその処理に組み込んでください。
 この構成だけで既存チャットが自動的にGitHubへ投稿するようになるわけではありません。
+
+## 公開ディレクトリとリンク仕様(2026-11-12 追加)
+
+- 公開ディレクトリは `public/` です。日々の更新でコミットするパスはすべて `public/schedule_report/openai-gpt/...` にしてください(`latest.json`、`archive/`、`content/`、`index.html` を含む)。
+- 元レポート(`content/YYYY-MM-DD.md`)へのリンク(`<a class="source" ...>`)には必ず `download` 属性を付けます。例: `<a class="source" href="../content/2026-11-12.md" download>`。`index.html` からのリンクは `href="content/YYYY-MM-DD.md" download` です。md をブラウザで直接開くと文字コードが解決できず文字化けすることがあるためです。
+- `public/.assetsignore` により `*.md` は配信されませんが、`schedule_report/**/content/*.md` だけは例外として配信されます。README.md は配信されません。
