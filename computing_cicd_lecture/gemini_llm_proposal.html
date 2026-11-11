@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>大規模システム開発におけるLLM活用プロポーザルレポート</title>
+<title>大規模システム開発におけるLLM活用 提言レポート</title>
 <style>
   :root {
     --primary-color: #1e293b;
@@ -240,8 +240,8 @@
 
 <div class="container">
   <header>
-    <span class="header-tag">Executive Proposal Report</span>
-    <h1>大規模システム開発におけるLLM活用戦略<br><small style="font-size:1.1rem; font-weight:400; opacity:0.85;">クラウド・アジャイル移行チームのための「Software Delivery Control System」構築</small></h1>
+    <span class="header-tag">経営層向け提言レポート</span>
+    <h1>大規模システム開発におけるLLM活用戦略<br><small style="font-size:1.1rem; font-weight:400; opacity:0.85;">クラウド・アジャイル移行チームのための「ソフトウェアデリバリー統制システム（Software Delivery Control System）」構築</small></h1>
     <p>モノリス・ウォーターフォールからクラウド・アジャイルへの変革期における安全かつ高速なAI導入手法</p>
   </header>
 
@@ -252,7 +252,7 @@
     </div>
     <div class="meta-item">
       <strong>策定メンバー</strong>
-      <span>Member A, B, C & Facilitator</span>
+      <span>メンバーA（OpenAI GPT）、メンバーB（Anthropic Claude）、メンバーC（Google Gemini）、ファシリテーター</span>
     </div>
     <div class="meta-item">
       <strong>コアモデル</strong>
@@ -265,14 +265,14 @@
   </div>
 
   <div class="content">
-    
+
     <div class="principle-box">
       <h3>アーキテクチャ基本原則</h3>
       <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #1e3a8a;">
-        「Reasoning Plane（AI）と Control Plane（決定論的システム）の分離」
+        「推論面（AI）と制御面（決定論的システム）の分離」
       </p>
       <p style="margin-bottom: 0;">
-        LLMには曖昧な情報の構造化と分析（考えさせること）を担当させ、決定論的な検証基盤（CI/CD、テスト、ポリシー解析）に判定・制約・実行を行わせる。確率論的な成果物は直接本番環境へ接続せず、必ず決定論的なGateを通じて検証する。
+        LLMには曖昧な情報の構造化と分析（考えさせること）を担当させ、決定論的な検証基盤（CI/CD、テスト、ポリシー解析）に判定・制約・実行を行わせる。確率論的な成果物は直接本番環境へ接続せず、必ず決定論的なゲートを通じて検証する。
       </p>
     </div>
 
@@ -295,69 +295,69 @@
           <tr>
             <td><strong>現場での活用事例</strong></td>
             <td>コード補完、単体テスト生成、IaCテンプレート生成、PR一次レビュー等の個別適用が中心。</td>
-            <td>個別最適（Lines of Code）から、検証済み変更の提供速度（Validated Change / Lead Time）向上へシフト。</td>
+            <td>個別最適（コード行数）から、検証済み変更の提供速度（検証済み変更数／変更リードタイム）向上へシフト。</td>
           </tr>
           <tr>
             <td><strong>インシデントとリスク</strong></td>
-            <td>LLMへの不可逆権限付与によるデータ削除、ハルシネーション起因のSupply Chain Attack（Slopsquatting）。</td>
-            <td>生成コードは信用せず「検証結果」を信用する。AIへの権限付与は最小権限の原則（Least Privilege）を適用。</td>
+            <td>LLMへの不可逆な権限（Authority）付与によるデータ削除、ハルシネーション起因のサプライチェーン攻撃（スロップスクワッティング）。</td>
+            <td>生成コードは信用せず「検証結果」を信用する。AIへの権限付与は最小権限の原則を適用。</td>
           </tr>
           <tr>
             <td><strong>ミッションクリティカル適用</strong></td>
             <td>非決定性と応答遅延から、本番実行時ロジックへの直接組み込みは高リスク。</td>
-            <td>SDLC内（仕様定義、テスト作成、静的解析、障害解析）におけるHuman-in-the-Loop前提の適用。</td>
+            <td>ソフトウェア開発ライフサイクル（SDLC）内（仕様定義、テスト作成、静的解析、障害解析）におけるヒューマンインザループ前提の適用。</td>
           </tr>
           <tr>
             <td><strong>コミュニケーションログ活用</strong></td>
-            <td>Chat, Ticket, Commit等に散在する非構造化データが活用されず、仕様の形骸化（Spec Drift）が発生。</td>
-            <td>LLMがログを横断分析し「仕様と実装の不一致（Drift Candidate）」を検出。意思決定は人間が行う。</td>
+            <td>チャット、チケット、コミット等に散在する非構造化データが活用されず、仕様の形骸化（仕様乖離）が発生。</td>
+            <td>LLMがログを横断分析し「仕様と実装の不一致（仕様乖離候補）」を検出。意思決定は人間が行う。</td>
           </tr>
         </tbody>
       </table>
     </section>
 
     <section>
-      <h2>2. 統合モデル：「Software Delivery Control System」（5層構造）</h2>
-      <p>A・B・C 3名の提言を統合し、開発プロセス全体を閉ループで統制する5層アーキテクチャとして定義する。</p>
+      <h2>2. 統合モデル：「ソフトウェアデリバリー統制システム」（5層構造）</h2>
+      <p>メンバーA・B・Cの3名の提言を統合し、開発プロセス全体を閉ループで統制する5層アーキテクチャとして定義する。</p>
 
       <div class="layer-card">
         <div class="layer-title">
-          <span>1. Intent Layer（意図・要求層）</span>
-          <span class="badge badge-primary">Human Led</span>
+          <span>1. 意図層</span>
+          <span class="badge badge-primary">共通基盤（人間主導）</span>
         </div>
-        <p>人間が「何を、なぜ作るか」を定義する層。Business Intent、Requirement、Architecture Decision Record (ADR) を含む。</p>
+        <p>人間が「何を、なぜ作るか」を定義する層。ビジネス意図、要求、アーキテクチャ決定記録（ADR）を含む。</p>
       </div>
 
       <div class="layer-card">
         <div class="layer-title">
-          <span>2. Specification Layer（仕様構造化・観測層）</span>
-          <span class="badge badge-primary">Member B 担当</span>
+          <span>2. 仕様・コンテキスト層</span>
+          <span class="badge badge-primary">メンバーB担当</span>
         </div>
-        <p>Intentを検証可能な形へ変換する層。自然言語（Why）、Gherkin（Business Rule）、OpenAPI（API Contract）等のハイブリッド構造（Type System）で管理。最小十分なコンテキスト（Minimum Sufficient Context）のみを抽出して抽出・供給する。</p>
+        <p>意図を検証可能な形へ変換する層。自然言語（背景・目的）、Gherkin（ビジネスルール）、OpenAPI（API契約）等のハイブリッド構造（仕様タイプ体系）で管理。最小十分なコンテキストのみを抽出して供給する。</p>
       </div>
 
       <div class="layer-card">
         <div class="layer-title">
-          <span>3. Reasoning / Generation Layer（AI思考・生成層）</span>
-          <span class="badge badge-warning">Probabilistic Plane</span>
+          <span>3. 推論・生成層</span>
+          <span class="badge badge-warning">共通基盤（推論面・確率的）</span>
         </div>
-        <p>LLMが設計候補、コード、テスト、レビュー案、Drift Candidateを生成する層。この出力を直接事実（Fact）として扱わず、候補として次層へ渡す。</p>
+        <p>LLMが設計候補、コード、テスト、レビュー案、仕様乖離候補を生成する層。この出力を直接事実として扱わず、候補として次層へ渡す。</p>
       </div>
 
       <div class="layer-card">
         <div class="layer-title">
-          <span>4. Control / Evidence Layer（決定論的検証層）</span>
-          <span class="badge badge-primary">Member A 担当</span>
+          <span>4. 制御・エビデンス層</span>
+          <span class="badge badge-primary">メンバーA担当</span>
         </div>
-        <p>Build, Unit/Integration Test, SAST, SCA, Secret Scan, Policy as Code等の自動実行により、100%決定論的に Verification Evidence を作成・判定する層。</p>
+        <p>ビルド、単体／結合テスト、SAST、SCA、シークレットスキャン、ポリシー・アズ・コード等の自動実行により、100%決定論的に検証エビデンスを作成・判定する層。</p>
       </div>
 
       <div class="layer-card">
         <div class="layer-title">
-          <span>5. Delegation / Governance Layer（権限委譲・統制層）</span>
-          <span class="badge badge-primary">Member C 担当</span>
+          <span>5. 委譲・ガバナンス層</span>
+          <span class="badge badge-primary">メンバーC担当</span>
         </div>
-        <p>Capability単位でTrust Level（T0〜T3）を管理。昇格はEvidenceに基づく人間判断（Promotion）、降格はSeverity（Critical/Major/Minor）別の自動降格（Automatic Downgrade）で制御する。</p>
+        <p>ケイパビリティ（AIへ委譲可能な操作・判断・生成・分析の最小統制単位）ごとに信頼レベル（T0〜T3）を管理。昇格はエビデンスに基づく人間判断、降格は重大度（クリティカル／メジャー／マイナー）別の自動降格で制御する。</p>
       </div>
     </section>
 
@@ -368,34 +368,34 @@
           <tr>
             <th>フェーズ</th>
             <th>マイルストーン概要</th>
-            <th>主な完了判定基準（Evidence）</th>
+            <th>主な完了判定基準（エビデンス）</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>Phase 0</strong></td>
-            <td>Baseline（現状値）の測定</td>
-            <td>過去プロジェクトまたは最低1スプリントの Lead Time, Change Failure Rate, Rework率 の取得完了。</td>
+            <td><strong>フェーズ0</strong></td>
+            <td>ベースライン（現状値）の測定</td>
+            <td>過去プロジェクトまたは最低1スプリントの リードタイム、デプロイ頻度、変更失敗率、欠陥流出率、レビュー時間、手戻り率、MTTR の取得完了。</td>
           </tr>
           <tr>
-            <td><strong>Phase 1</strong></td>
-            <td>Capability Registry設計と境界定義</td>
-            <td>全AI関与機能がCapability登録され、初期Trust Level（T0/T1）と権限境界がCI/CD・IAMで強制されていること。</td>
+            <td><strong>フェーズ1</strong></td>
+            <td>ケイパビリティレジストリ設計と境界定義</td>
+            <td>全AI関与機能がケイパビリティとして登録され、初期の信頼レベル（T0/T1）と権限境界がCI/CD・IAMで強制されていること。未登録のケイパビリティはデフォルト拒否。</td>
           </tr>
           <tr>
-            <td><strong>Phase 2</strong></td>
-            <td>Specification Type System & Verification Gate構築</td>
-            <td>Gherkin/OpenAPI化の確立。LLM生成物に対する自動テスト・セキュリティスキャン等のEvidence生成率100%。</td>
+            <td><strong>フェーズ2</strong></td>
+            <td>仕様タイプ体系・検証ゲート構築とトレーサビリティ確保</td>
+            <td>Gherkin/OpenAPIによる仕様化の確立。LLM生成物に対する自動テスト・セキュリティスキャン等のエビデンス生成率100%。要求からデプロイまで1本のトレースで追跡可能。</td>
           </tr>
           <tr>
-            <td><strong>Phase 3</strong></td>
-            <td>Traceability Pipeline & Drift Detection稼働</td>
-            <td>要求からDeployまで1本のTraceで追跡可能。Chat/Jiraログから仕様不整合（Drift Candidate）を検知可能。</td>
+            <td><strong>フェーズ3</strong></td>
+            <td>昇格パイロットと委譲ガバナンスの運用</td>
+            <td>小規模機能でAI生成・テスト・PR・ゲート・人間承認を運用し、対象ケイパビリティの昇格実績を確認。重大度別の自動降格トリガーと降格訓練の検証完了。</td>
           </tr>
           <tr>
-            <td><strong>Phase 4</strong></td>
-            <td>Delegation Governance運用と自己監視の組み込み</td>
-            <td>Drift Detector自身もCapabilityとして継続監視（Precision/Recall）。Severity別自動降格トリガーの検証完了。</td>
+            <td><strong>フェーズ4</strong></td>
+            <td>仕様乖離検知の稼働と自己監視の組み込み</td>
+            <td>チャット／Jiraログから仕様不整合（仕様乖離候補）を検知可能。仕様乖離検知機能自身もケイパビリティとして継続監視（適合率／再現率）。</td>
           </tr>
         </tbody>
       </table>
@@ -403,7 +403,7 @@
 
     <section>
       <h2>4. 経営層向け「AI実績」要求の置換モデル</h2>
-      <p>経営層が求める「AI利用率」「生成コード量」などの Vanity Metrics（虚栄の指標）を退け、デリバリー能力とガバナンス成熟度の持続的成長を示す**複合評価ビュー**へと翻訳・報告する。</p>
+      <p>経営層が求める「AI利用率」「生成コード量」などの虚栄の指標を退け、デリバリー能力とガバナンス成熟度の持続的成長を示す<strong>複合評価ビュー</strong>へと翻訳・報告する。</p>
 
       <table>
         <thead>
@@ -415,23 +415,23 @@
         </thead>
         <tbody>
           <tr>
-            <td><strong>Capability Registry 推移</strong></td>
-            <td>AI関与Capability総数、Trust Level（T0〜T3）分布状況</td>
+            <td><strong>ケイパビリティレジストリの推移</strong></td>
+            <td>AI関与ケイパビリティ総数、信頼レベル（T0〜T3）分布状況</td>
             <td>安全にAIへ委譲可能な業務領域の拡大範囲を視覚化</td>
           </tr>
           <tr>
-            <td><strong>Delegation 可逆性実績</strong></td>
-            <td>期間内の昇格件数、および自動降格（Demotion）の発生件数と要因</td>
-            <td>統制機構（Governance）が健全に機能していることの立証</td>
+            <td><strong>委譲の可逆性実績</strong></td>
+            <td>期間内の昇格件数、および自動降格の発生件数と要因</td>
+            <td>統制機構（ガバナンス）が健全に機能していることの立証</td>
           </tr>
           <tr>
-            <td><strong>Delivery Capability 改善</strong></td>
-            <td>Lead Time for Changes（短縮率）、Change Failure Rate、Rework率</td>
+            <td><strong>デリバリー能力の改善</strong></td>
+            <td>変更リードタイム（短縮率）、デプロイ頻度、変更失敗率、欠陥流出率、手戻り率</td>
             <td>品質を維持・向上させた上での本質的な開発スピード向上</td>
           </tr>
           <tr>
-            <td><strong>Traceability 達成度</strong></td>
-            <td>Acceptance Criteria に対する Verification Evidence 網羅率</td>
+            <td><strong>トレーサビリティ達成度</strong></td>
+            <td>受け入れ基準に対する検証エビデンス網羅率</td>
             <td>仕様と実装・テストの完全な透明性と説明責任の担保</td>
           </tr>
         </tbody>
@@ -441,7 +441,7 @@
   </div>
 
   <footer>
-    <p>© 2026 Large-scale System Development LLM Proposal Group. All rights reserved.</p>
+    <p>© 2026 大規模システム開発LLM活用提言グループ. 無断転載を禁じます。</p>
     <button class="action-btn" onclick="window.print()">レポートを印刷 / PDF保存</button>
   </footer>
 </div>
