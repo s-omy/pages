@@ -875,7 +875,7 @@ td a{word-break:break-all;}
 <tr><td>プロンプトインジェクション（間接を含む）</td><td>Issue・PR・Webページ・文書など外部コンテンツ内の指示により、エージェントが意図しない操作を行う</td><td>外部入力を信頼できないデータとして扱う。ツール権限を最小化し、機密情報の参照と外部への送信を同じエージェントに同時に与えない。不可逆操作は承認ゲートを通す</td><td>OWASP Top 10 for LLM Applications 2025 LLM01／OWASP Top 10 for Agentic Applications 2026 ASI01（Agent Goal Hijack）★</td></tr>
 <tr><td>ツール連携（MCPサーバ等）の信頼性</td><td>ツール説明文や接続先サーバが改ざん・悪性であり、エージェントが誤った操作や情報流出を行う</td><td>接続先をレジストリ登録制にし、未登録は拒否する。バージョンを固定し、出所を確認する。ツール説明を信頼しない</td><td>MCP仕様 2026-07-28版（Security and Trust & Safety）／OWASP ASI02・ASI04★</td></tr>
 <tr><td>エージェントの識別・権限の濫用</td><td>人間の資格情報の流用、過大・長期の権限付与により、侵害時の影響が拡大する</td><td>エージェントを非人間IDとして個別に発行し、短寿命の認可を与える。人間の資格情報を共有しない</td><td>NIST NCCoE ドラフト概念ペーパー／OAuth 2.0（RFC 6749）／OpenID Connect／SPIFFE／OWASP ASI03★</td></tr>
-<tr><td>依存パッケージの幻覚（スロップスクワッティング）</td><td>AIが存在しないパッケージ名を提案し、攻撃者がその名前で悪性パッケージを登録し得る攻撃手法。2026年1月には、幻覚されたパッケージ名react-codeshiftがAIエージェント用スキルファイル経由で多数のリポジトリに拡散し、取得試行につながった事例が研究者により報告された。同名は研究者が防御的に登録した無害なプレースホルダーであり、この事例で悪性コードによる被害は確認されていない。大規模な悪用キャンペーンについては、CSAの調査ノート（2026年5月時点）が、公に確認された事例はないとしている★</td><td>AIが提案したパッケージ名を未検証の入力として扱う。追加前に存在・公開元・登録日を検証する。ロックファイルに従うインストールに限定し、社内ミラーまたは許可リストを使う。ハーネスのフックとCIの両方で未検証パッケージの追加を拒否する。SBOM（SPDX／CycloneDX）とSCAで追跡する</td><td>Aikido研究者のブログ（2026-01公開）／CSA調査ノート（2026年5月）★／SLSA／SPDX／CycloneDX</td></tr>
+<tr><td>依存パッケージの幻覚（スロップスクワッティング）</td><td>AIが存在しないパッケージ名を提案し、攻撃者がその名前で悪性パッケージを登録し得る攻撃手法。2026年1月には、幻覚されたパッケージ名react-codeshiftがAIエージェント用スキルファイル経由で多数のリポジトリに拡散し、取得試行につながった事例が研究者により報告された。同名は研究者が防御的に登録した無害なプレースホルダーであり、この事例で悪性コードによる被害は確認されていない。大規模な悪用キャンペーンについては、CSA（Cloud Security Alliance）の調査ノート「Slopsquatting: AI Hallucinations as Supply Chain Attack Vectors」（2026-05-03、Key Takeaways）が、執筆時点で公に確認された事例はないとしている。ただし同ノートは、AI支援で作成されCSAの正式な査読・承認を経ていないと明記している。同機関の2026-04-19付ノート（Security Analysis「Confirmed Real-World Exploitation」）は、悪性パッケージが実際に存在し数万回ダウンロードされたと述べており（本改訂では未検証）、大規模キャンペーンと個別の悪性パッケージの存在は区別して扱う</td><td>AIが提案したパッケージ名を未検証の入力として扱う。追加前に存在・公開元・登録日を検証する。ロックファイルに従うインストールに限定し、社内ミラーまたは許可リストを使う。ハーネスのフックとCIの両方で未検証パッケージの追加を拒否する。SBOM（SPDX／CycloneDX）とSCAで追跡する</td><td>Aikido研究者のブログ（2026-01公開）／CSA調査ノート（2026-05-03、2026-04-19）／SLSA／SPDX／CycloneDX</td></tr>
 <tr><td>人間レビューにおける自動化バイアス</td><td>人間がAIの判断を過度に信頼し、最終確認を怠る</td><td>レビュー対象をリスクベースで絞り、観点を提示する。操作履歴を定期的に確認・報告する</td><td>AI事業者ガイドライン 第1.2版（総務省・経済産業省）★</td></tr>
 </tbody>
 </table>
@@ -972,7 +972,7 @@ td a{word-break:break-all;}
     <div class="section-head">
       <p class="section-num">付録 ― 出典</p>
       <h2>出典・確認状態の一覧</h2>
-      <p class="section-desc">各事実について、確認状態と、外部の事実か本提言の設計判断かを示す。3つのLLMが合意したことは、外部事実の正確性や実装の有効性の検証を代替しない。「未取得」は、本改訂で一次資料のURLを取得・確認していないことを示す。</p>
+      <p class="section-desc">各事実について、確認状態と、外部の事実か本提言の設計判断かを示す。3つのLLMが合意したことは、外部事実の正確性や実装の有効性の検証を代替しない。「未取得」は、本改訂で一次資料のURLを取得・確認していないことを示す。本一覧は確認状態の可視化であり、出典検証の完了を意味しない。</p>
     </div>
     <div class="refs">
 <table>
@@ -1000,13 +1000,14 @@ td a{word-break:break-all;}
 <tr><td>サプライチェーン関連標準</td><td>SLSA／SPDX（ISO/IEC 5962:2021）／CycloneDX（ECMA-424）／SARIF</td><td>未取得</td><td>未確認（既知情報。再確認なし）</td><td style="white-space:nowrap">外部事実</td></tr>
 <tr><td>仕様表現・運用基盤の標準</td><td>OpenAPI／AsyncAPI／JSON Schema／Gherkin／OPA／OpenTelemetry／OAuth 2.0／OpenID Connect／SPIFFE／IETF WIMSE</td><td>未取得</td><td>未確認（IETF WIMSEのドラフトは二次のみ）</td><td style="white-space:nowrap">外部事実</td></tr>
 <tr><td>react-codeshift</td><td>Aikido研究者のブログ（2026-01-21公開、2026-03-17更新）</td><td><a href="https://www.aikido.dev/blog/agent-skills-spreading-hallucinated-npx-commands">https://www.aikido.dev/blog/agent-skills-spreading-hallucinated-npx-commands</a></td><td>一次確認済み（研究者による報告）</td><td style="white-space:nowrap">外部事実</td></tr>
-<tr><td>CSA調査ノート</td><td>スロップスクワッティングに関する調査ノート（2026年4〜5月）</td><td>未取得</td><td>二次のみ</td><td style="white-space:nowrap">外部事実</td></tr>
+<tr><td>CSA調査ノート（2件）</td><td>(1) Slopsquatting: AI Hallucinations as Supply Chain Attack Vectors（CSA、2026-05-03）。該当節：Key Takeaways（4つ目の項目）<br>(2) Slopsquatting: AI Code Hallucinations Fuel Supply Chain Attacks（CSA、2026-04-19）。該当節：Key Takeaways、Security Analysis「Confirmed Real-World Exploitation」</td><td>(1) <a href="https://labs.cloudsecurityalliance.org/wp-content/uploads/2026/05/CSA_research_note_slopsquatting-ai-coding-assistant-supply-chain_20260503-csa-styled.pdf">https://labs.cloudsecurityalliance.org/wp-content/uploads/2026/05/CSA_research_note_slopsquatting-ai-coding-assistant-supply-chain_20260503-csa-styled.pdf</a><br>(2) <a href="https://labs.cloudsecurityalliance.org/research/csa-research-note-slopsquatting-ai-supply-chain-20260419-csa/">https://labs.cloudsecurityalliance.org/research/csa-research-note-slopsquatting-ai-supply-chain-20260419-csa/</a></td><td>一次確認済み（記載内容の確認。(1)はAI支援で作成されCSAの正式な査読・承認を経ていないと明記。(2)の主張は未検証）</td><td style="white-space:nowrap">外部事実</td></tr>
 <tr><td>米国州法</td><td>Colorado AI Act、Texas TRAIGA（HB 149）等</td><td>未取得</td><td>二次のみ</td><td style="white-space:nowrap">外部事実</td></tr>
 <tr><td>統合5層モデル・信頼レベル（T0〜T3）・ケイパビリティ</td><td>本提言の設計</td><td>—</td><td>外部検証なし（3つのLLMの合意に基づく）</td><td style="white-space:nowrap">設計判断</td></tr>
 <tr><td>ハーネスコントロールの統制点・オーケストレーション方針</td><td>本提言の設計（2026年11月改訂で追加）</td><td>—</td><td>外部検証なし（3つのLLMの合意に基づく）</td><td style="white-space:nowrap">設計判断</td></tr>
 <tr><td>ロードマップ・KPIの構成</td><td>本提言の設計</td><td>—</td><td>外部検証なし（3つのLLMの合意に基づく）</td><td style="white-space:nowrap">設計判断</td></tr>
 </tbody>
 </table>
+<p class="note">出典検証は未完了である。残作業は次のとおり。(1) 各事実について、根拠となる条項・節を特定して記載する（現状は、CSA調査ノート等の一部を除き未記載）。(2) 「二次のみ」の項目について、確認に用いた二次資料のURLを記録する。(3) 人工知能基本計画（2026-07-14閣議決定）の内容を確認し、本提言との対応を整理する。</p>
     </div>
   </section>
 
