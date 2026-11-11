@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="LLM・生成AI 技術インテリジェンス週報。モデル、Personal AI、仕様駆動開発の動向を学ぶ。"><title>2026-10-24 | LLM技術週報</title><link rel="stylesheet" href="../assets/style.css"></head><body><a class="skip" href="#main">本文へ</a><div class="top">WEEKLY INTELLIGENCE / OPENAI GPT</div><main id="main"><nav aria-label="レポートナビゲーション"><a href="../index.html">最新号</a><a href="../archive/index.html">週別アーカイブ</a><a href="../../index.html">レポート入口</a></nav><header><p class="eyebrow">MODEL / PERSONAL AI / DEVELOPMENT</p><h1>LLM・生成AI<br>技術インテリジェンス週報</h1><time datetime="2026-10-24">2026-10-24 発行</time><p class="lead">MuseとCometから見る、Personal AIと仕様駆動開発の現在。</p><p class="meta"><a class="source" href="../content/2026-10-24.md" download>元レポートをダウンロード（Markdown）</a> · <a href="../archive/2026-10-24.html">この号の固定ページ</a></p></header><aside class="notice">添付された過去週報の移植版です。本文は当時の記述を保持しており、事実・数値・提供状況の独立した再検証は行っていません。記事URLが添付に残っていない出典はその旨を表示しています。検索画像・出典アイコンは本文表示から省き、元Markdownに保存しています。</aside><details class="toc"><summary>この号の目次（23項目）</summary><ol><li><a href="#section-1">1. Executive Summary</a></li><li><a href="#section-2">2. 今週の重要トピック Top 7</a></li><li><a href="#section-3">3. フロンティアモデルと周辺技術</a></li><li><a href="#section-4">3.1 今週の主役：Meta Muse family</a></li><li><a href="#section-6">3.2 Muse Glimmer 30Bは別方向で重要</a></li><li><a href="#section-8">3.3 Google：Gemini 4 Argon</a></li><li><a href="#section-9">4. エンドユーザー向けAI：今週もっとも重視すべき領域</a></li><li><a href="#section-10">4.1 Meta Muse — 今週最大のニュース</a></li><li><a href="#section-11">4.2 Museが示すPersonal AIの次の形</a></li><li><a href="#section-12">5. Perplexity / Comet — 現在の利用価値をどう見るか</a></li><li><a href="#section-14">5.1 Perplexity自体も「検索」から離れ始めている</a></li><li><a href="#section-15">6. 仕様駆動開発 — 今週から「学習コーナー」として扱う</a></li><li><a href="#section-16">今週のテーマ：「Specを書くこと」が目的ではない</a></li><li><a href="#section-17">7. 今週のSDD参考文献</a></li><li><a href="#section-22">8. 今週のSDD実践事例：AMOREPACIFIC</a></li><li><a href="#section-23">9. ガバナンス — 今週はここだけ押さえる</a></li><li><a href="#section-24">10. AI企業の動向</a></li><li><a href="#section-29">11. 法制度・政策</a></li><li><a href="#section-34">12. 今週の「自分で試すなら」</a></li><li><a href="#section-38">13. 今週の学習優先順位</a></li><li><a href="#section-39">14. 今週の見取り図</a></li><li><a href="#section-40">15. 今後の週報での重点配分</a></li><li><a href="#section-41">今週の結論</a></li></ol></details><article><p><strong>Vol. 9 Revised｜2026年10月24日（土）</strong>  <br><strong>主対象：2026年10月17日〜10月24日</strong>  <br><strong>補足範囲：直近1〜3か月</strong></p>
+<h2 id="section-1">1. Executive Summary</h2>
+<p>今週を象徴するニュースは、Metaの<strong>Muse日本上陸</strong>です。</p>
+<p>Metaは10月23日、パーソナルAIエージェント「Muse」を日本で提供開始しました。北米以外では日本が最初の提供地域です。Museは質問に回答するChatbotではなく、Gmail、Google Calendar、Instagramなどと接続し、Webブラウザ操作、フォーム入力、旅行予約などをユーザーの代わりに進める<strong>Personal AI Agent</strong>として設計されています。日本ではメルカリ、マネーフォワード ME、チケットぴあとの連携も進めるとしています。 <a href="https://about.fb.com/ja/news/2026/10/muse-personal-ai-agent-launches-in-japan/?utm_source=chatgpt.com" rel="noreferrer">Facebook</a></p>
+<p>これは単に「Meta版ChatGPTが出た」というニュースではありません。</p>
+<p>2026年の個人向け生成AIが、</p>
+<p><strong>Chatbot → Search/Research → AI Browser → Personal Agent</strong></p>
+<p>へ進んでいることを強く象徴しています。</p>
+<p>特に現在の主要プレイヤーを見ると、</p>
+<ul><li>ChatGPT：会話を起点にWork・Apps・Agentへ拡張</li><li>Gemini：Google Workspaceと一体化する汎用Agent</li><li>Perplexity：検索を起点にComet / Computerへ拡張</li><li>Meta：Museを最初からPersonal Agentとして設計</li></ul>
+<p>という<strong>異なる入口から同じ「Personal AI」へ収束する動き</strong>が見えてきます。GoogleもGeminiをGmail、Drive、Docs、Sheets、Calendar等を横断する「universal agent for work」として展開しています。 <a href="https://cloud.google.com/blog/products/ai-machine-learning/welcome-to-gemini-at-work-2026?trk=public_post_comment-text&amp;utm_source=chatgpt.com" rel="noreferrer">Google Cloud</a></p>
+<p>Metaはモデル側でも攻勢を強めています。10月12日に公開した<strong>Muse Wonder / Muse Wonder Full</strong>はPersonal/Professional Agent向けの同社最上位モデルで、Active MemoryとActive Focusを備えています。さらに10月19日には、30Bパラメータのオープンソース・オンデバイスAgentモデル<strong>Muse Glimmer 30B</strong>を公開しました。約4bit量子化でconsumer hardware上のローカル実行を狙ったモデルです。 <a href="https://about.fb.com/news/2026/10/introducing-muse-wonder-models/?utm_source=chatgpt.com" rel="noreferrer">Facebook</a></p>
+<p>このためMetaについては、今後この週報でも「SNS企業のAI」ではなく、</p>
+<blockquote><strong>Frontier Model + Personal Agent + Device + Social Graph</strong></blockquote>
+<p>を統合する主要AIプレイヤーとして追う必要があります。</p>
+<p>もう一つ、個人的な利用に直結するのが<strong>Perplexity / Comet</strong>です。</p>
+<p>PerplexityはComet Assistantを刷新し、複数タブ・複数サイトにまたがる長時間タスクへの対応を強化しました。社内評価では旧Assistant比23%改善としています。またブラウザを実際に操作する場合には事前承認を求める方式へ変更しています。 <a href="https://www.perplexity.ai/ja/hub/blog/the-new-comet-assistant?utm_source=chatgpt.com" rel="noreferrer">Perplexity AI</a></p>
+<p>さらにPerplexityは10月20日、ComputerをMac上で完全ローカル実行できるようにしました。検索サービスだったPerplexityが、</p>
+<p><strong>Search → Browser → Computer → Local Agent</strong></p>
+<p>へかなり速い速度で拡張していることが分かります。 <a href="https://www.perplexity.ai/en-GB/hub/blog?utm_source=chatgpt.com" rel="noreferrer">Perplexity AI</a></p>
+<p>したがって、今週の最も重要な認識更新は、</p>
+<blockquote><strong>「どのLLMが一番賢いか」だけでなく、「どのAIが自分のWeb・アプリ・ファイル・予定・行動へ最も自然に接続されるか」が、個人利用では重要な競争軸になった</strong></blockquote>
+<p>という点です。</p>
+<hr>
+<h2 id="section-2">2. 今週の重要トピック Top 7</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">順位</th><th scope="col">トピック</th><th scope="col">分野</th><th scope="col">今週の意味</th></tr></thead><tbody><tr><td>1</td><td>Meta Muse 日本提供開始</td><td>Personal AI</td><td>Personal Agent競争が日本でも本格化</td></tr><tr><td>2</td><td>Muse Wonder / Glimmer</td><td>Frontier Model</td><td>Metaがモデル競争へ本格復帰</td></tr><tr><td>3</td><td>Comet Assistant刷新</td><td>AI Browser</td><td>Browser Agentが検索から実作業へ</td></tr><tr><td>4</td><td>Perplexity Computer Local</td><td>Personal AI</td><td>Cloud＋Local Hybridの重要性上昇</td></tr><tr><td>5</td><td>Google Agent Compute Engine</td><td>Agent基盤</td><td>Agent専用Runtimeが独立カテゴリ化</td></tr><tr><td>6</td><td>SDDの実証研究が増加</td><td>AI駆動開発</td><td>「流行」から検証フェーズへ</td></tr><tr><td>7</td><td>日本・EUのAI制度整備</td><td>社会・政策</td><td>AI普及を前提に制度実装フェーズへ</td></tr></tbody></table></div>
+<hr>
+<h2 id="section-3">3. フロンティアモデルと周辺技術</h2>
+<h2 id="section-4">3.1 今週の主役：Meta Muse family</h2>
+<h3 id="section-5">Muse Wonder / Wonder Full</h3>
+<p>MetaはMuse Wonderシリーズを「personal and professional agentic tasks」向けの最上位モデルとして位置付けています。</p>
+<p>重要なのはベンチマーク数値以上に、</p>
+<p><strong>Active Memory</strong>  <br>→ 会話をまたいで関連情報を保持・想起する</p>
+<p><strong>Active Focus</strong>  <br>→ 一度失敗しても別アプローチを試し、タスクを継続する</p>
+<p>という設計思想です。 <a href="https://about.fb.com/ja/news/2026/10/introducing-muse-wonder-models/?utm_source=chatgpt.com" rel="noreferrer">Facebook</a></p>
+<p>従来のLLMの評価軸だった、</p>
+<ul><li>Reasoning</li><li>Coding</li><li>Long Context</li></ul>
+<p>に加えて、</p>
+<ul><li>Persistence</li><li>Recovery</li><li>Memory</li><li>Tool use</li></ul>
+<p>がFrontier Model評価の中心へ入っています。</p>
+<p>これはGPT、Claude、Geminiにも共通する流れです。</p>
+<hr>
+<h2 id="section-6">3.2 Muse Glimmer 30Bは別方向で重要</h2>
+<p>10月19日にMetaが公開したMuse Glimmer 30Bは、今回の週報ではかなり注目したい技術です。</p>
+<p>30Bという比較的小規模なモデルで、</p>
+<ul><li>Text + Image入力</li><li>Multi-step reasoning</li><li>Tool use</li><li>Failure recovery</li><li>100以上の言語</li><li>約4bit量子化</li><li>Consumer GPUでのローカル実行</li></ul>
+<p>を狙っています。Apache 2.0で公開されています。 <a href="https://ai.meta.com/research/publications/muse-glimmer-30b-an-on-device-agentic-model?utm_source=chatgpt.com" rel="noreferrer">AI Meta</a></p>
+<h3 id="section-7">なぜ重要か</h3>
+<p>Frontier AIには現在、二つの方向があります。</p>
+<p><strong>巨大Cloud Model</strong></p>
+<p>GPT / Claude / Gemini / Muse Wonder</p>
+<p>と、</p>
+<p><strong>十分に賢いLocal Agent Model</strong></p>
+<p>Muse Glimmer / Gemma / Qwen等です。</p>
+<p>Personal AIではすべてをCloudへ送る必要はありません。</p>
+<p>今後、</p>
+<blockquote>Local modelで日常処理   → 難題だけFrontier Cloud Model</blockquote>
+<p>というHybrid AIがかなり現実的になる可能性があります。</p>
+<p>PerplexityもComputerのLocal実行を強化しており、これは偶然ではありません。 <a href="https://www.perplexity.ai/en-GB/hub/blog?utm_source=chatgpt.com" rel="noreferrer">Perplexity AI</a></p>
+<hr>
+<h2 id="section-8">3.3 Google：Gemini 4 Argon</h2>
+<p>直近7日より少し前ですが、10月14日にGemini 4 Argonが一般ユーザー向けGeminiアプリへ入りました。</p>
+<p>Google AI Pro / Ultraで利用可能で、長時間タスク、複雑なWorkflow、Codingを重点強化しています。Google AntigravityのCoding interfaceもGemini Macアプリへ統合されました。 <a href="https://blog.google/intl/ja-jp/company-news/technology/gemini-4-argon-gemini/?utm_source=chatgpt.com" rel="noreferrer">blog.google</a></p>
+<p>これも「モデル単体」より、</p>
+<p><strong>Gemini + Workspace + Agent + Coding</strong></p>
+<p>を一つのPersonal/Professional AIとして売る流れです。</p>
+<hr>
+<h2 id="section-9">4. エンドユーザー向けAI：今週もっとも重視すべき領域</h2>
+<h2 id="section-10">4.1 Meta Muse — 今週最大のニュース</h2>
+<p>Museの特徴は、「AIに質問する」のではなく、</p>
+<blockquote><strong>やってほしいことを渡す</strong></blockquote>
+<p>ことを前提にしている点です。</p>
+<p>日本版開始時点で、</p>
+<ul><li>Gmail</li><li>Google Calendar</li><li>Instagram</li><li>Stripe</li><li>Shopify</li><li>Trip.com</li><li>Agoda</li><li>Klook</li></ul>
+<p>などとの接続を説明しており、日本向けにはメルカリ、マネーフォワード ME、チケットぴあとも連携を進めています。 <a href="https://about.fb.com/ja/news/2026/10/muse-personal-ai-agent-launches-in-japan/?utm_source=chatgpt.com" rel="noreferrer">Facebook</a></p>
+<p>さらにMuseは専用の<strong>Muse Secure VM</strong>を持ち、ユーザーごとに独立したクラウド実行環境を利用します。</p>
+<p>これは重要です。</p>
+<p>Personal AI Agentは、</p>
+<p><strong>「ユーザーについて知っているAI」</strong></p>
+<p>だけでは足りません。</p>
+<p><strong>「ユーザーの代わりに安全に操作できるComputer」</strong></p>
+<p>まで必要だからです。</p>
+<hr>
+<h2 id="section-11">4.2 Museが示すPersonal AIの次の形</h2>
+<p>Museでは、</p>
+<ul><li>Memory</li><li>Browser</li><li>Connectors</li><li>Background Task</li><li>Approval</li><li>Notifications</li></ul>
+<p>が一つになっています。 <a href="https://about.fb.com/ja/news/2026/10/muse-personal-ai-agent-launches-in-japan/?utm_source=chatgpt.com" rel="noreferrer">Facebook</a></p>
+<p>この構造は、かなり分かりやすく、</p>
+<pre><code>Conversation
+    ↓
+Personal Memory
+    ↓
+Planning
+    ↓
+Apps / Web / Browser
+    ↓
+Task Execution
+    ↓
+User Approval</code></pre>
+<p>です。</p>
+<p>これは今後「Personal AI Agent」の基本形になる可能性があります。</p>
+<hr>
+<h2 id="section-12">5. Perplexity / Comet — 現在の利用価値をどう見るか</h2>
+<p>最近Cometの利用率が上がっているのであれば、これはかなり理にかなっています。</p>
+<p>CometはChatGPTやClaudeとは入口が違います。</p>
+<p><strong>ChatGPT / Claude</strong><br>→ 「AIに相談する」が起点</p>
+<p><strong>Comet</strong><br>→ 「Webで何かをしている途中」が起点</p>
+<p>だからです。</p>
+<p>現在のComet Assistantは複数タブを横断し、複数サイトの情報を扱いながらタスクを進められるようになっています。Perplexityの内部評価では旧世代より23%性能向上とされています。 <a href="https://www.perplexity.ai/ja/hub/blog/the-new-comet-assistant?utm_source=chatgpt.com" rel="noreferrer">Perplexity AI</a></p>
+<h3 id="section-13">Cometを特に使う価値がある場面</h3>
+<p>今の利用環境なら、私は次の役割分担が分かりやすいと考えます。</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">用途</th><th scope="col">向いているAI</th></tr></thead><tbody><tr><td>Webを巡回しながら調査</td><td><strong>Comet</strong></td></tr><tr><td>情報源横断のResearch</td><td><strong>Perplexity</strong></td></tr><tr><td>思考整理・相談・成果物作成</td><td>ChatGPT</td></tr><tr><td>Googleサービスを使った作業</td><td>Gemini</td></tr><tr><td>長文・文書・コード分析</td><td>Claude</td></tr><tr><td>日常タスクの代行</td><td><strong>Museを要評価</strong></td></tr></tbody></table></div>
+<p>特にCometは、</p>
+<p><strong>「検索する」→「タブを開く」→「比較する」→「まとめる」</strong></p>
+<p>を一つの操作系へ統合する方向へ進んでいます。</p>
+<p>これは従来ブラウザとの大きな違いです。</p>
+<hr>
+<h2 id="section-14">5.1 Perplexity自体も「検索」から離れ始めている</h2>
+<p>現在のPerplexityのChangelogを見ると、</p>
+<ul><li>Computer</li><li>Automations</li><li>Skills</li><li>Projects</li><li>Brain</li><li>Hybrid Compute</li><li>Local Computer</li><li>Agent API</li></ul>
+<p>がかなり中心になっています。 <a href="https://www.perplexity.ai/changelog?utm_source=chatgpt.com" rel="noreferrer">Perplexity AI</a></p>
+<p>もはやPerplexityを「AI検索サービス」とだけ分類するのは難しく、</p>
+<blockquote><strong>Research-centric Personal AI Platform</strong></blockquote>
+<p>と考える方が実態に近くなっています。</p>
+<hr>
+<h2 id="section-15">6. 仕様駆動開発 — 今週から「学習コーナー」として扱う</h2>
+<p>これまでの週報では、いきなりControl PlaneやEvidence Gateの話まで進みすぎていました。</p>
+<p>今後は、</p>
+<blockquote><strong>「SDDとは何なのか」→「何が効くのか」→「どの程度使うべきか」</strong></blockquote>
+<p>の順に学べる形にします。</p>
+<hr>
+<h2 id="section-16">今週のテーマ：「Specを書くこと」が目的ではない</h2>
+<p>Specification-Driven Developmentの本質は、</p>
+<blockquote>AIに大量の仕様書を読ませる</blockquote>
+<p>ことではありません。</p>
+<p>Microsoftの解説はかなり分かりやすく、</p>
+<p><strong>Stakeholder intent → Requirements → Design → Implementation → Validation</strong></p>
+<p>の途中で生じる「意味の損失」を減らす方法としてSDDを説明しています。 <a href="https://developer.microsoft.com/blog/spec-driven-development-ai-native-engineering/?utm_source=chatgpt.com" rel="noreferrer">Microsoft Developer</a></p>
+<p>この理解から始めることを推奨します。</p>
+<hr>
+<h2 id="section-17">7. 今週のSDD参考文献</h2>
+<p>読む順番を付けると、次の4本がよいです。</p>
+<h3 id="section-18">① 入門：Microsoft — Spec-Driven Development: A Spec-First Approach</h3>
+<p>最初に読むならこれです。</p>
+<p>難解なAgent Architectureではなく、</p>
+<ul><li>intent</li><li>constraint</li><li>acceptance criteria</li><li>right-sized specification</li></ul>
+<p>を中心に説明しています。 <a href="https://developer.microsoft.com/blog/spec-driven-development-ai-native-engineering/?utm_source=chatgpt.com" rel="noreferrer">Microsoft Developer</a></p>
+<p><a href="https://developer.microsoft.com/blog/spec-driven-development-ai-native-engineering/?utm_source=chatgpt.com" rel="noreferrer">MicrosoftのSDD解説</a></p>
+<hr>
+<h3 id="section-19">② 実践：Kiro — Specs just got faster (and smarter)</h3>
+<p>KiroのSpec modeが、</p>
+<p><strong>Requirements → Design → Tasks → Implementation</strong></p>
+<p>をどう扱っているかを見る教材です。</p>
+<p>重要なのは「全部を重厚なSpecにしない」という点で、簡単な変更と複雑な変更で流程を変える思想も参考になります。 <a href="https://kiro.dev/blog/faster-smarter-specs/?utm_source=chatgpt.com" rel="noreferrer">Kiro</a></p>
+<p><a href="https://kiro.dev/blog/faster-smarter-specs/?utm_source=chatgpt.com" rel="noreferrer">Kiro Spec解説</a></p>
+<hr>
+<h3 id="section-20">③ 実証研究：Google — Spec-Driven Test Generation</h3>
+<p>ここから一段深くします。</p>
+<p>GoogleのProduction Bugを対象とした研究では、AgentにいきなりTestを書かせるより、</p>
+<p><strong>Pre-condition / Post-condition / Undefined Behavior</strong></p>
+<p>を一度Specificationとして書かせてからTest生成させることで、bug detection rateが9.8ポイント改善したと報告しています。 <a href="https://research.google/pubs/grounding-ai-agents-in-contracts-an-empirical-evaluation-of-spec-driven-test-generation/?utm_source=chatgpt.com" rel="noreferrer">Google Research</a></p>
+<p>これは「Specがなぜ効く可能性があるのか」を比較的具体的に確認できる研究です。</p>
+<hr>
+<h3 id="section-21">④ 批判的視点：Spec-Driven Development as Prescribed and as Practiced</h3>
+<p>10月15日に改訂された研究では、21人へのインタビューと266 repositoryを分析しています。</p>
+<p>結果は単純な「SDD最高」ではありません。</p>
+<p>利用者は、</p>
+<ul><li>Agentの挙動が安定した</li><li>intentを明文化できた</li></ul>
+<p>というメリットを感じる一方、</p>
+<ul><li>Planning cost</li><li>Review cost</li><li>Spec decay</li></ul>
+<p>も報告しています。 <a href="https://www.alphaxiv.org/abs/2608.25202?utm_source=chatgpt.com" rel="noreferrer">alphaXiv</a></p>
+<p>これは非常に重要です。</p>
+<p><strong>SDDにもコストがあります。</strong></p>
+<p>したがって、</p>
+<blockquote>何でもSpec化</blockquote>
+<p>ではなく、</p>
+<blockquote><strong>複雑・長期・複数制約がある作業ほどSpecを厚くする</strong></blockquote>
+<p>のが現実的です。</p>
+<hr>
+<h2 id="section-22">8. 今週のSDD実践事例：AMOREPACIFIC</h2>
+<p>今週公開されたAWSのAMOREPACIFIC事例はかなり面白いです。</p>
+<p>SAP ECC環境でKiro Spec Modeを使い、</p>
+<p><strong>Jira Ticket → Kiro Spec → Code → FS/TS documentation</strong></p>
+<p>というWorkflowを構築しています。</p>
+<p>公開事例では文書作成時間80%削減、SpecとCodeの同期維持などを報告しています。 <a href="https://aws.amazon.com/blogs/awsforsap/how-amorepacific-brought-ai-driven-development-to-sap-ecc-with-kiro/?utm_source=chatgpt.com" rel="noreferrer">Amazon Web Services, Inc.</a></p>
+<p>もちろんベンダー事例なので数値はそのまま一般化できません。</p>
+<p>それでも、</p>
+<blockquote>SDD = 新規Webアプリ開発専用</blockquote>
+<p>ではなく、</p>
+<blockquote><strong>既存Enterprise Systemにも適用できる</strong></blockquote>
+<p>という点で参考になります。</p>
+<p>Java＋業務共通Frameworkという環境にも近い発想です。</p>
+<hr>
+<h2 id="section-23">9. ガバナンス — 今週はここだけ押さえる</h2>
+<p>ガバナンスを軽くするのではなく、<strong>理解しやすい粒度にします。</strong></p>
+<p>今週覚えることは一つです。</p>
+<blockquote><strong>Agentに「やってはいけない」と伝えることと、実際にできなくすることは別。</strong></blockquote>
+<p>Googleは10月22日、Agent専用Runtime <strong>Agent Compute Engine</strong>を発表しました。隔離microVM、short-lived credential、Agent Gatewayなどを使い、Agentが触れる環境そのものを制御します。 <a href="https://cloud.google.com/blog/topics/ai-infrastructure/introducing-agent-compute-engine-and-expanded-agent-governance/?utm_source=chatgpt.com" rel="noreferrer">Google Cloud</a></p>
+<p>PerplexityもSPACEというAgent sandbox基盤をOSS公開しており、MuseはMuse Secure VMを持ちます。 <a href="https://www.perplexity.ai/en-GB/hub/blog?utm_source=chatgpt.com" rel="noreferrer">Perplexity AI</a></p>
+<p>各社が同じ方向へ進んでいます。</p>
+<p>つまり、</p>
+<p><strong>AI SafetyはPrompt Engineeringだけでは成立しない</strong></p>
+<p>ということだけ今週は押さえておけば十分です。</p>
+<hr>
+<h2 id="section-24">10. AI企業の動向</h2>
+<h3 id="section-25">Meta：本格的にAIプラットフォーム企業へ</h3>
+<p>今週最も評価を更新すべき企業です。</p>
+<p>Metaは現在、</p>
+<ul><li>Muse</li><li>Muse Wonder</li><li>Muse Glimmer</li><li>Muse Code</li><li>Meta Model API</li><li>AI Glasses</li><li>WhatsApp / Instagram</li><li>Secure VM</li></ul>
+<p>を組み合わせ始めています。 <a href="https://about.fb.com/ja/news/2026/10/muse-personal-ai-agent-launches-in-japan/?utm_source=chatgpt.com" rel="noreferrer">Facebook</a></p>
+<p>以前の「Llamaを公開する会社」からかなり変わっています。</p>
+<p>特に重要なのは、</p>
+<blockquote><strong>AI + Social Graph + Device + Personal Agent</strong></blockquote>
+<p>を同時に持てることです。</p>
+<p>これはOpenAI、Anthropic、PerplexityにはないMeta固有の強みです。</p>
+<hr>
+<h3 id="section-26">Perplexity：AI Browserのポジションを強化</h3>
+<p>Cometの知見はSamsung Browserにも展開され始めています。</p>
+<p>Perplexityによれば、SamsungのBrowsing AssistはPerplexity APIを利用しており、Cometで培ったWeb perception、multi-tab context、browser action等の技術がベースになっています。 <a href="https://www.perplexity.ai/en-GB/hub/blog/perplexity-apis-power-ai-browsing-on-samsung-devices?utm_source=chatgpt.com" rel="noreferrer">Perplexity AI</a></p>
+<p>つまりCometは単独製品だけではなく、</p>
+<p><strong>AI-native browsing technology</strong></p>
+<p>のショーケースでもあります。</p>
+<hr>
+<h3 id="section-27">Google：Workspaceが最大のDistribution</h3>
+<p>Geminiは単独Chatbotより、</p>
+<p>Gmail / Drive / Docs / Slides / Sheets / Chat / Calendar</p>
+<p>の内部で同じMemory・Skills・Controlを維持する方向を強めています。 <a href="https://cloud.google.com/blog/ja/products/ai-machine-learning/welcome-to-gemini-at-work-2026/?hl=ja&amp;utm_source=chatgpt.com" rel="noreferrer">Google Cloud</a></p>
+<p>Google Workspaceを日常利用している場合、この統合度は無視できません。</p>
+<hr>
+<h3 id="section-28">Anthropic：企業・公共性を強く意識</h3>
+<p>Anthropicは10月18日、株式の一部を拠出する<strong>Anthropic Public Benefit Fund</strong>を発表しました。 <a href="https://www.anthropic.com/news?cam=claude&amp;utm_source=chatgpt.com" rel="noreferrer">Anthropic</a></p>
+<p>モデル性能競争だけでなく、「Frontier AI企業として社会的責任をどう制度化するか」という企業ガバナンスも競争領域になっています。</p>
+<hr>
+<h2 id="section-29">11. 法制度・政策</h2>
+<h3 id="section-30">日本：AI・デジタル改革推進会議が始動</h3>
+<p>日本では10月22日、政府の<strong>AI・デジタル改革推進会議</strong>が初開催されました。</p>
+<p>政府は年末までに、</p>
+<ul><li>2030年のAX像</li><li>AI・デジタル改革原則</li><li>AX社会実装アクション</li></ul>
+<p>を「中間整理」としてまとめる予定です。</p>
+<p>またAI法を含む制度の見直しや、AISIの機能強化も議論対象になります。 <a href="https://www.digital.go.jp/councils/ai_digital?utm_source=chatgpt.com" rel="noreferrer">デジタル庁</a></p>
+<h3 id="section-31">注目点</h3>
+<p>日本の政策は現在、</p>
+<p><strong>AIをどう規制するか</strong></p>
+<p>だけでなく、</p>
+<p><strong>AIをどう社会実装するか</strong></p>
+<p>にかなり比重があります。</p>
+<p>これは今後、</p>
+<p>行政・企業のAI Agent利用を後押しする可能性があります。</p>
+<hr>
+<h3 id="section-32">日本政府自身もAgent利用へ</h3>
+<p>10月20日、デジタル庁はガバメントAI「源内」でAI Agent利用環境の提供を開始し、「源内基準」も公開しました。 <a href="https://www.digital.go.jp/policies/genai?utm_source=chatgpt.com" rel="noreferrer">デジタル庁</a></p>
+<p>これは日本政府自身が、</p>
+<p><strong>Chat AI → Agent</strong></p>
+<p>へ進み始めたことを意味します。</p>
+<p>民間企業のAI Governanceを考える際にも、今後この基準は参考資料になりそうです。</p>
+<hr>
+<h3 id="section-33">EU：AI Actは実際のEnforcementへ</h3>
+<p>EU AI Actは2026年8月からGPAIやTransparencyに関する主要規定の執行段階へ入りました。</p>
+<p>EU AI OfficeはGPAI providerに対し、technical documentationの提出要求、model evaluation、是正措置、罰金等を行えるようになっています。 <a href="https://digital-strategy.ec.europa.eu/en/policies/enforcement-ai-act?utm_source=chatgpt.com" rel="noreferrer">デジタル戦略</a></p>
+<p>つまり2026年後半は、</p>
+<p><strong>「AI Actが来る」</strong></p>
+<p>ではなく、</p>
+<p><strong>「AI Actの運用が始まった」</strong></p>
+<p>というフェーズです。</p>
+<hr>
+<h2 id="section-34">12. 今週の「自分で試すなら」</h2>
+<p>今回は実運用基盤を構築するPoCではなく、利用者として試せるものを中心にします。</p>
+<h3 id="section-35">① Museを触る</h3>
+<p>日本提供が始まったばかりなので、まず、</p>
+<ul><li>日程調整</li><li>情報収集</li><li>旅行計画</li><li>Web操作</li><li>Memory</li></ul>
+<p>あたりを試す価値があります。 <a href="https://about.fb.com/ja/news/2026/10/muse-personal-ai-agent-launches-in-japan/?utm_source=chatgpt.com" rel="noreferrer">Facebook</a></p>
+<p>特に見るべきなのは回答品質ではありません。</p>
+<p><strong>「どこまで安心して仕事を任せられる感じがするか」</strong></p>
+<p>です。</p>
+<hr>
+<h3 id="section-36">② Cometを「検索」ではなく作業に使う</h3>
+<p>今週はCometで一つ、</p>
+<blockquote>「複数サイト＋複数タブをまたぐ作業」</blockquote>
+<p>を意図的に任せてみるとよいです。</p>
+<p>例えば、</p>
+<p><strong>「気になるAIサービスについて公式ページ、価格、利用者評価を調査して比較表にまとめる」</strong></p>
+<p>のようなタスクです。</p>
+<p>Cometの進化点が最も見えやすい使い方です。 <a href="https://www.perplexity.ai/ja/hub/blog/the-new-comet-assistant?utm_source=chatgpt.com" rel="noreferrer">Perplexity AI</a></p>
+<hr>
+<h3 id="section-37">③ KiroのSpecを1本だけ作る</h3>
+<p>本番開発へ導入する必要はありません。</p>
+<p>既知の小規模機能を題材に、</p>
+<p><strong>Requirement → Design → Task</strong></p>
+<p>まで作らせて、</p>
+<p>「普通にCodexへ依頼する場合と何が違うか」</p>
+<p>を見るだけで十分です。</p>
+<hr>
+<h2 id="section-38">13. 今週の学習優先順位</h2>
+<p>今週ならこの順です。</p>
+<p><strong>1. Meta Museを実際に触る</strong>  <br>Personal AI Agentがどこまで来たかを体感する。</p>
+<p><strong>2. MicrosoftのSDD入門を読む</strong>  <br>SDDを高度なGovernance論より先に、Requirements Engineeringの延長として理解する。 <a href="https://developer.microsoft.com/blog/spec-driven-development-ai-native-engineering/?utm_source=chatgpt.com" rel="noreferrer">Microsoft Developer</a></p>
+<p><strong>3. Cometでmulti-site taskを実行する</strong>  <br>AI Browserの価値を検索精度ではなく「作業量削減」で評価する。</p>
+<p><strong>4. Muse Glimmer 30Bについて読む</strong>  <br>Local AgentがPersonal AIにどう入るかを見る。 <a href="https://ai.meta.com/research/publications/muse-glimmer-30b-an-on-device-agentic-model?utm_source=chatgpt.com" rel="noreferrer">AI Meta</a></p>
+<p><strong>5. 日本のAI・デジタル改革推進会議を把握する</strong>  <br>国内の制度・社会実装の方向を見る。 <a href="https://www.digital.go.jp/councils/ai_digital?utm_source=chatgpt.com" rel="noreferrer">デジタル庁</a></p>
+<hr>
+<h2 id="section-39">14. 今週の見取り図</h2>
+<p>現在のPersonal AI市場は、かなり面白い形になっています。</p>
+<pre><code>                   Personal AI
+                       │
+        ┌──────────────┼──────────────┐
+        │              │              │
+      Chat          Search          Action
+        │              │              │
+    ChatGPT         Perplexity       Muse
+    Claude            Comet           │
+    Gemini              │             │
+        │               │             │
+        └─────── Agent / Computer ────┘
+                       │
+                Apps / Web / Files
+                       │
+                Personal Context
+                       │
+               Background Tasks</code></pre>
+<p>そして裏側では、</p>
+<pre><code>Frontier Cloud Model
+        +
+Small / Local Model
+        +
+Memory
+        +
+Browser / Computer
+        +
+Connectors
+        +
+Secure Runtime</code></pre>
+<p>の組み合わせ競争になっています。</p>
+<hr>
+<h2 id="section-40">15. 今後の週報での重点配分</h2>
+<p>今回の再構成を踏まえると、今後は概ね次の比重が適切だと考えます。</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">領域</th><th scope="col">比重</th></tr></thead><tbody><tr><td>Frontier Model・モデル技術</td><td><strong>25%</strong></td></tr><tr><td>Personal / Consumer AI</td><td><strong>25%</strong></td></tr><tr><td>AI駆動開発・SDD・学習資料</td><td><strong>25%</strong></td></tr><tr><td>企業・市場・法制度</td><td><strong>15%</strong></td></tr><tr><td>Governance / Runtime / Security</td><td><strong>10%</strong></td></tr></tbody></table></div>
+<p>もちろん重要インシデントがあればGovernance比率は一時的に上げます。</p>
+<hr>
+<h2 id="section-41">今週の結論</h2>
+<p>これまでのレポートは、AIを「企業システムへ安全に導入するエンジニア」の視点に寄りすぎていました。</p>
+<p>今週のMuseは、その視点だけでは拾い切れない重要な変化です。</p>
+<p>現在生成AIで最も大きな動きの一つは、</p>
+<blockquote><strong>AIが「使うサービス」から「日常生活とWebの間に常駐するインターフェース」へ変わりつつあること</strong></blockquote>
+<p>です。</p>
+<p>Meta Muse、Perplexity Comet/Computer、Gemini、ChatGPTは、そのアプローチこそ違いますが、いずれもこの方向へ進んでいます。</p>
+<p>一方で開発分野では、仕様駆動開発も「難しいAgent Governance技術」として捉える必要はありません。</p>
+<p>まずは、</p>
+<blockquote><strong>人間の意図をAIへ渡すときに失われる情報を減らし、生成結果が本当に意図通りか確認しやすくする手法</strong></blockquote>
+<p>として理解すれば十分です。</p>
+<p>そこからKiro、Spec Kit、cc-sdd、AGENTS.md、Skills、MCP、Evaluation、Governanceへ段階的に進めばよい。</p>
+<p>この二つを合わせると、今後追うべき生成AIは、</p>
+<p>**「モデルがどこまで賢くなったか」  <br>「一般ユーザーが何を任せられるようになったか」  <br>「開発者はAIとどう協働すべきか」  <br>「社会や企業はそれをどう受け入れようとしているか」**</p>
+<p>の4軸です。</p>
+<p>今後の週報は、この4軸を中心にした方が、現在のAI全体の変化を把握するという目的に合っています。</p></article><p><a href="#main">ページ先頭へ</a> · <a href="../archive/index.html">週別アーカイブへ</a></p></main><footer>LLM技術週報 · 発行日はJST · HTML移植：2026年11月12日</footer></body></html>
