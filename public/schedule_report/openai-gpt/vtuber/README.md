@@ -25,10 +25,10 @@ HTMLはJavaScript、外部フォント、外部ライブラリに依存せず閲
 
 ## GitHub Pagesへの配置
 
-配置先: `s-omy/pages` の `main` ブランチ、`schedule_report/openai-gpt/vtuber/`（ユーザー確認済み）。
+配置先: `s-omy/pages` の `main` ブランチ、`public/schedule_report/openai-gpt/vtuber/`（公開ディレクトリは `public/`）。
 `s-omy/pages`は既存サイトを含むため、ルートの`index.html`や`CNAME`を置換しないでください。
 このフォルダ一式を確認済みの配置先に追加します。
-既存の`schedule_report`配下に配置する場合も、既存ファイルの有無を確認してください。
+既存の`public/schedule_report`配下に配置する場合も、既存ファイルの有無を確認してください。
 
 新規専用リポジトリに配置する場合:
 
