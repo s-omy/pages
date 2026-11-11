@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="LLM・生成AI 技術インテリジェンス週報。モデル、Personal AI、仕様駆動開発の動向を学ぶ。"><title>2026-11-07 | LLM技術週報</title><link rel="stylesheet" href="../assets/style.css"></head><body><a class="skip" href="#main">本文へ</a><div class="top">WEEKLY INTELLIGENCE / OPENAI GPT</div><main id="main"><nav aria-label="レポートナビゲーション"><a href="../index.html">最新号</a><a href="../archive/index.html">週別アーカイブ</a><a href="../../index.html">レポート入口</a></nav><header><p class="eyebrow">MODEL / PERSONAL AI / DEVELOPMENT</p><h1>LLM・生成AI<br>技術インテリジェンス週報</h1><time datetime="2026-11-07">2026-11-07 発行</time><p class="lead">専門モデルの進化と、Codex・仕様駆動開発の学習へ。</p><p class="meta"><a class="source" href="../content/2026-11-07.md" download>元レポートをダウンロード（Markdown）</a> · <a href="../archive/2026-11-07.html">この号の固定ページ</a></p></header><aside class="notice">添付された過去週報の移植版です。本文は当時の記述を保持しており、事実・数値・提供状況の独立した再検証は行っていません。記事URLが添付に残っていない出典はその旨を表示しています。検索画像・出典アイコンは本文表示から省き、元Markdownに保存しています。</aside><details class="toc"><summary>この号の目次（20項目）</summary><ol><li><a href="#section-1">1. Executive Summary</a></li><li><a href="#section-2">2. 今週の最重要トピック Top 8</a></li><li><a href="#section-3">3. OpenAI / ChatGPT / Codex</a></li><li><a href="#section-7">4. Agentic Development・Coding Agents</a></li><li><a href="#section-8">5. 仕様駆動開発・Context / Harness設計</a></li><li><a href="#section-9">今週の学習テーマ：仕様だけでなくAgentの作業ルールもVersion管理する</a></li><li><a href="#section-10">今週読むべき参考文献</a></li><li><a href="#section-11">6. IaC / Kubernetes / Platform Engineering</a></li><li><a href="#section-12">7. AIガバナンス・セキュリティ・品質・監査・コスト</a></li><li><a href="#section-13">8. Google Cloud中心のCloud AI / Infra</a></li><li><a href="#section-14">9. AWSの重要動向</a></li><li><a href="#section-15">10. Azure</a></li><li><a href="#section-16">11. 主要競合・周辺サービス・OSS</a></li><li><a href="#section-17">12. 主要企業・先進現場の導入事例</a></li><li><a href="#section-20">13. 新しい技術・研究・規格</a></li><li><a href="#section-21">14. 今週の学習優先順位</a></li><li><a href="#section-22">15. PoC / 検証候補</a></li><li><a href="#section-23">16. 継続ウォッチ項目</a></li><li><a href="#section-24">今週やるならこの3つ</a></li><li><a href="#section-25">今週の結論</a></li></ol></details><article><p>Vol. 11</p>
+<p>2026年11月7日（土）｜対象：10月31日〜11月6日</p>
+<p>今週は、OpenAIのGPT-6 Cyber、Codexを支えるGit基盤の進化、Googleの動画生成・学習支援AI、GitHubのAgent資産管理が注目ニュースです。</p>
+<p>前回のフィードバックを引き継ぎ、フロンティアモデル、個人向けAIサービス、仕様駆動開発の学習、企業・制度動向を中心に整理しました。Google Cloudを最優先、AWSを次点とし、ガバナンスは重要な実例と学習ポイントに絞ります。</p>
+<h2 id="section-1">1. Executive Summary</h2>
+<p>GPT-6 Cyber — AIが脆弱性を発見・検証する能力が大幅向上</p>
+<p>11月5日｜OpenAI公式</p>
+<p>GPT-6 Cyberは、セキュリティ専門タスクに特化したモデル。OpenAI公表のExploitGymでは48.5%を記録し、GPT-5.6 Cyberの32.1%から改善しました。LinuxやFirefoxの脆弱性調査でも実績を報告しています。</p>
+<p class="citation">出典表記：OpenAI（添付に記事URL未収録）</p>
+<p>OpenAIがAgent規模のGit基盤を公開</p>
+<p>11月上旬｜OpenAI技術記事</p>
+<p>OpenAIはAgentによる大量の変更を扱うSource Control基盤の設計を紹介しました。さらにコード理解・レビュー技術を持つPierre Computerの買収計画も発表。Codexがコード生成だけでなく、Repositoryの理解・変更・レビューまで扱う方向が鮮明です。</p>
+<p class="citation">出典表記：OpenAI+1（添付に記事URL未収録）</p>
+<p>Gemini Omni 1.2 Flash — 動画生成の速度と使いやすさを改善</p>
+<p>11月5日｜Google公式</p>
+<p>最大15秒のクリップ生成、映像の一貫性、生成速度とコスト効率を改善。動画生成AIは単なるデモから、短尺コンテンツを繰り返し制作するワークフローへ進んでいます。</p>
+<p class="citation">出典表記：blog.google（添付に記事URL未収録）</p>
+<p>Gemini — 手描きのスケッチから動くアプリへ</p>
+<p>11月5日｜Google公式</p>
+<p>手描きの画面案をGeminiへ渡し、Canvasでアプリ化してプレビュー・修正できる利用法を紹介。エンドユーザーが自然言語と画像で小さなソフトウェアを作る流れを象徴しています。</p>
+<p class="citation">出典表記：blog.google（添付に記事URL未収録）</p>
+<p>今週の結論は、AIの進化が「より良い回答」から、専門業務を実行する能力、複数工程を継続する能力、誰でもソフトウェアやコンテンツを作れる能力へ広がっていることです。</p>
+<h2 id="section-2">2. 今週の最重要トピック Top 8</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">順位</th><th scope="col">トピック</th><th scope="col">重要度</th><th scope="col">成熟度</th></tr></thead><tbody><tr><td>1</td><td>GPT-6 Cyber</td><td>最重要</td><td>限定的な実利用</td></tr><tr><td>2</td><td>OpenAIのAgent-scale Git</td><td>最重要</td><td>内部実運用</td></tr><tr><td>3</td><td>Codex × Qodo / Pierre</td><td>高</td><td>導入事例・買収計画</td></tr><tr><td>4</td><td>Gemini Omni 1.2 Flash</td><td>高</td><td>提供開始</td></tr><tr><td>5</td><td>Gemini Canvasによるアプリ生成</td><td>高</td><td>利用可能な機能</td></tr><tr><td>6</td><td>GitHub Dependabot × Agent Package Manager</td><td>高</td><td>提供開始</td></tr><tr><td>7</td><td>AWS Security Hub SBOM Inventory</td><td>高</td><td>提供開始</td></tr><tr><td>8</td><td>GoogleのGuided Learning拡張</td><td>高</td><td>段階的提供</td></tr></tbody></table></div>
+<p>以下、重要トピックを指定の6観点で評価します。</p>
+<p>1. GPT-6 Cyber</p>
+<p>What happened: 11月5日、OpenAIがセキュリティ特化モデルを発表。Why it matters: AIが脆弱性を実際に発見・検証する能力を強化。技術的意味: コード理解、脆弱性検出、修正案生成と実証を統合。実務への影響: Security Reviewと脆弱性管理の高度化。成熟度: Early Adoption（限定アクセス）。推奨アクション: まず通常のCodexによるSecurity ReviewとSASTを比較。</p>
+<p class="citation">出典表記：OpenAI（添付に記事URL未収録）</p>
+<p>2. OpenAI Agent-scale Git</p>
+<p>What happened: 大量のCoding Agentが扱うSource Controlの課題と設計を公開。Why it matters: AI生成コードの量が増えるとGitの運用自体がボトルネックになる。技術的意味: Repository管理とAgent実行のスケーリング。実務への影響: PR粒度、並列作業、変更の競合、レビュー負荷の再検討。成熟度: OpenAI内部での実運用。推奨アクション: 自チームのAgent並列実行・PR運用への影響を整理。</p>
+<p class="citation">出典表記：OpenAI（添付に記事URL未収録）</p>
+<p>3. Codex × Qodo / Pierre</p>
+<p>What happened: QodoによるCodex活用事例とPierre Computer買収計画を発表。Why it matters: コード生成だけでなく、Repository固有の品質ルールやレビューが重要化。技術的意味: 組織Contextとコード解析の結合。実務への影響: ビジネスフレームワーク準拠のレビュー強化。成熟度: 既存製品活用・買収計画。推奨アクション: AGENTS.mdにレビュー規約を明示。</p>
+<p class="citation">出典表記：OpenAI+1（添付に記事URL未収録）</p>
+<p>4. Gemini Omni 1.2 Flash</p>
+<p>What happened: 11月5日に新しい動画生成モデルを紹介。Why it matters: 短尺動画制作の反復コストが低下。技術的意味: 長めのクリップと一貫性・速度の改善。実務への影響: プレゼン、説明動画、プロトタイプ制作への応用。成熟度: 提供開始、利用条件は要確認。推奨アクション: 15秒の製品説明動画を題材に評価。</p>
+<p class="citation">出典表記：blog.google（添付に記事URL未収録）</p>
+<p>5. Gemini Canvasアプリ生成</p>
+<p>What happened: 11月5日、スケッチをアプリ化する手順をGoogleが紹介。Why it matters: プログラミング知識が少ない利用者もUIからアプリを作れる。技術的意味: 画像理解、コード生成、実行プレビューの統合。実務への影響: 画面モックや小規模業務ツールの試作が容易に。成熟度: 利用可能な機能。推奨アクション: 手描き画面案から簡易Webアプリを試作。</p>
+<p class="citation">出典表記：blog.google（添付に記事URL未収録）</p>
+<p>6. Dependabot × Agent Package Manager</p>
+<p>What happened: 11月3日、Agent Package ManagerのSkills・Prompt・Instruction資産をDependabotで更新可能に。Why it matters: AgentのContextやSkillsも依存関係として管理する時代に。技術的意味: Agent設定のVersion管理と更新PR生成。実務への影響: Skillsの陳腐化・変更リスクを管理しやすくなる。成熟度: 提供開始。推奨アクション: Agent資産のVersion固定とレビュー方針を検討。</p>
+<p class="citation">出典表記：GitHub Changelog（添付に記事URL未収録）</p>
+<p>7. AWS Security Hub SBOM Inventory</p>
+<p>What happened: 11月6日、Compute資産のSBOM Inventory機能を発表。Why it matters: ソフトウェア依存関係を組織横断で把握できる。技術的意味: ソフトウェア構成情報の継続収集。実務への影響: AI生成コードを含むSupply Chain管理の補強。成熟度: 提供開始。推奨アクション: CIで生成するSBOMとの責任分界を確認。</p>
+<p class="citation">出典表記：Amazon Web Services, Inc.（添付に記事URL未収録）</p>
+<p>8. Google Guided Learning</p>
+<p>What happened: 11月3日、Google ClassroomとSearchにGuided Learningを拡張。Why it matters: AIが答えを出すだけでなく学習過程を支援。技術的意味: 対話型学習支援と教育サービスの統合。実務への影響: エンジニア教育やスキル習得にも参考になる。成熟度: 段階的提供。推奨アクション: SDDの学習に対話型チューターを活用。</p>
+<p class="citation">出典表記：blog.google（添付に記事URL未収録）</p>
+<h2 id="section-3">3. OpenAI / ChatGPT / Codex</h2>
+<h3 id="section-4">GPT-6 Cyber：専門特化型Frontier Modelの進化</h3>
+<p>OpenAIの発表によると、GPT-6 CyberはExploitGymで48.5%を記録しました。</p>
+<p>ExploitGym ベンチマーク</p>
+<p>OpenAI公表値。数値は特定の脆弱性検証タスクにおける成功率であり、一般的なセキュリティ能力全体を示すものではありません。</p>
+<p>0%15%30%45%60%GPT-5.6 CyberGPT-6 Cyber</p>
+<p>OpenAIはLinuxで948件の権限昇格Exploitを開発し、Firefoxでは81件の未知の高深刻度脆弱性を発見したと報告しています。ただし、これはOpenAI側の調査結果であり、独立した第三者評価と同一視するべきではありません。</p>
+<p class="citation">出典表記：OpenAI（添付に記事URL未収録）</p>
+<p>より重要なのは、強力な能力を持つモデルに対して、許可された対象・操作範囲を守らせる設計が重視されていることです。</p>
+<h3 id="section-5">Codexの次の課題はSource ControlとReview</h3>
+<p>OpenAIはGitの大規模運用に関する技術記事を公開しました。Agentが大量の変更を生成する状況では、モデルの生成速度だけでなく、Repositoryの管理、並列作業、変更の統合、レビューの効率が開発速度を左右します。</p>
+<p class="citation">出典表記：OpenAI（添付に記事URL未収録）</p>
+<p>また、Qodoの導入事例では、組織固有のContextやコード規約をCodexに供給し、複数Repositoryにまたがる重大問題の検出に活用しています。</p>
+<p class="citation">出典表記：OpenAI（添付に記事URL未収録）</p>
+<p>これは業務共通フレームワークを持つJava開発と相性の良い考え方です。AIに「一般的に良いJavaコード」を書かせるだけでなく、「この組織の認可、監査、例外、トランザクション規約に適合しているか」を判断させる方向です。</p>
+<h3 id="section-6">Images 2.6</h3>
+<p>OpenAIは11月上旬にImages 2.6も発表しました。画像編集の反復性と速度を改善し、GIFアニメーションにも対応しています。UI素材や説明用画像の作成を繰り返す際の実用性が高まっています。</p>
+<p class="citation">出典表記：OpenAI（添付に記事URL未収録）</p>
+<h2 id="section-7">4. Agentic Development・Coding Agents</h2>
+<p>今週のテーマは、Agentが生成する成果物を、どう組織の開発プロセスに組み込むかです。</p>
+<p>GitHubは11月3日、JetBrains AirへのCopilot統合を発表しました。Agent Client Protocol（ACP）を利用してCoding Agentの実行をIDEから扱います。またCopilotの利用Metrics APIではBYOK（Bring Your Own Key）やカスタムモデル利用を区別できるようになりました。</p>
+<p class="citation">出典表記：GitHub Changelog（添付に記事URL未収録）</p>
+<p>これらは、開発者が単一のAI製品に閉じるのではなく、IDE・Agent・Model・Repositoryを組み合わせる構成が一般化していることを示します。</p>
+<h2 id="section-8">5. 仕様駆動開発・Context / Harness設計</h2>
+<h2 id="section-9">今週の学習テーマ：仕様だけでなくAgentの作業ルールもVersion管理する</h2>
+<p>GitHub DependabotのAgent Package Manager対応は、SDDの学習にも関係する重要な更新です。</p>
+<p>これまでのソフトウェア開発では、Mavenやnpmの依存ライブラリをVersion管理していました。今後はAgentが参照するSkills、Instructions、Promptsも同様に変更管理する必要が生じます。</p>
+<p>仕様駆動開発で管理する4つの資産</p>
+<p>Specification</p>
+<p>何を実装するか</p>
+<p>Context / Skills</p>
+<p>何を知り、どう作業するか</p>
+<p>Policy</p>
+<p>何を許可・禁止するか</p>
+<p>Evidence</p>
+<p>何をもって完成と判断するか</p>
+<h2 id="section-10">今週読むべき参考文献</h2>
+<p><a href="https://github.github.com/spec-kit/quickstart?utm_source=chatgpt.com" rel="noreferrer">GitHub Spec Kit Quickstart</a></p>
+<p>入門｜30〜45分</p>
+<p>Requirements、Plan、Tasks、Implementationの流れを理解するための基本教材。今週初めてSDDを学ぶなら最優先です。</p>
+<p><a href="https://kiro.dev/blog/spec-it-safe/?utm_source=chatgpt.com" rel="noreferrer">Kiro — Spec it safe</a></p>
+<p>応用｜20〜30分</p>
+<p>仕様段階でセキュリティ要求を補強する方法。機能要件だけでは十分でないことを学べます。</p>
+<p><a href="https://github.blog/changelog/month/11-2026/?utm_source=chatgpt.com" rel="noreferrer">GitHub Changelog — 2026年11月</a></p>
+<p>最新動向｜15分</p>
+<p>DependabotによるAgent資産の更新管理や、Copilot利用Metricsの変更を確認できます。</p>
+<h2 id="section-11">6. IaC / Kubernetes / Platform Engineering</h2>
+<p>今週はAgent専用Kubernetes Runtimeの大型発表より、既存Infrastructureを安全に管理する機能更新が中心でした。</p>
+<p>AWS Systems Manager Parameter Storeでは11月5日、JSONやIPアドレスなどの型検証が追加されました。IaCやAgentが設定値を生成する際、不正な形式を登録段階で拒否できることは有用です。</p>
+<p class="citation">出典表記：Amazon Web Services, Inc.（添付に記事URL未収録）</p>
+<p>Kubernetesにおいても、同様の考え方でJSON Schema、OpenAPI Schema、Admission Policyを利用し、AIが生成したManifestを実行前に検証する設計が重要です。</p>
+<h2 id="section-12">7. AIガバナンス・セキュリティ・品質・監査・コスト</h2>
+<p>今週の重要な示唆は、GPT-6 Cyberの発表から得られます。</p>
+<p>高度なAIには、脆弱性を発見する能力と同時に、許可された範囲を守る能力が必要です。OpenAIは、GPT-6 Cyberの評価でScope外の操作を避ける能力も測定しています。</p>
+<p class="citation">出典表記：OpenAI（添付に記事URL未収録）</p>
+<p>一般のCoding Agentでも、以下の区別が必要です。</p>
+<ul><li>生成・提案する権限： コード、設定、テスト、IaCの変更案を作る</li><li>実行・適用する権限： Repositoryへ反映、CI/CD実行、本番環境変更を行う</li></ul>
+<p>後者には人間の承認、独立したPolicy Check、Audit Logを組み合わせます。</p>
+<p>またGitHubのCopilot Usage Metrics APIは、Code Review指摘への対応状況も集計できるようになりました。AIの利用量だけでなく、レビューが実際に改善へつながったかを測る方向です。</p>
+<p class="citation">出典表記：GitHub Changelog（添付に記事URL未収録）</p>
+<h2 id="section-13">8. Google Cloud中心のCloud AI / Infra</h2>
+<p>Googleは11月2日の月次まとめで、Gemini 4 Argon、Gemini 4 Carbon、Genie 4など、10月の主要モデル発表を振り返りました。</p>
+<p>Gemini 4 Carbonは高度なCybersecurityと長時間のEngineering Taskを重視し、現時点では米国政府や一部の信頼されたセキュリティ組織による事前テスト段階です。一般提供済みのモデルではありません。</p>
+<p class="citation">出典表記：blog.google（添付に記事URL未収録）</p>
+<p>Google Cloudを中心にAI開発を考える場合、今後の注目点はModel Gardenの選択肢だけでなく、Model Evaluation、IAM、Context供給、Agent Runtimeをどこまで統合できるかです。</p>
+<h2 id="section-14">9. AWSの重要動向</h2>
+<p>AWSでは11月6日、Security HubのSBOM Inventoryが発表されました。Compute環境で利用されるソフトウェアパッケージを組織横断で把握する機能です。</p>
+<p class="citation">出典表記：Amazon Web Services, Inc.（添付に記事URL未収録）</p>
+<p>また11月2日にはAmazon Textractが東京リージョンで利用可能になりました。日本国内での文書解析、スキャン帳票からの情報抽出などに利用できます。ただし、Expense、ID、Lendingなど一部の専用APIは東京リージョンでは未提供です。</p>
+<p class="citation">出典表記：Amazon Web Services, Inc.（添付に記事URL未収録）</p>
+<h2 id="section-15">10. Azure</h2>
+<p>今週はAzure固有の大型AI発表より、GitHub CopilotやMicrosoft系開発ツールとの統合を優先しました。Azure AI基盤については、Model Governance、Identity、Monitoringの重要変更を継続監視します。</p>
+<h2 id="section-16">11. 主要競合・周辺サービス・OSS</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">分野</th><th scope="col">今週の注目点</th></tr></thead><tbody><tr><td>Anthropic / Claude</td><td>Opus 5.5、Sonnet 5.5、Haiku 5.5の利用動向を継続</td></tr><tr><td>Google Gemini</td><td>Omni 1.2 Flash、Canvas、Guided Learning</td></tr><tr><td>GitHub Copilot</td><td>ACP統合、Usage Metrics、Agent資産管理</td></tr><tr><td>Meta Muse</td><td>日本提供開始後の実利用評価を継続</td></tr><tr><td>Perplexity / Comet</td><td>AI Browser・Computerの操作品質と安全性を継続評価</td></tr><tr><td>OpenHands / LangGraph / LlamaIndex / CrewAI</td><td>個別更新より、Agent Runtimeと標準化動向を優先</td></tr><tr><td>Cursor / Windsurf / Devin</td><td>Codex・Copilotとの機能差を継続監視</td></tr></tbody></table></div>
+<p>今週の検索では、Perplexity/Cometの新たな大型発表を十分に裏付ける一次情報は得られませんでした。前週のニュースを今週の新発表として再掲することは避けています。</p>
+<h2 id="section-17">12. 主要企業・先進現場の導入事例</h2>
+<h3 id="section-18">OpenAI × Mazda：物理世界の設計へAIを適用</h3>
+<p>11月3日、OpenAIはMazdaとの研究協力を公表しました。空力・衝突安全性に関する設計やSimulationをAIで支援し、車体形状の検討を効率化する取り組みです。</p>
+<p>OpenAIはGPT-6 Astraを利用して、CAD、PCB、Firmware、Software Integrationを横断した試作も実施しています。ただし、製造上の公差や制約の取り扱いには課題が残ると説明しています。</p>
+<p class="citation">出典表記：OpenAI（添付に記事URL未収録）</p>
+<p>この事例は、AI駆動開発がソフトウェア生成だけに閉じず、RequirementsからDesign、Simulation、Prototypeまで拡張していることを示します。</p>
+<h3 id="section-19">DevRev：企業Contextを利用した自律型サポート</h3>
+<p>OpenAIはDevRevがGPT-6.1 Solを利用して企業向けセルフサービスを実装した事例も紹介しました。企業内Contextを用いながら問い合わせ対応や操作を自動化する取り組みです。</p>
+<p class="citation">出典表記：OpenAI（添付に記事URL未収録）</p>
+<p>既存業務システムの上にAgent Interfaceを追加するパターンとして参考になります。</p>
+<h2 id="section-20">13. 新しい技術・研究・規格</h2>
+<p>今週は、専門特化型モデルとマルチモーダルモデルの両方で進展がありました。</p>
+<p>GPT-6 Cyberは高度なセキュリティ研究、Gemini Omni 1.2 Flashは動画生成、OpenAIの物理設計研究はCADやSimulationと、それぞれ異なる専門領域を強化しています。</p>
+<p>これは汎用モデル一つがすべてを担う方向だけでなく、専門モデルと汎用モデルを用途別に組み合わせる方向が重要であることを示しています。</p>
+<h2 id="section-21">14. 今週の学習優先順位</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">優先</th><th scope="col">学習テーマ</th><th scope="col">時間目安</th></tr></thead><tbody><tr><td>1</td><td>Spec Kitの基本フロー</td><td>45分</td></tr><tr><td>2</td><td>CodexとGit運用の関係</td><td>30分</td></tr><tr><td>3</td><td>GPT-6 CyberとSecurity Review</td><td>30分</td></tr><tr><td>4</td><td>Gemini Canvasで簡易アプリ作成</td><td>30分</td></tr><tr><td>5</td><td>Agent SkillsのVersion管理</td><td>20分</td></tr></tbody></table></div>
+<h2 id="section-22">15. PoC / 検証候補</h2>
+<p>PoC A：SDDの最小実践</p>
+<p>60〜90分</p>
+<p>Java REST APIを題材にRequirements、Design、Tasks、Implementation、Testを一通り作成します。認可と監査ログをAcceptance Criteriaに含め、生成結果との対応を確認します。</p>
+<p>PoC B：Codexによるコードレビュー</p>
+<p>45〜60分</p>
+<p>既存のJavaプロジェクトへAGENTS.mdで設計規約を供給し、一般的なレビューと組織ルール準拠レビューの差を比較します。</p>
+<p>PoC C：Gemini CanvasによるUI試作</p>
+<p>30分</p>
+<p>手描きの画面案からWebアプリを生成し、自然言語による修正と実行プレビューを体験します。SDDで作成した仕様との比較にも利用できます。</p>
+<h2 id="section-23">16. 継続ウォッチ項目</h2>
+<p>フロンティアモデルはGPT-6系、Gemini 4、Claude 5.5系、Muse Wonder/Glimmerを中心に追跡します。</p>
+<p>個人向けAIではChatGPT Work、Perplexity Comet/Computer、Meta Muse、GeminiのPersonal Agent機能を重点対象とします。特に検索、Web操作、長時間タスク、Memory、アプリ連携の実用性を比較します。</p>
+<p>開発領域ではCodex、Claude Code、GitHub Copilot、Spec Kit、cc-sdd、Kiro、AGENTS.md、Skills、MCPを監視します。CloudはGoogle Cloudを最優先とし、AWS AgentCoreやAzureの重要なGovernance機能を補完します。</p>
+<h2 id="section-24">今週やるならこの3つ</h2>
+<p>学習：Spec Kit Quickstartを完了する</p>
+<p>SDDのRequirements → Design → Tasksの流れを理解し、仕様がAIの実装判断にどう影響するか確認します。</p>
+<p>検証：Codexに組織固有のレビュー規約を与える</p>
+<p>AGENTS.mdへJava業務共通フレームワークのルールを記載し、生成コードや既存コードのレビュー結果を比較します。</p>
+<p>業務適用：AI生成物の品質基準を一つ定義する</p>
+<p>認可、監査ログ、業務例外などから一つ選び、AIが生成したコードに対するAcceptance Criteriaと自動テストを作成します。</p>
+<h2 id="section-25">今週の結論</h2>
+<p>2026年11月第1週は、AIが専門的な業務を遂行する能力と、その成果物を既存の開発・品質管理プロセスへ組み込む技術が進展しました。</p>
+<p>GPT-6 Cyberは専門モデルの高度化を、OpenAIのGit基盤とCodex関連の動向はAgentによる大規模開発の課題を、Gemini Canvasは一般ユーザーによるソフトウェア作成の敷居が下がっていることを示しています。</p>
+<p>今週の学習としては、最新モデルの細かなBenchmarkを追うこと以上に、SDDの基本を理解し、Codexへ組織固有のContextを渡して、その結果を評価する経験を積むことを推奨します。</p></article><p><a href="#main">ページ先頭へ</a> · <a href="../archive/index.html">週別アーカイブへ</a></p></main><footer>LLM技術週報 · 発行日はJST · HTML移植：2026年11月12日</footer></body></html>
