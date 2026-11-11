@@ -4,5 +4,7 @@ wrangler.jsonc
 .gitignore
 CNAME
 *.md
+# schedule_report の日次ブリーフ原本(ダウンロード用リンクの配信先)は除外しない
+!schedule_report/**/content/*.md
 temp.*
 tmp.*
