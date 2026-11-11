@@ -1,0 +1,8 @@
+# Files excluded from Workers static assets (paths relative to this directory)
+.git
+wrangler.jsonc
+.gitignore
+CNAME
+*.md
+temp.*
+tmp.*

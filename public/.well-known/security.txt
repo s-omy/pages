@@ -1,0 +1,4 @@
+Contact: mailto:report-to@oro-9.org
+Expires: 2027-11-10T00:00:00.000Z
+Preferred-Languages: ja, en
+Canonical: https://pages.oro-9.org/.well-known/security.txt
