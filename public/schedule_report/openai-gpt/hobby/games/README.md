@@ -9,7 +9,7 @@ ChatGPTの同名チャットから2026-10-19〜2026-10-23の5日分をHTML化し
 - `content/YYYY-MM-DD.md`: 取得した元レポート
 - `assets/style.css`: 共通スタイル（スマートフォン・印刷対応）
 
-配置先: `s-omy/pages` の `main` ブランチ、`public/schedule_report/openai-gpt/games/`(公開ディレクトリは `public/`)。
+配置先: `s-omy/pages` の `main` ブランチ、`public/schedule_report/openai-gpt/hobby/games/`(公開ディレクトリは `public/`)。
 既存のトップページ、他のレポート、ドメイン設定は変更しません。
 相対リンク・外部ライブラリ不要の静的HTML/CSSなのでGitHub Pagesに配置できます。
 

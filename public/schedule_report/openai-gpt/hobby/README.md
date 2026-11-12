@@ -1,6 +1,6 @@
 # デイリーブリーフの入口と独立更新
 
-配置先: s-omy/pages、main、`public/schedule_report/openai-gpt/`(2026-11-12 以降、公開ディレクトリは `public/`。リポジトリ直下の `schedule_report/` に書いても公開されません)。
+配置先: s-omy/pages、main、`public/schedule_report/openai-gpt/hobby/`(2026-11-12 以降、公開ディレクトリは `public/`。リポジトリ直下の `schedule_report/` に書いても公開されません)。
 index.html と hub.js は共通の入口。各カテゴリの latest.json を閲覧時に個別取得します。
 ゲームとVTuberの公開日が異なる場合も、それぞれの発行日を表示します。
 メタデータが読めない場合は一般的な紹介文とリンクを残し、日付取得失敗を表示します。
@@ -36,6 +36,11 @@ Git CLIを使う場合も最新状態を取り込み、自分の変更だけをr
 
 ## 公開ディレクトリとリンク仕様(2026-11-12 追加)
 
-- 公開ディレクトリは `public/` です。日々の更新でコミットするパスはすべて `public/schedule_report/openai-gpt/...` にしてください(`latest.json`、`archive/`、`content/`、`index.html` を含む)。
+- 公開ディレクトリは `public/` です。日々の更新でコミットするパスはすべて `public/schedule_report/openai-gpt/hobby/...` にしてください(`latest.json`、`archive/`、`content/`、`index.html` を含む)。
 - 元レポート(`content/YYYY-MM-DD.md`)へのリンク(`<a class="source" ...>`)には必ず `download` 属性を付けます。例: `<a class="source" href="../content/2026-11-12.md" download>`。`index.html` からのリンクは `href="content/YYYY-MM-DD.md" download` です。md をブラウザで直接開くと文字コードが解決できず文字化けすることがあるためです。
 - `public/.assetsignore` により `*.md` は配信されませんが、`schedule_report/**/content/*.md` だけは例外として配信されます。README.md は配信されません。
+
+## 趣味レポート入口の移行 (2026-11-12)
+
+VTuber・ゲームの入口と全コンテンツは `public/schedule_report/openai-gpt/hobby/` 配下へ移行しました。公開URLは https://pages.oro-9.org/schedule_report/openai-gpt/hobby/ です。最新号・アーカイブ・CSS・元Markdown・latest.jsonのカテゴリ内構成と相対リンクを維持します。
+`public/schedule_report/openai-gpt/index.html` は空白のみとし、リンク・リダイレクト・一覧を追加しません。独立した `weekly_llm_study/` は移動しません。日次更新では `hobby/games/` と `hobby/vtuber/` のみを更新し、共通入口とhub.jsは更新しません。
